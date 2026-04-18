@@ -37,14 +37,14 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({projectId}) 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        <button className="px-2 rounded bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">
+        <button className="px-2 py-1 rounded bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">
           + Custom 
         </button>
       </Dialog.Trigger>
 
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40" />
-        <Dialog.Content className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-950 rounded-2xl shadow-xl p-6 w-full max-w-md">
+        <Dialog.Content className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-950 rounded-2xl shadow-xl p-6 w-full md:w-[50vw]">
           <Dialog.Title className="text-lg font-semibold mb-1">
             Add Custom Rep
           </Dialog.Title>
@@ -65,7 +65,7 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({projectId}) 
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-white mb-1">
               Category
             </label>
             <Select.Root value={categoryId} onValueChange={setCategoryId}>

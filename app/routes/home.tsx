@@ -5,6 +5,7 @@ import { SignIn, useUser } from "@clerk/react-router";
 import { XPBar } from "~/components/art-prg/XPBar";
 import { Loader } from "~/components/art-prg/Loader";
 import { AddCustomRepButton } from "~/components/art-prg/AddCustomRepButton";
+import { StatChartButton } from "~/components/art-prg/StatChartButton";
 
 export default function Home() {
   const { isLoaded, isSignedIn } = useUser();
@@ -31,7 +32,10 @@ export default function Home() {
         <XPBar/>
         <div className="flex justify-between mx-20 lg:mx-40 mt-20 text-white mb-5">
         <h1 className="text-2xl">Magisterium</h1>
-        <AddCustomRepButton projectId={projectId}/>
+        <div className="flex gap-2">
+          <StatChartButton/>
+          <AddCustomRepButton projectId={projectId}/>
+        </div>
       </div>
       <CategoryTaskTree tasks={tasks} categories={categories} projectId={projectId}/>
     </div>

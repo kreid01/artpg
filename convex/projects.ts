@@ -116,6 +116,12 @@ export const getAllReps = query({
   },
 });
 
+export const getAllTasks = query({
+  handler: async (ctx) => {
+    return await ctx.db.query("tasks").collect();
+  },
+});
+
 export const createRep = mutation({
   args: {
     xpValue: v.number(),

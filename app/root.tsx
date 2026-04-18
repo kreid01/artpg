@@ -14,6 +14,7 @@ import { ConvexProviderWithClerk } from "convex/react-clerk";
 import type { Route } from "./+types/root";
 import "./app.css";
 import { Analytics } from "@vercel/analytics/react";
+import { createTheme, ThemeProvider } from "@mui/material";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 
@@ -61,7 +62,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+
+
 export default function App({ loaderData }: Route.ComponentProps) {
+  const darkTheme = createTheme({ palette: { mode: "dark" } });
+
   return (
     <ClerkProvider
       loaderData={loaderData}
@@ -69,7 +74,9 @@ export default function App({ loaderData }: Route.ComponentProps) {
       signInFallbackRedirectUrl="/"
     >
       <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-        <Outlet />
+        <ThemeProvider theme={darkTheme}>
+          <Outlet />
+        </ThemeProvider>
       </ConvexProviderWithClerk>
     </ClerkProvider>
   );
