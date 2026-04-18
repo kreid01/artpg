@@ -3,7 +3,7 @@ import { api } from "../../convex/_generated/api";
 import { CategoryTaskTree } from "~/components/art-prg/CategoryTasks";
 import { SignIn, useUser } from "@clerk/react-router";
 import { XPBar } from "~/components/art-prg/XPBar";
-import { PacmanLoader } from "react-spinners";
+import { Loader } from "~/components/art-prg/Loader";
 
 export default function Home() {
   const { isLoaded, isSignedIn } = useUser();
@@ -16,12 +16,12 @@ export default function Home() {
     projectId ? { projectId } : "skip"
   );
 
-  if (!isLoaded) return <PacmanLoader/> 
+  if (!isLoaded) return <Loader/> 
   if (!isSignedIn) return <SignIn />;
 
-  if (!categories || !projects || !tasks || !projectId) return <div><PacmanLoader/></div>;
+  if (!categories || !projects || !tasks || !projectId) return <div><Loader/></div>;
 
-  if (projects.length === 0) return <div><PacmanLoader/></div>;
+  if (projects.length === 0) return <div><Loader/></div>;
   console.log({ categories, projects, tasks, projectId });
 
 
