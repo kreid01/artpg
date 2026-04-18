@@ -138,6 +138,22 @@ export const getAllTasks = query({
   },
 });
 
+
+export const createChecklistRep = mutation({
+  args: {
+    xpValue: v.number(),
+    categoryId: v.id("categories"),
+    title: v.optional(v.string())
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("reps", {
+      categoryId: args.categoryId,
+      xpValue: args.xpValue,
+      title: args.title
+    });
+  },
+});
+
 export const createRep = mutation({
   args: {
     xpValue: v.number(),

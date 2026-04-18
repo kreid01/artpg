@@ -15,7 +15,7 @@ export const RepChecklist: React.FC = () => {
   const reps = useQuery(api.projects.getIncompleteReps);
   const categories = useQuery(api.projects.getAllCategories, adding ? {} : "skip");
   const completeRep = useMutation(api.projects.completeRep);
-  const createRep = useMutation(api.projects.createRep);
+  const createRep = useMutation(api.projects.createChecklistRep);
 
   async function handleAdd() {
     if (!title.trim() || !categoryId) return;
