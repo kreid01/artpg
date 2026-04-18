@@ -24,7 +24,7 @@ type Props = {
 
 export function CategoryTaskTree({ categories, tasks, projectId}: Props) {
   return (
-    <div className="space-y-2 mx-40">
+    <div className="space-y-2 mx-20 lg:mx-40">
       {categories.map((category) => (
         <CategoryBranch
           projectId={projectId}

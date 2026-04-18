@@ -27,9 +27,9 @@ export default function Home() {
 
 
   return (
-    <div className="p-4 bg-slate-950 " >
+    <div className="p-4 bg-slate-950 h-screen" >
         <XPBar/>
-        <div className="flex justify-between mx-40 mt-20 text-white mb-5">
+        <div className="flex justify-between mx-20 lg:mx-40 mt-20 text-white mb-5">
         <h1 className="text-2xl">Magisterium</h1>
         <AddCustomRepButton projectId={projectId}/>
       </div>

@@ -4,8 +4,13 @@
 @custom-variant dark (&:is(.dark *));
 
 .cl-rootBox {
-    margin-left: 35vw;
-    margin-top: 20vh;
+    margin-left: 5%;
+        margin-top: 20%;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 @theme inline {
     --color-background: var(--background);
