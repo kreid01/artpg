@@ -29,10 +29,9 @@ export const StatChartButton: React.FC = () => {
   );
 
   const xpByCategory = useMemo(() => {
-    console.log(tasks)
     const acc = new Map<string, number>();
     for (const rep of reps ?? []) {
-      const catId = rep.categoryId ?? rep.taskId != undefined ? taskMap.get(rep.taskId as Id<"tasks">)?.categoryId : null;
+      const catId = rep.categoryId ?? taskMap.get(rep.taskId as Id<"tasks">)?.categoryId;
       if (!catId) continue;
       acc.set(catId, (acc.get(catId) ?? 0) + rep.xpValue);
     }

@@ -12,8 +12,9 @@ export default defineSchema({
 
   reps: defineTable({
     taskId: v.optional(v.id("tasks")),
+    title: v.optional(v.string()),
     categoryId: v.optional(v.id("categories")),
-    completedAt: v.number(), 
+    completedAt: v.optional(v.number()), 
     xpValue: v.number(),
   }).index("by_task", ["taskId"]),
 

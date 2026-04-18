@@ -6,6 +6,7 @@ import { XPBar } from "~/components/art-prg/XPBar";
 import { Loader } from "~/components/art-prg/Loader";
 import { AddCustomRepButton } from "~/components/art-prg/AddCustomRepButton";
 import { StatChartButton } from "~/components/art-prg/StatChartButton";
+import { RepChecklist } from "~/components/art-prg/RepChecklist";
 
 export default function Home() {
   const { isLoaded, isSignedIn } = useUser();
@@ -37,7 +38,14 @@ export default function Home() {
           <AddCustomRepButton projectId={projectId}/>
         </div>
       </div>
-      <CategoryTaskTree tasks={tasks} categories={categories} projectId={projectId}/>
+      <div className="lg:flex gap-5 mx-20 lg:mx-40">
+        <div className=" lg:w-[30%]">
+          <RepChecklist/>
+        </div>
+        <div className="lg:w-[70%]">
+          <CategoryTaskTree tasks={tasks} categories={categories} projectId={projectId}/>
+        </div>
+      </div>
     </div>
   );
 }

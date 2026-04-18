@@ -1,5 +1,6 @@
 import { query } from "./_generated/server";
 import { v } from "convex/values";
+import { mutation } from "./_generated/server";
 
 export const getAllProjects = query({
   args: {},
@@ -51,8 +52,6 @@ export const getTasksByProject = query({
       .collect();
   },
 });
-
-import { mutation } from "./_generated/server";
 
 export const updateTaskCategory = mutation({
   args: {
@@ -116,6 +115,23 @@ export const getAllReps = query({
   },
 });
 
+export const getIncompleteReps = query({
+  handler: async (ctx) => {
+    return (await ctx.db.query("reps").collect()).filter(t => !t.completedAt);
+  },
+});
+
+export const completeRep = mutation({
+  args: { repId: v.id("reps") },
+  handler: async (ctx, { repId }) => {
+    const rep = await ctx.db.get(repId);
+    if (!rep) throw new Error("Rep not found");
+    await ctx.db.patch(repId, {
+      completedAt: Date.now(),
+    });
+  },
+});
+
 export const getAllTasks = query({
   handler: async (ctx) => {
     return await ctx.db.query("tasks").collect();
@@ -125,13 +141,15 @@ export const getAllTasks = query({
 export const createRep = mutation({
   args: {
     xpValue: v.number(),
-    categoryId: v.id("categories")
+    categoryId: v.id("categories"),
+    title: v.optional(v.string())
   },
   handler: async (ctx, args) => {
     await ctx.db.insert("reps", {
       categoryId: args.categoryId,
       xpValue: args.xpValue,
       completedAt: Date.now(),
+      title: args.title
     });
   },
 });
