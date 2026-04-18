@@ -3,6 +3,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+.cl-rootBox {
+    margin-left: 35vw;
+    margin-top: 20vh;
+}
 @theme inline {
     --color-background: var(--background);
     --color-foreground: var(--foreground);
