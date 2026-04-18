@@ -49,18 +49,18 @@ export function XPBar() {
   return (
     <div className="fixed bg-slate-950  top-0 left-0 right-0 z-50 border-b px-6 py-3">
       <div className="flex justify-between items-center mb-2 text-sm">
-        <span className="font-medium">Level {currentLevel.level}</span>
-        <span className="text-gray-400">
+        <span className="font-medium text-gray-100">Level {currentLevel.level}</span>
+        <span className="text-gray-100">
           {nextLevel ? `${xpIntoLevel.toLocaleString()} / ${xpNeeded.toLocaleString()} XP` : "Max level!"}
         </span>
-        <span className="text-gray-400">{totalXp.toLocaleString()} total XP</span>
+        <span className="text-gray-100">{totalXp.toLocaleString()} total XP</span>
       </div>
       <div className="relative h-6 bg-slate-950 border-2 rounded-full overflow-hidden">
         <div
           className="h-full bg-emerald-500 rounded-full transition-all duration-500"
           style={{ width: `${pct}%` }}
         />
-        <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-gray-400 drop-shadow-sm">
+        <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-white drop-shadow-sm">
           {pct}%
         </span>
       </div>

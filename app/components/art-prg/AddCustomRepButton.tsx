@@ -27,6 +27,7 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({projectId}) 
       await createRep({ categoryId: categoryId as Id<"categories">, xpValue });
       setOpen(false);
       setTitle("");
+      setXpValue(0)
       setCategoryId("");
     } finally {
       setSaving(false);
@@ -92,12 +93,11 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({projectId}) 
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-white mb-1">
               XP Value
             </label>
             <input
               type="number"
-              min={1}
               className="w-full border text-white border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="e.g. 10"
               value={xpValue}
