@@ -85,7 +85,7 @@ export const StatChartButton: React.FC = () => {
               ) : (
                 <>
                   <RadarChart
-                    height={600}
+                    height={500}
                     series={[
                       {
                         label: "XP",
