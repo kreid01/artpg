@@ -31,14 +31,14 @@ export default function Home() {
   return (
     <div className="p-4 bg-slate-950 h-screen" >
         <XPBar/>
-        <div className="md:flex justify-between mx-20 lg:mx-40 mt-20 text-white mb-5">
+        <div className="md:flex justify-between mx-5 lg:mx-40 mt-20 text-white mb-5">
         <h1 className="text-2xl">Magisterium</h1>
         <div className="flex gap-2 mt-2 md:mt-0">
           <StatChartButton/>
           <AddCustomRepButton projectId={projectId}/>
         </div>
       </div>
-      <div className="lg:flex gap-5 mx-20 lg:mx-40">
+      <div className="lg:flex gap-5 mx-5 lg:mx-40">
         <div className="mb-10 lg:mb-0 lg:w-[30%]">
           <RepChecklist/>
         </div>
