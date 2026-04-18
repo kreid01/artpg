@@ -74,13 +74,25 @@ export const createTask = mutation({
     xpValue: v.number(),
   },
   handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("tasks")
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("categoryId"), args.categoryId),
+          q.eq(q.field("title"), args.title)
+        )
+      )
+      .first();
+
+    if (existing) return existing._id;
+
     const taskId = await ctx.db.insert("tasks", {
       projectId: args.projectId,
       categoryId: args.categoryId,
       title: args.title,
       xpValue: args.xpValue,
     });
-
     return taskId;
   },
 });
@@ -101,5 +113,19 @@ export const completeTask = mutation({
 export const getAllReps = query({
   handler: async (ctx) => {
     return await ctx.db.query("reps").collect();
+  },
+});
+
+export const createRep = mutation({
+  args: {
+    xpValue: v.number(),
+    categoryId: v.id("categories")
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("reps", {
+      categoryId: args.categoryId,
+      xpValue: args.xpValue,
+      completedAt: Date.now(),
+    });
   },
 });

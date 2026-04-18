@@ -4,6 +4,7 @@ import { CategoryTaskTree } from "~/components/art-prg/CategoryTasks";
 import { SignIn, useUser } from "@clerk/react-router";
 import { XPBar } from "~/components/art-prg/XPBar";
 import { Loader } from "~/components/art-prg/Loader";
+import { AddCustomRepButton } from "~/components/art-prg/AddCustomRepButton";
 
 export default function Home() {
   const { isLoaded, isSignedIn } = useUser();
@@ -26,9 +27,12 @@ export default function Home() {
 
 
   return (
-    <div className="p-4">
-      <h1 className="mx-40 text-2xl mt-20 mb-5">Magisterium</h1>
-      <XPBar/>
+    <div className="p-4 bg-slate-950 " >
+        <XPBar/>
+        <div className="flex justify-between mx-40 mt-20 text-white mb-5">
+        <h1 className="text-2xl">Magisterium</h1>
+        <AddCustomRepButton projectId={projectId}/>
+      </div>
       <CategoryTaskTree tasks={tasks} categories={categories} projectId={projectId}/>
     </div>
   );

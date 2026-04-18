@@ -70,25 +70,23 @@ function CategoryBranch({
   return (
     <Collapsible.Root open={open} onOpenChange={setOpen}>
       <Collapsible.Trigger asChild>
-        <button className="w-full flex items-center justify-between px-3 py-2 bg-gray-100 rounded hover:bg-gray-200">
+        <button className="w-full flex items-center justify-between text-white px-3 py-2 bg-slate-950 border rounded hover:bg-slate-700">
           <span className="font-medium">{category.name}</span>
           <span className="text-sm">{open ? "▼" : "▶"}</span>
         </button>
       </Collapsible.Trigger>
       <Collapsible.Content className="ml-4 mt-2 space-y-1">
-        {tasks.length === 0 ? (
-          <div className="text-sm text-gray-400 px-2">No tasks</div>
-        ) : (
+        {tasks.length !== 0 &&
           tasks.map((task) => (
             <div
               onClick={() => completeTask({ taskId: task._id })}
               key={task._id}
-              className="px-3 py-1 rounded transition-colors cursor-pointer hover:bg-green-600"
+              className="px-3 py-1 rounded border text-white transition-colors cursor-pointer hover:bg-green-600"
             >
               {task.title} - {task.xpValue}xp
             </div>
           ))
-        )}
+        }
 
         {adding ? (
           <div className="flex flex-col gap-2 px-2 pt-2">
@@ -98,27 +96,27 @@ function CategoryBranch({
               placeholder="Task name"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="border rounded px-2 py-1 text-sm w-full"
+              className="border rounded px-2 py-1 text-white text-sm w-full"
               onKeyDown={(e) => e.key === "Enter" && handleAdd()}
             />
             <input
               type="number"
-              placeholder="XP"
+              placeholder="Xp Value"
               value={xp}
               onChange={(e) => setXp(e.target.value)}
-              className="border rounded px-2 py-1 text-sm w-full"
+              className="border rounded px-2 py-1 text-white text-sm w-full"
               onKeyDown={(e) => e.key === "Enter" && handleAdd()}
             />
             <div className="flex gap-2">
               <button
                 onClick={handleAdd}
-                className="text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                className="text-sm bg-emerald-700 text-white px-3 py-1 rounded hover:bg-emerald-600"
               >
                 Add
               </button>
               <button
                 onClick={() => { setAdding(false); setTitle(""); setXp(""); }}
-                className="text-sm text-gray-500 px-3 py-1 rounded hover:bg-gray-100"
+                className="text-sm text-white px-3 py-1 rounded border hover:bg-gray-100"
               >
                 Cancel
               </button>
@@ -127,7 +125,7 @@ function CategoryBranch({
         ) : (
           <button
             onClick={() => setAdding(true)}
-            className="text-sm text-gray-400 hover:text-gray-600 px-2 py-1 w-full text-left"
+            className="text-sm text-gray-400 rounded border h-8 hover:text-white px-2 py-1 w-full text-left"
           >
             + Add task
           </button>
