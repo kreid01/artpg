@@ -18,7 +18,9 @@ const LEVELS = [
   { level: 40, xp: 122500 }, { level: 41, xp: 131500 }, { level: 42, xp: 141000 },
   { level: 43, xp: 151000 }, { level: 44, xp: 161000 }, { level: 45, xp: 172500 },
   { level: 46, xp: 184000 }, { level: 47, xp: 196000 }, { level: 48, xp: 208500 },
-  { level: 49, xp: 221500 }, { level: 50, xp: 235000 },
+  { level: 49, xp: 215000 }, { level: 50, xp: 225000}, { level: 51, xp: 235000 },
+  { level: 52, xp: 245000 }, { level: 53, xp: 255000}, { level: 45, xp: 265000 },
+  { level: 55, xp: 275000 }
 ];
 
 export function XPBar() {
