@@ -10,6 +10,12 @@ export default defineSchema({
     name: v.string(),
   }),
 
+  reps: defineTable({
+    taskId: v.id("tasks"),
+    completedAt: v.number(), 
+    xpValue: v.number(),
+  }).index("by_task", ["taskId"]),
+
   tasks: defineTable({
     projectId: v.id("projects"),
     categoryId: v.id("categories"),

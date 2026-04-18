@@ -38,6 +38,20 @@ export const getTasksByCategory = query({
   },
 });
 
+export const getTasksByProject = query({
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("tasks")
+      .withIndex("by_project", (q) =>
+        q.eq("projectId", args.projectId)
+      )
+      .collect();
+  },
+});
+
 import { mutation } from "./_generated/server";
 
 export const updateTaskCategory = mutation({
@@ -68,5 +82,24 @@ export const createTask = mutation({
     });
 
     return taskId;
+  },
+});
+
+export const completeTask = mutation({
+  args: { taskId: v.id("tasks") },
+  handler: async (ctx, { taskId }) => {
+    const task = await ctx.db.get(taskId);
+    if (!task) throw new Error("Task not found");
+    await ctx.db.insert("reps", {
+      taskId,
+      completedAt: Date.now(),
+      xpValue: task.xpValue,
+    });
+  },
+});
+
+export const getAllReps = query({
+  handler: async (ctx) => {
+    return await ctx.db.query("reps").collect();
   },
 });
