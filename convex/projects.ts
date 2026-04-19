@@ -109,9 +109,9 @@ export const completeTask = mutation({
   },
 });
 
-export const getAllReps = query({
+export const getAllCompleteReps = query({
   handler: async (ctx) => {
-    return await ctx.db.query("reps").collect();
+    return (await ctx.db.query("reps").collect()).filter(r => r.completedAt)
   },
 });
 

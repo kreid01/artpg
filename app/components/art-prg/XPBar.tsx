@@ -24,7 +24,7 @@ const LEVELS = [
 ];
 
 export function XPBar() {
-  const reps = useQuery(api.projects.getAllReps);
+  const reps = useQuery(api.projects.getAllCompleteReps);
 
   if (!reps) return <div>Loading reps...</div>;
 

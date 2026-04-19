@@ -19,7 +19,7 @@ const CATEGORY_COLORS = [
 export const StatChartButton: React.FC = () => {
   const [open, setOpen] = useState(false);
 
-  const reps = useQuery(api.projects.getAllReps, open ? {} : "skip");
+  const reps = useQuery(api.projects.getAllCompleteReps, open ? {} : "skip");
   const tasks = useQuery(api.projects.getAllTasks, open ? {} : "skip");
   const categories = useQuery(api.projects.getAllCategories, open ? {} : "skip");
 
