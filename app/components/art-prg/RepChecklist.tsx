@@ -104,7 +104,6 @@ export const RepChecklist: React.FC = () => {
 
           <input
             type="number"
-            min={1}
             className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
             placeholder="XP value"
             value={xpValue}
