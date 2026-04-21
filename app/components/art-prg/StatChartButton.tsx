@@ -5,16 +5,19 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
 
-const CATEGORY_COLORS = [
-  "#6366f1",
-  "#06b6d4",
-  "#10b981",
-  "#f59e0b",
-  "#ef4444",
-  "#ec4899",
-  "#8b5cf6",
-  "#14b8a6",
-];
+const CATEGORY_COLORS: Record<string, string> = {
+  "design": "#ef4444",
+  "rendering": "#f97316",
+  "clothing & material": "#f59e0b",
+  "colour theory": "#84cc16",
+  "visual library": "#22c55e",
+  "observation": "#14b8a6",
+  "composition": "#0ea5e9",
+  "form & construction": "#6366f1",
+  "perspective": "#a855f7",
+  "gesture": "#ec4899",
+  "anatomy": "#f97316",
+};
 
 export const StatChartButton: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -70,9 +73,16 @@ export const StatChartButton: React.FC = () => {
               <Dialog.Title className="text-base font-semibold text-white">
                 XP by Category
               </Dialog.Title>
-              <span className="text-sm text-slate-400">
-                {totalXp.toLocaleString()} total XP
-              </span>
+              <div>
+                <span className="text-sm text-slate-400">
+                  {totalXp.toLocaleString()} total XP
+                </span>
+              <Dialog.Close asChild>
+                <button className="px-3 ml-5 py-1.5 rounded-lg border border-slate-700 text-sm text-slate-300 hover:bg-slate-800 transition-colors">
+                  Close
+                </button>
+              </Dialog.Close>
+              </div>
             </div>
 
             <div className="px-6 pb-4">
@@ -85,11 +95,14 @@ export const StatChartButton: React.FC = () => {
               ) : (
                 <>
                   <RadarChart
-                    height={400}
+                    height={300}
                     series={[
                       {
                         label: "XP",
                         data: activeCategories.map((c) => xpByCategory.get(c._id) ?? 0),
+                        color: "#22c55e",
+                        fillArea: true
+
                       },
                     ]}
                     radar={{
@@ -104,9 +117,9 @@ export const StatChartButton: React.FC = () => {
                     {activeCategories.map((cat, i) => {
                       const xp = xpByCategory.get(cat._id) ?? 0;
                       const pct = Math.round((xp / maxXp) * 100);
-                      const color = CATEGORY_COLORS[i % CATEGORY_COLORS.length];
+                      const color = CATEGORY_COLORS[cat.name.toLowerCase()] ?? "#64748b"; 
                       return (
-                        <div key={cat._id} className="grid items-center gap-3" style={{ gridTemplateColumns: "120px 1fr 48px" }}>
+                        <div key={cat._id} className="grid items-center gap-2" style={{ gridTemplateColumns: "120px 1fr 48px" }}>
                           <span className="text-sm text-slate-300 truncate">{cat.name}</span>
                           <div className="h-2 rounded-l-full bg-slate-800 overflow-hidden">
                             <div
@@ -123,13 +136,6 @@ export const StatChartButton: React.FC = () => {
               )}
             </div>
 
-            <div className="px-6 pb-6 flex justify-end">
-              <Dialog.Close asChild>
-                <button className="px-3 py-1.5 rounded-lg border border-slate-700 text-sm text-slate-300 hover:bg-slate-800 transition-colors">
-                  Close
-                </button>
-              </Dialog.Close>
-            </div>
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>

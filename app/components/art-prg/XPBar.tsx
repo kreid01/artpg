@@ -1,32 +1,29 @@
 import { api } from "convex/_generated/api";
 import { useQuery } from "convex/react";
 
-const LEVELS = [
-  { level: 1, xp: 0 }, { level: 2, xp: 500 }, { level: 3, xp: 1100 },
-  { level: 4, xp: 1800 }, { level: 5, xp: 2600 }, { level: 6, xp: 3500 },
-  { level: 7, xp: 4500 }, { level: 8, xp: 5600 }, { level: 9, xp: 6800 },
-  { level: 10, xp: 8100 }, { level: 11, xp: 9600 }, { level: 12, xp: 11200 },
-  { level: 13, xp: 12900 }, { level: 14, xp: 14700 }, { level: 15, xp: 16600 },
-  { level: 16, xp: 18600 }, { level: 17, xp: 20700 }, { level: 18, xp: 22900 },
-  { level: 19, xp: 25200 }, { level: 20, xp: 27600 }, { level: 21, xp: 30100 },
-  { level: 22, xp: 32800 }, { level: 23, xp: 35700 }, { level: 24, xp: 38800 },
-  { level: 25, xp: 42100 }, { level: 26, xp: 45600 }, { level: 27, xp: 49300 },
-  { level: 28, xp: 52000 }, { level: 29, xp: 54000 }, { level: 30, xp: 60000 },
-  { level: 31, xp: 64000 }, { level: 32, xp: 68500 }, { level: 33, xp: 73500 },
-  { level: 34, xp: 79000 }, { level: 35, xp: 85000 }, { level: 36, xp: 91500 },
-  { level: 37, xp: 98500 }, { level: 38, xp: 106000 }, { level: 39, xp: 114000 },
-  { level: 40, xp: 122500 }, { level: 41, xp: 131500 }, { level: 42, xp: 141000 },
-  { level: 43, xp: 151000 }, { level: 44, xp: 161000 }, { level: 45, xp: 172500 },
-  { level: 46, xp: 184000 }, { level: 47, xp: 196000 }, { level: 48, xp: 208500 },
-  { level: 49, xp: 215000 }, { level: 50, xp: 225000}, { level: 51, xp: 235000 },
-  { level: 52, xp: 245000 }, { level: 53, xp: 255000}, { level: 45, xp: 265000 },
-  { level: 55, xp: 275000 }
-];
+const generateLevels = (maxLevel = 100) => {
+  const levels = [];
+  let xp = 0;
+
+  for (let level = 1; level <= maxLevel; level++) {
+    const increment = Math.floor(
+      400 + (level * 120) + Math.pow(level, 1.35) * 25
+    );
+
+    xp += level === 1 ? 0 : increment;
+
+    levels.push({ level, xp });
+  }
+
+  return levels;
+};
 
 export function XPBar() {
   const reps = useQuery(api.projects.getAllCompleteReps);
 
   if (!reps) return <div>Loading reps...</div>;
+
+  const LEVELS = generateLevels();
 
   const totalXp = reps.reduce((sum, rep) => sum + rep.xpValue, 0);
 

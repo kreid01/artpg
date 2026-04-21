@@ -12,6 +12,7 @@ export default function Home() {
   const { isLoaded, isSignedIn } = useUser();
   const categories = useQuery(api.projects.getAllCategories);
   const projects = useQuery(api.projects.getAllProjects);
+  const reps = useQuery(api.projects.getAllCompleteReps)
 
   const projectId = projects?.[0]?._id;
   const tasks = useQuery(
@@ -22,11 +23,9 @@ export default function Home() {
   if (!isLoaded) return <Loader/> 
   if (!isSignedIn) return <SignIn />;
 
-  if (!categories || !projects || !tasks || !projectId) return <div><Loader/></div>;
+  if (!categories || !projects || !tasks || !projectId || !reps) return <div><Loader/></div>;
 
   if (projects.length === 0) return <div><Loader/></div>;
-  console.log({ categories, projects, tasks, projectId });
-
 
   return (
     <div className="p-4 bg-slate-950 h-screen" >
@@ -43,7 +42,7 @@ export default function Home() {
           <RepChecklist/>
         </div>
         <div className="lg:w-[70%]">
-          <CategoryTaskTree tasks={tasks} categories={categories} projectId={projectId}/>
+          <CategoryTaskTree reps={reps} tasks={tasks} categories={categories} projectId={projectId}/>
         </div>
       </div>
     </div>

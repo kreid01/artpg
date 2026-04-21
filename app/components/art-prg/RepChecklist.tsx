@@ -68,7 +68,6 @@ export const RepChecklist: React.FC = () => {
         </ul>
       )}
 
-      {/* Add form */}
       {adding ? (
         <div className="border border-slate-700 rounded-lg p-3 space-y-3 bg-slate-900">
           <input

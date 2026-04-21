@@ -17,6 +17,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { createTheme, ThemeProvider } from "@mui/material";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
+import * as Toast from "@radix-ui/react-toast";
 
 export async function loader(args: Route.LoaderArgs) {
   return rootAuthLoader(args);
@@ -75,7 +76,9 @@ export default function App({ loaderData }: Route.ComponentProps) {
     >
       <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
         <ThemeProvider theme={darkTheme}>
-          <Outlet />
+          <Toast.Provider swipeDirection="right">
+            <Outlet />
+          </Toast.Provider>
         </ThemeProvider>
       </ConvexProviderWithClerk>
     </ClerkProvider>
