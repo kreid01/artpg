@@ -1,5 +1,6 @@
 import { api } from "convex/_generated/api";
 import { useQuery } from "convex/react";
+import { Loader } from "./Loader";
 
 const generateLevels = (maxLevel = 100) => {
   const levels = [];
@@ -21,7 +22,7 @@ const generateLevels = (maxLevel = 100) => {
 export function XPBar() {
   const reps = useQuery(api.projects.getAllCompleteReps);
 
-  if (!reps) return <div>Loading reps...</div>;
+  if (!reps) return <Loader/> 
 
   const LEVELS = generateLevels();
 

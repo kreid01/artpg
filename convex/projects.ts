@@ -117,7 +117,16 @@ export const getAllCompleteReps = query({
 
 export const getIncompleteReps = query({
   handler: async (ctx) => {
-    return (await ctx.db.query("reps").collect()).filter(t => !t.completedAt);
+    const reps = (await ctx.db.query("reps").collect()).filter(t => !t.completedAt);
+
+    return Promise.all(
+      reps.map(async (rep) => {
+        const category = rep.categoryId
+          ? await ctx.db.get(rep.categoryId)
+          : null;
+        return { ...rep, categoryName: category?.name ?? null };
+      })
+    );
   },
 });
 

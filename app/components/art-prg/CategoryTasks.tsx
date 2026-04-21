@@ -4,6 +4,7 @@ import { useMutation } from "convex/react";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
 import * as Toast from "@radix-ui/react-toast";
+import { CATEGORY_COLORS } from "~/constants/colours";
 
 type Category = {
   _id: Id<"categories">;
@@ -29,20 +30,6 @@ type Props = {
   tasks: Task[];
   reps: Rep[];
   projectId: Id<"projects">;
-};
-
-const CATEGORY_COLORS: Record<string, string> = {
-  "design":               "#ef4444", 
-  "rendering":            "#f97316", 
-  "clothing & material": "#f59e0b", 
-  "colour theory":        "#84cc16", 
-  "visual library":       "#22c55e", 
-  "observation":          "#14b8a6", 
-  "composition":          "#0ea5e9", 
-  "form & construction":  "#6366f1", 
-  "perspective":          "#a855f7", 
-  "gesture":              "#ec4899", 
-  "anatomy":              "#f97316", 
 };
 
 const CATEGORY_XP_CAPS: Record<string, number> = {
