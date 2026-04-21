@@ -8,7 +8,7 @@ import type { Id } from "convex/_generated/dataModel";
 export const CATEGORY_COLORS: Record<string, string> = {
   "design":               "#ef4444",
   "rendering":            "#f97316",
-  "clothing & material":  "#f59e0b",
+  "clothing & materials":  "#f59e0b",
   "colour theory":        "#84cc16",
   "visual library":       "#22c55e",
   "observation":          "#14b8a6",
