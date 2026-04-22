@@ -41,9 +41,9 @@ const CATEGORY_XP_CAPS: Record<string, number> = {
   "observation":          20000,
   "composition":          20000,
   "form & construction":  15000,
-  "perspective":          12000,
-  "gesture":              10000,
-  "anatomy":              25000,
+  "perspective":          15000,
+  "gesture":              20000,
+  "anatomy":              35000,
 };
 
 

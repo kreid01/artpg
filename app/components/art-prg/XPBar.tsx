@@ -7,12 +7,9 @@ const generateLevels = (maxLevel = 100) => {
   let xp = 0;
 
   for (let level = 1; level <= maxLevel; level++) {
-    const increment = Math.floor(
-      400 + (level * 120) + Math.pow(level, 1.35) * 25
-    );
+    const increment = Math.floor( 200 + (level * 90) + Math.pow(level, 1.5) * 18);
 
     xp += level === 1 ? 0 : increment;
-
     levels.push({ level, xp });
   }
 
