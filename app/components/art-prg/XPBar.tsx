@@ -1,27 +1,14 @@
 import { api } from "convex/_generated/api";
 import { useQuery } from "convex/react";
 import { Loader } from "./Loader";
-
-const generateLevels = (maxLevel = 100) => {
-  const levels = [];
-  let xp = 0;
-
-  for (let level = 1; level <= maxLevel; level++) {
-    const increment = Math.floor( 200 + (level * 90) + Math.pow(level, 1.5) * 18);
-
-    xp += level === 1 ? 0 : increment;
-    levels.push({ level, xp });
-  }
-
-  return levels;
-};
+import { levels } from "~/constants/colours";
 
 export function XPBar() {
   const reps = useQuery(api.projects.getAllCompleteReps);
 
   if (!reps) return <Loader/> 
 
-  const LEVELS = generateLevels();
+  const LEVELS = levels();
 
   const totalXp = reps.reduce((sum, rep) => sum + rep.xpValue, 0);
 
