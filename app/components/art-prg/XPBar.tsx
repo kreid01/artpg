@@ -1,7 +1,7 @@
 import { api } from "convex/_generated/api";
 import { useQuery } from "convex/react";
 import { Loader } from "./Loader";
-import { levels } from "~/constants/colours";
+import { levels } from "~/constants/levels";
 
 export function XPBar() {
   const reps = useQuery(api.projects.getAllCompleteReps);

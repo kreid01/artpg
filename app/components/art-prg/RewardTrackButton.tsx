@@ -2,22 +2,13 @@ import { useState } from "react"
 import * as Dialog from "@radix-ui/react-dialog"
 import { useQuery } from "convex/react"
 import { api } from "convex/_generated/api"
+import { levels } from "~/constants/levels"
 
-const generateLevels = (maxLevel = 100) => {
-  const levels = [];
-  const targetXp = 300_000;
-  const k = 0.07;
-  const a = targetXp / (Math.exp(k * maxLevel) - 1);
+const rewardDict = {
 
-  for (let level = 1; level <= maxLevel; level++) {
-    const xp = Math.round(a * (Math.exp(k * level) - 1));
-    levels.push({ level, xp, reward: null });
-  }
+}
 
-  return levels;
-};
-
-const LEVELS = generateLevels();
+const LEVELS = levels();
 
 export const RewardTrackButton = () => {
   const [open, setOpen] = useState(false)
@@ -38,7 +29,6 @@ export const RewardTrackButton = () => {
         <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40" />
         <Dialog.Content className="fixed z-50 left-1/2 top-1/2 text-white -translate-x-1/2 -translate-y-1/2 bg-slate-950 rounded-2xl shadow-xl w-full lg:w-[60%] overflow-hidden flex flex-col max-h-[80vh]">
 
-          {/* Header */}
           <div className="px-6 pt-6 pb-4 flex items-center justify-between shrink-0 border-b border-slate-800">
             <div>
               <Dialog.Title className="text-base font-semibold text-white">
@@ -55,7 +45,6 @@ export const RewardTrackButton = () => {
             </Dialog.Close>
           </div>
 
-          {/* Table */}
           <div className="overflow-y-auto flex-1">
             <table className="w-full text-sm">
               <thead className="sticky top-0 bg-slate-950 border-b border-slate-800 z-10">
