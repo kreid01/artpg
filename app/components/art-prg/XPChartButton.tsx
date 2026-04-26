@@ -141,7 +141,7 @@ export const XPChartButton = () => {
                   ]}
                   series={[
                     {
-                      label: "XP this week",
+                      label: "XP By Week",
                       data: xpPerWeek,
                       color: "#22c55e",
                       area: true,
