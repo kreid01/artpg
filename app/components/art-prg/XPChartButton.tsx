@@ -124,7 +124,6 @@ export const XPChartButton = () => {
                   </div>
                 </div>
 
-                {/* Line chart */}
                 <LineChart
                   height={260}
                   xAxis={[

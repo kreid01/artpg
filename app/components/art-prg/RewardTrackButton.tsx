@@ -21,7 +21,7 @@ export const RewardTrackButton = () => {
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
         <button className="px-2 py-1 rounded bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">
-            Reward Track
+            Progress 
         </button>
       </Dialog.Trigger>
 
