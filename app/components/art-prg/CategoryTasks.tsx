@@ -140,7 +140,7 @@ function CategoryBranch({
 
       <Collapsible.Content className="ml-4 mt-2 space-y-1">
         {tasks.length !== 0 &&
-          tasks.map(task => (
+          tasks.sort((a, b) => a.xpValue - b.xpValue).map(task => (
             <div onClick={async () => {
                 try {
                   await completeTask({ taskId: task._id });
