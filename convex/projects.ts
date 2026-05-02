@@ -248,12 +248,6 @@ export const createRepsFromGroup = mutation({
       .filter((q) => q.eq(q.field("groupId"), groupId))
       .collect();
 
-    const latest = await ctx.db
-      .query("reps")
-      .filter((q) => q.neq(q.field("groupId"), undefined))
-      .order("desc")
-      .first();
-
     await Promise.all(
       reps.map((r) =>
         ctx.db.insert("reps", {
