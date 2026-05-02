@@ -20,7 +20,7 @@ export const CATEGORY_COLORS: Record<string, string> = {
 };
 
 function getCategoryColor(categoryName?: string): string {
-  if (!categoryName) return "#64748b"; // slate-500 fallback
+  if (!categoryName) return "#64748b"; 
   return CATEGORY_COLORS[categoryName.toLowerCase()] ?? "#64748b";
 }
 

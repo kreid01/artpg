@@ -34,16 +34,16 @@ type Props = {
 
 const CATEGORY_XP_CAPS: Record<string, number> = {
   "design":               70000,
-  "rendering":            30000,
-  "clothing & materials": 30000,
+  "form & construction":  60000,
+  "value & light":        50000,
   "colour theory":        20000,
-  "visual library":       20000,
-  "observation":          20000,
+  "visual library":       30000,
   "composition":          20000,
-  "form & construction":  15000,
-  "perspective":          15000,
   "gesture":              20000,
-  "anatomy":              35000,
+  "anatomy":              20000,
+  "clothing & materials": 15000,
+  "rendering":            15000,
+  "perspective":          15000,
 };
 
 
