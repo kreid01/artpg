@@ -152,13 +152,15 @@ export const createChecklistRep = mutation({
   args: {
     xpValue: v.number(),
     categoryId: v.id("categories"),
-    title: v.optional(v.string())
+    title: v.optional(v.string()),
+    groupId: v.optional(v.number())
   },
   handler: async (ctx, args) => {
     await ctx.db.insert("reps", {
       categoryId: args.categoryId,
       xpValue: args.xpValue,
-      title: args.title
+      title: args.title,
+      groupId: args.groupId
     });
   },
 });

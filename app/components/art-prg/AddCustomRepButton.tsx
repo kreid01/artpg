@@ -21,7 +21,7 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({ projectId }
   const [entries, setEntries] = useState<RepEntry[]>([{ id: 0, categoryId: "", xpValue: 10 }]);
   const latestGroupId = useQuery(api.projects.getLatestGroupId, open ? {} : "skip");
   const categories = useQuery(api.projects.getAllCategories);
-  const createRep = useMutation(api.projects.createRep);
+  const createRep = useMutation(api.projects.createChecklistRep);
 
   function addEntry() {
     setEntries((prev) => [...prev, { id: Date.now(), name: "", categoryId: "", xpValue: 10 }]);
@@ -79,7 +79,7 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({ projectId }
         <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40" />
         <Dialog.Content className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-950 rounded-2xl shadow-xl p-6 w-full md:w-[50vw] max-h-[80vh] flex flex-col">
           <Dialog.Title className="text-lg font-semibold text-white mb-1">
-            Add Custom Reps
+            Add Custom Grouped Reps
           </Dialog.Title>
 
           <div className="mb-4">
