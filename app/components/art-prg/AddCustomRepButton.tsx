@@ -138,9 +138,6 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({ projectId }
           </div>
 
           <div className="flex items-center justify-between pt-3 border-t border-slate-800">
-            <span className="text-xs text-slate-500">
-              Log {entries.length} rep{entries.length !== 1 ? "s" : ""}
-            </span>
             <div className="flex gap-2">
               <Dialog.Close asChild>
                 <button className="px-3 py-1.5 rounded-lg border border-slate-700 text-sm text-slate-300 hover:bg-slate-800 transition-colors">
@@ -150,8 +147,7 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({ projectId }
               <button
                 onClick={handleSave}
                 disabled={!isValid || saving}
-                className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
+                className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors" >
                 {saving ? "Saving…" : `Log ${entries.length > 1 ? `${entries.length} reps` : "rep"}`}
               </button>
             </div>
