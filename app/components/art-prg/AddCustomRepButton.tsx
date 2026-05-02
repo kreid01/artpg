@@ -85,7 +85,7 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({ projectId }
           <div className="mb-4">
             <label className="block text-xs text-slate-500 font-medium uppercase tracking-wide mb-1">Name</label>
             <input
-              className="w-[95%] border border-slate-700 text-white bg-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full border border-slate-700 text-white bg-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               placeholder="e.g. Anatomy Study"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -93,7 +93,7 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({ projectId }
           </div>
 
           <div className="flex-1 overflow-y-auto space-y-2 pr-1 mb-4">
-            <div className="grid grid-cols-[1fr_100px_32px] gap-2 px-1">
+            <div className="grid grid-cols-[1fr_1fr_32px] gap-2 px-1">
               <span className="text-xs text-slate-500 font-medium uppercase tracking-wide">Category</span>
               <span className="text-xs text-slate-500 font-medium uppercase tracking-wide">XP</span>
               <span />
@@ -162,7 +162,7 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({ projectId }
                 onClick={handleSave}
                 disabled={!isValid || saving}
                 className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors" >
-                {saving ? "Saving…" : `Log ${entries.length > 1 ? `${entries.length} reps` : "rep"}`}
+                {saving ? "Creating…" : `Create ${entries.length > 1 ? `${entries.length} reps` : "rep"}`}
               </button>
             </div>
           </div>

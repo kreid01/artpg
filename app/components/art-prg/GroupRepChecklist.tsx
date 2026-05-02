@@ -17,7 +17,7 @@ export const GroupRepChecklist: React.FC = () => {
   if (groups.length === 0) return <div></div> 
 
   return (
-    <ul className="space-y-2">
+    <ul className="space-y-2 mt-5">
       {groups.map((group) => (
         <li key={group.groupId} className="flex items-center gap-3">
           <div className="flex-1 flex items-center justify-between">
