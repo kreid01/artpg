@@ -5,26 +5,26 @@ import * as Select from "@radix-ui/react-select";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
 
+interface CustomRepButtonProps {
+  projectId: Id<"projects">;
+}
+
 interface RepEntry {
   id: number;
   categoryId: string;
   xpValue: number;
 }
 
-interface CustomRepButtonProps {
-  projectId: Id<"projects">;
-}
-
 export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({ projectId }) => {
   const [open, setOpen] = useState(false);
-  const [entries, setEntries] = useState<RepEntry[]>([{ id: 0, categoryId: "", xpValue: 10 }]);
   const [saving, setSaving] = useState(false);
-
+  const [entries, setEntries] = useState<RepEntry[]>([{ id: 0, categoryId: "", xpValue: 10 }]);
+  const latestGroupId = useQuery(api.projects.getLatestGroupId, open ? {} : "skip");
   const categories = useQuery(api.projects.getAllCategories);
   const createRep = useMutation(api.projects.createRep);
 
   function addEntry() {
-    setEntries((prev) => [...prev, { id: Date.now(), categoryId: "", xpValue: 10 }]);
+    setEntries((prev) => [...prev, { id: Date.now(), name: "", categoryId: "", xpValue: 10 }]);
   }
 
   function removeEntry(id: number) {
@@ -38,21 +38,26 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({ projectId }
   function handleClose(isOpen: boolean) {
     setOpen(isOpen);
     if (!isOpen) {
+      setName("");
       setEntries([{ id: 0, categoryId: "", xpValue: 10 }]);
     }
   }
 
-  const isValid = entries.length > 0 && entries.every((e) => e.categoryId && e.xpValue > 0);
+  const [name, setName] = useState("");
+  const isValid = name.trim() && entries.length > 0 && entries.every((e) => e.categoryId && e.xpValue > 0);
 
   async function handleSave() {
     if (!isValid) return;
     setSaving(true);
     try {
+      const groupId = entries.length > 1 ? (latestGroupId ?? 0) + 1 : undefined;
       await Promise.all(
         entries.map((e) =>
           createRep({
+            title: name,
             categoryId: e.categoryId as Id<"categories">,
             xpValue: e.xpValue,
+            ...(groupId !== undefined && { groupId }),
           })
         )
       );
@@ -77,6 +82,16 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({ projectId }
             Add Custom Reps
           </Dialog.Title>
 
+          <div className="mb-4">
+            <label className="block text-xs text-slate-500 font-medium uppercase tracking-wide mb-1">Name</label>
+            <input
+              className="w-[95%] border border-slate-700 text-white bg-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              placeholder="e.g. Anatomy Study"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+
           <div className="flex-1 overflow-y-auto space-y-2 pr-1 mb-4">
             <div className="grid grid-cols-[1fr_100px_32px] gap-2 px-1">
               <span className="text-xs text-slate-500 font-medium uppercase tracking-wide">Category</span>
@@ -85,11 +100,10 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({ projectId }
             </div>
 
             {entries.map((entry, idx) => (
-              <div key={entry.id} className="grid ml-1 grid-cols-[1fr_100px_32px] gap-2 items-center">
-                <Select.Root
-                  value={entry.categoryId}
-                  onValueChange={(val) => updateEntry(entry.id, "categoryId", val)}
-                >
+                <div key={entry.id} className="grid grid-cols-[1fr_100px_32px] gap-2 items-center">
+                  <Select.Root
+                    value={entry.categoryId}
+                    onValueChange={(val) => updateEntry(entry.id, "categoryId", val)} >
                   <Select.Trigger className="w-full flex items-center justify-between border border-slate-700 text-white rounded-lg px-3 py-2 text-sm bg-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                     <Select.Value placeholder="Select…" />
                     <Select.Icon className="ml-2 text-slate-400 text-xs">▾</Select.Icon>

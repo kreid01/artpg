@@ -9,6 +9,7 @@ import { StatChartButton } from "~/components/art-prg/StatChartButton";
 import { RepChecklist } from "~/components/art-prg/RepChecklist";
 import { RewardTrackButton } from "~/components/art-prg/RewardTrackButton";
 import { XPChartButton } from "~/components/art-prg/XPChartButton";
+import { GroupRepChecklist } from "~/components/art-prg/GroupRepChecklist";
 
 export default function Home() {
   const { isLoaded, isSignedIn } = useUser();
@@ -44,6 +45,7 @@ export default function Home() {
       <div className="lg:flex gap-5 mx-5 lg:mx-40">
         <div className="mb-10 lg:mb-0 lg:w-[30%]">
           <RepChecklist/>
+          <GroupRepChecklist/>
         </div>
         <div className="lg:w-[70%]">
           <CategoryTaskTree reps={reps} tasks={tasks} categories={categories} projectId={projectId}/>

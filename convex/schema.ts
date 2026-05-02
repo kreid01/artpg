@@ -15,6 +15,7 @@ export default defineSchema({
     title: v.optional(v.string()),
     categoryId: v.optional(v.id("categories")),
     completedAt: v.optional(v.number()), 
+    groupId: v.optional(v.number()),
     xpValue: v.number(),
   }).index("by_task", ["taskId"]),
 

@@ -167,14 +167,102 @@ export const createRep = mutation({
   args: {
     xpValue: v.number(),
     categoryId: v.id("categories"),
-    title: v.optional(v.string())
+    title: v.optional(v.string()),
+    groupId: v.optional(v.number())
   },
   handler: async (ctx, args) => {
     await ctx.db.insert("reps", {
       categoryId: args.categoryId,
       xpValue: args.xpValue,
       completedAt: Date.now(),
-      title: args.title
+      title: args.title,
+      groupId: args.groupId
     });
+  },
+});
+
+export const getLatestGroupId = query({
+  args: {},
+  handler: async (ctx) => {
+    const rep = await ctx.db
+      .query("reps")
+      .filter((q) => q.neq(q.field("groupId"), undefined))
+      .order("desc")
+      .first();
+    return rep?.groupId ?? 0;
+  },
+});
+
+export const getRepGroups = query({
+  args: {},
+  handler: async (ctx) => {
+    const reps = await ctx.db
+      .query("reps")
+      .filter((q) => q.neq(q.field("groupId"), undefined))
+      .collect();
+
+    const groupMap = new Map<number, typeof reps>();
+    for (const rep of reps) {
+      const gid = rep.groupId!;
+      if (!groupMap.has(gid)) groupMap.set(gid, []);
+      groupMap.get(gid)!.push(rep);
+    }
+
+    const results = [];
+    for (const [groupId, groupReps] of groupMap.entries()) {
+      const entries = await Promise.all(
+        groupReps.map(async (r) => {
+          let categoryId = r.categoryId;
+
+          if (!categoryId && r.taskId) {
+            const task = await ctx.db.get(r.taskId);
+            categoryId = task?.categoryId;
+          }
+
+          const category = categoryId ? await ctx.db.get(categoryId) : null;
+
+          return {
+            categoryName: category?.name,
+            xpValue: r.xpValue,
+          };
+        })
+      );
+
+      results.push({
+        groupId,
+        name: groupReps[0].title ?? "Untitled group",
+        totalXp: groupReps.reduce((a, r) => a + r.xpValue, 0),
+        entries,
+      });
+    }
+
+    return results.sort((a, b) => a.groupId - b.groupId);
+  },
+});
+
+export const createRepsFromGroup = mutation({
+  args: { groupId: v.float64() },
+  handler: async (ctx, { groupId }) => {
+    const reps = await ctx.db
+      .query("reps")
+      .filter((q) => q.eq(q.field("groupId"), groupId))
+      .collect();
+
+    const latest = await ctx.db
+      .query("reps")
+      .filter((q) => q.neq(q.field("groupId"), undefined))
+      .order("desc")
+      .first();
+
+    await Promise.all(
+      reps.map((r) =>
+        ctx.db.insert("reps", {
+          categoryId: r.categoryId,
+          xpValue: r.xpValue,
+          title: r.title,
+          completedAt: Date.now(),
+        })
+      )
+    );
   },
 });
