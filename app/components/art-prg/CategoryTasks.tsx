@@ -32,6 +32,7 @@ type Props = {
   projectId: Id<"projects">;
 };
 
+
 const CATEGORY_XP_CAPS: Record<string, number> = {
   "design":               70000,
   "form & construction":  60000,
@@ -46,9 +47,18 @@ const CATEGORY_XP_CAPS: Record<string, number> = {
   "perspective":          15000,
 };
 
+const CATEGORY_ORDER = Object.keys(CATEGORY_XP_CAPS);
 
 export function CategoryTaskTree({ categories, tasks, reps, projectId }: Props) {
   const taskMap = Object.fromEntries(tasks.map(t => [t._id, t]));
+
+  const sortedCategories = [...categories].sort((a, b) => {
+    const ai = CATEGORY_ORDER.indexOf(a.name.toLowerCase());
+    const bi = CATEGORY_ORDER.indexOf(b.name.toLowerCase());
+    const aIdx = ai === -1 ? Infinity : ai;
+    const bIdx = bi === -1 ? Infinity : bi;
+    return aIdx - bIdx;
+  });
 
   const categoryXpTotals: Record<string, number> = {};
 
@@ -60,7 +70,7 @@ export function CategoryTaskTree({ categories, tasks, reps, projectId }: Props) 
 
   return (
     <div className="space-y-2">
-      {categories.map(category => (
+      {sortedCategories.map(category => (
         <CategoryBranch
           key={category._id}
           projectId={projectId}
