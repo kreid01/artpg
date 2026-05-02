@@ -117,7 +117,7 @@ export const getAllCompleteReps = query({
 
 export const getIncompleteReps = query({
   handler: async (ctx) => {
-    const reps = (await ctx.db.query("reps").collect()).filter(t => !t.completedAt);
+    const reps = (await ctx.db.query("reps").collect()).filter(t => !t.completedAt && !t.groupId);
 
     return Promise.all(
       reps.map(async (rep) => {
