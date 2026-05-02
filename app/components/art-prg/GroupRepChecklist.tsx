@@ -14,7 +14,7 @@ export const GroupRepChecklist: React.FC = () => {
   const [completing, setCompleting] = useState<number | null>(null);
 
   if (groups === undefined) return <p className="text-sm text-slate-400">Loading…</p>;
-  if (groups.length === 0) return <p className="text-sm text-slate-400">No groups yet.</p>;
+  if (groups.length === 0) return <div></div> 
 
   return (
     <ul className="space-y-2">
