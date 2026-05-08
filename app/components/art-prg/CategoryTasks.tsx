@@ -38,7 +38,7 @@ const CATEGORY_XP_CAPS: Record<string, number> = {
   "form & construction":  60000,
   "value & light":        50000,
   "colour theory":        20000,
-  "visual library":       30000,
+  "observation & recall": 30000,
   "composition":          20000,
   "gesture":              20000,
   "anatomy":              20000,
