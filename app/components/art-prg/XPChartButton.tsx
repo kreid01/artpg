@@ -22,7 +22,7 @@ export const XPChartButton = () => {
 
   const filteredReps = useMemo(() => {
   return (reps ?? []).filter((rep) => {
-    const d = new Date(rep._creationTime);
+    const d = new Date(rep.completedAt ?? new Date());
     return !(d.getFullYear() === 2026 && d.getMonth() === 3 && d.getDate() === 18);
   });
 }, [reps]);
