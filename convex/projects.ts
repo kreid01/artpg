@@ -262,3 +262,18 @@ export const createRepsFromGroup = mutation({
     );
   },
 });
+
+export const getGames = query({
+  handler: async (ctx) => {
+    return await ctx.db.query("games").collect();
+  },
+});
+
+export const addToPot = mutation({
+  args: { gameId: v.id("games") },
+  handler: async (ctx, { gameId }) => {
+    const game = await ctx.db.get(gameId);
+    if (!game) throw new Error("Game not found");
+    await ctx.db.patch(gameId, { pot: game.pot + 1 });
+  },
+});

@@ -19,6 +19,12 @@ export default defineSchema({
     xpValue: v.number(),
   }).index("by_task", ["taskId"]),
 
+  games: defineTable({
+    name: v.string(),
+    cost: v.number(),
+    pot: v.number(),
+  }),
+
   tasks: defineTable({
     projectId: v.id("projects"),
     categoryId: v.id("categories"),

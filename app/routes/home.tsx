@@ -10,6 +10,7 @@ import { RepChecklist } from "~/components/art-prg/RepChecklist";
 import { RewardTrackButton } from "~/components/art-prg/RewardTrackButton";
 import { XPChartButton } from "~/components/art-prg/XPChartButton";
 import { GroupRepChecklist } from "~/components/art-prg/GroupRepChecklist";
+import { Games } from "~/components/art-prg/Games";
 
 export default function Home() {
   const { isLoaded, isSignedIn } = useUser();
@@ -44,7 +45,7 @@ export default function Home() {
       </div>
       <div className="lg:flex gap-5 mx-5 lg:mx-40">
         <div className="mb-10 lg:mb-0 lg:w-[30%]">
-          <RepChecklist/>
+          <Games/>
           <GroupRepChecklist/>
         </div>
         <div className="lg:w-[70%]">
