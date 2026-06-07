@@ -6,11 +6,12 @@ import { api } from "convex/_generated/api";
 
 const GOAL_XP = 300_000;
 
-function getWeekKey(dateMs: number): string {
+const getWeekKey = (dateMs: number): string => {
   const d = new Date(dateMs);
-  const day = d.getDay();
+  const day = d.getUTCDay(); 
   const monday = new Date(d);
-  monday.setDate(d.getDate() - ((day + 6) % 7));
+  monday.setUTCDate(d.getUTCDate() - ((day + 6) % 7)); 
+  monday.setUTCHours(0, 0, 0, 0); 
   return monday.toISOString().slice(0, 10);
 }
 

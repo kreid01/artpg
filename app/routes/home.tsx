@@ -45,7 +45,9 @@ export default function Home() {
       </div>
       <div className="lg:flex gap-5 mx-5 lg:mx-40">
         <div className="mb-10 lg:mb-0 lg:w-[30%]">
-          <Games/>
+          <div className="hidden">
+            <Games/>
+          </div>
           <GroupRepChecklist/>
         </div>
         <div className="lg:w-[70%]">
