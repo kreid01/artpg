@@ -2,12 +2,12 @@
 export const levels = () => generateLevels(100)
 
 const rewardDict: Record<number, string> = {
-    70: "Art Book",
-    75: "Drawing Tablet",
-    80: "Art Book",
-    85: "Course",
-    90: "Art Book",
-    95: "Course",
+    70: "Notan/Colour Studies",
+    75: "Illustration Work",
+    80: "Master Studies",
+    85: "Study -> Design",
+    90: "Portfolio Work",
+    95: "Mentorship",
 }
 
 const generateLevels = (maxLevel = 100) => {
