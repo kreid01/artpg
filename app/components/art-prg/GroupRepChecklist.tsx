@@ -2,6 +2,13 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "convex/_generated/api";
 import { CATEGORY_COLORS } from "./RepChecklist";
 import { useState } from "react";
+import { levels } from "~/constants/levels";
+import { Loader } from "./Loader";
+
+const hidden = ["Extraction / Design", "Prop Ideation", "Synthesis Design", "Focused Render Study"];
+const levelLocked = {
+  70: ["Limite Palette Study", "Notan Portrait Study", "Notan Composition Study"],
+}
 
 function getCategoryColor(categoryName?: string): string {
   if (!categoryName) return "#64748b";
@@ -13,12 +20,44 @@ export const GroupRepChecklist: React.FC = () => {
   const createRepsFromGroup = useMutation(api.projects.createRepsFromGroup);
   const [completing, setCompleting] = useState<number | null>(null);
 
+
+  const reps = useQuery(api.projects.getAllCompleteReps);
+  if (!reps) return <Loader/> 
+
+  const LEVELS = levels();
+
+  const totalXp = reps.reduce((sum, rep) => sum + rep.xpValue, 0);
+  
+  let currentLevel = LEVELS[0];
+  for (let i = 0; i < LEVELS.length - 1; i++) {
+    if (totalXp >= LEVELS[i].xp && totalXp < LEVELS[i + 1].xp) {
+      currentLevel = LEVELS[i];
+      break;
+    }
+  }
+  if (totalXp >= LEVELS[LEVELS.length - 1].xp) {
+    currentLevel = LEVELS[LEVELS.length - 1];
+  }
+
+
   if (groups === undefined) return <p className="text-sm text-slate-400">Loading…</p>;
   if (groups.length === 0) return <div></div> 
 
+  const visibleGroups = groups.filter((group) => {
+    if (hidden.includes(group.name)) return false;
+
+    for (const [key, names] of Object.entries(levelLocked)) {
+      if (names.includes(group.name) && currentLevel.level < Number(key)) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
   return (
     <ul className="space-y-2 mt-5">
-      {groups.map((group) => (
+      {visibleGroups.map((group) => (
         <li key={group.groupId} className="flex items-center gap-3">
           <div className="flex-1 flex items-center justify-between">
             <div className="flex flex-col gap-0.5">

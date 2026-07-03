@@ -4,10 +4,6 @@ import { useQuery } from "convex/react"
 import { api } from "convex/_generated/api"
 import { levels } from "~/constants/levels"
 
-const rewardDict = {
-
-}
-
 const LEVELS = levels();
 
 export const RewardTrackButton = () => {
