@@ -7,7 +7,7 @@ import { Loader } from "./Loader";
 
 const hidden = ["Extraction / Design", "Prop Ideation", "Synthesis Design", "Focused Render Study"];
 const levelLocked = {
-  70: ["Limite Palette Study", "Notan Portrait Study", "Notan Composition Study"],
+  70: ["Limited Palette Study", "Notan Portrait Study", "Notan Composition Study"],
 }
 
 function getCategoryColor(categoryName?: string): string {
