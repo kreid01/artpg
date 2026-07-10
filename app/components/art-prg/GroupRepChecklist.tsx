@@ -5,7 +5,7 @@ import { useState } from "react";
 import { levels } from "~/constants/levels";
 import { Loader } from "./Loader";
 
-const hidden = ["Extraction / Design", "Prop Ideation", "Synthesis Design", "Focused Render Study"];
+const hidden = ["Extraction / Design", "Prop Ideation", "Synthesis Design", "Focused Render Study", "Integrated Design Session"];
 const levelLocked = {
   70: ["Limited Palette Study", "Notan Portrait Study", "Notan Composition Study"],
 }

@@ -277,3 +277,30 @@ export const addToPot = mutation({
     await ctx.db.patch(gameId, { pot: game.pot + 1 });
   },
 });
+
+export const createJournalEntry = mutation({
+  args: {
+    wins: v.string(),
+    toImprove: v.string(),
+    focus: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("journal", {
+      ...args,
+      created: Date.now(),
+    });
+  },
+});
+
+export const getLatestFocus = query({
+  args: {},
+  handler: async (ctx) => {
+    const latest = await ctx.db
+      .query("journal")
+      .withIndex("by_created")
+      .order("desc")
+      .first();
+
+    return latest?.focus ?? "";
+  },
+});

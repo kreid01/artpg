@@ -10,6 +10,13 @@ export default defineSchema({
     name: v.string(),
   }),
 
+  journal: defineTable({
+    created: v.number(),
+    wins: v.string(),
+    toImprove: v.string(),
+    focus: v.string(),
+  }).index("by_created", ["created"]),
+
   reps: defineTable({
     taskId: v.optional(v.id("tasks")),
     title: v.optional(v.string()),

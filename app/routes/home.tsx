@@ -6,11 +6,11 @@ import { XPBar } from "~/components/art-prg/XPBar";
 import { Loader } from "~/components/art-prg/Loader";
 import { AddCustomRepButton } from "~/components/art-prg/AddCustomRepButton";
 import { StatChartButton } from "~/components/art-prg/StatChartButton";
-import { RepChecklist } from "~/components/art-prg/RepChecklist";
 import { RewardTrackButton } from "~/components/art-prg/RewardTrackButton";
 import { XPChartButton } from "~/components/art-prg/XPChartButton";
 import { GroupRepChecklist } from "~/components/art-prg/GroupRepChecklist";
 import { Games } from "~/components/art-prg/Games";
+import { AddJournalEntryButton } from "~/components/art-prg/JournalEntryButton";
 
 export default function Home() {
   const { isLoaded, isSignedIn } = useUser();
@@ -34,10 +34,11 @@ export default function Home() {
   return (
     <div className="p-4 bg-slate-950 h-screen" >
         <XPBar/>
-        <div className="md:flex justify-between mx-5 mt-20 lg:mx-40 text-white mb-5">
+        <div className="md:flex justify-between mx-5 mt-32 lg:mx-40 text-white mb-5">
         <h1 className="text-2xl">Magisterium</h1>
         <div className="flex gap-2 mt-2 md:mt-0">
-          <StatChartButton/>
+          {/* <StatChartButton/> */}
+          <AddJournalEntryButton/>
           <AddCustomRepButton projectId={projectId}/>
           <XPChartButton/>
           <RewardTrackButton/>
