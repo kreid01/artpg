@@ -5,10 +5,14 @@ import { useState } from "react";
 import { levels } from "~/constants/levels";
 import { Loader } from "./Loader";
 
-const hidden = ["Extraction / Design", "Prop Ideation", "Synthesis Design", "Focused Render Study", "Integrated Design Session"];
-const levelLocked = {
-  70: ["Limited Palette Study", "Notan Portrait Study", "Notan Composition Study"],
-}
+const hidden = [
+  "Extraction / Design", 
+  "Prop Ideation", 
+  "Synthesis Design", 
+  "Focused Render Study", 
+  "Integrated Design Session",
+  "Limited Palette Study"
+];
 
 function getCategoryColor(categoryName?: string): string {
   if (!categoryName) return "#64748b";
@@ -45,13 +49,6 @@ export const GroupRepChecklist: React.FC = () => {
 
   const visibleGroups = groups.filter((group) => {
     if (hidden.includes(group.name)) return false;
-
-    for (const [key, names] of Object.entries(levelLocked)) {
-      if (names.includes(group.name) && currentLevel.level < Number(key)) {
-        return false;
-      }
-    }
-
     return true;
   });
 
