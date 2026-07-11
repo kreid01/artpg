@@ -34,17 +34,17 @@ type Props = {
 
 
 const CATEGORY_XP_CAPS: Record<string, number> = {
-  "design":               70000,
-  "form & construction":  60000,
-  "value & light":        50000,
-  "colour theory":        20000,
-  "observation & recall": 30000,
-  "composition":          20000,
-  "gesture":              20000,
-  "anatomy":              20000,
-  "clothing & materials": 15000,
-  "rendering":            15000,
-  "perspective":          15000,
+  "design":               50000,
+  "form & construction":  50000,
+  "value & light":        45000,
+  "observation & recall": 45000,
+  "anatomy":              35000,
+  "composition":          35000,
+  "perspective":          35000,
+  "colour theory":        30000,
+  "rendering":            30000,
+  "clothing & materials": 25000,
+  "gesture":              25000,
 };
 
 const CATEGORY_ORDER = Object.keys(CATEGORY_XP_CAPS);

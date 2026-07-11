@@ -11,9 +11,9 @@ const rewardDict: Record<number, string> = {
     95: "Mentorship",
 }
 
-const generateLevels = (maxLevel = 100) => {
+const generateLevels = (maxLevel = 120) => {
   const levels = [];
-  const targetXp = 315_000;
+  const targetXp = 400_000;
   const k = 0.04;
   const a = targetXp / (Math.exp(k * maxLevel) - 1);
 
