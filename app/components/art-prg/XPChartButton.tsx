@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { api } from "convex/_generated/api";
 
-const GOAL_XP = 300_000;
+const GOAL_XP = 400_000;
 
 const getWeekKey = (dateMs: number): string => {
   const d = new Date(dateMs);
