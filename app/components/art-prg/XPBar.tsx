@@ -2,14 +2,19 @@ import { api } from "convex/_generated/api";
 import { useQuery } from "convex/react";
 import { Loader } from "./Loader";
 import { levels } from "~/constants/levels";
+import type { ProjectId } from "./RepChecklist";
 
-export function XPBar() {
-  const reps = useQuery(api.projects.getAllCompleteReps);
+export const XPBar: React.FC<ProjectId> = ({projectId}) => {
+  const reps = useQuery(api.projects.getAllCompleteReps, {projectId});
   const latestFocus = useQuery(api.projects.getLatestFocus);
 
-  if (!reps || latestFocus === undefined) return <Loader />;
+  const projectName = useQuery(api.projects.getProjectById, {
+    projectId,
+  })?.name;
 
-  const LEVELS = levels();
+  if (!projectName || !reps || latestFocus === undefined) return <Loader />;
+
+  const LEVELS = levels(projectName ?? "");
 
   const totalXp = reps.reduce((sum, rep) => sum + rep.xpValue, 0);
 
@@ -59,7 +64,7 @@ export function XPBar() {
       </span>
     </div>
 
-    {latestFocus && (
+    {latestFocus && projectId.toLowerCase() == "art" && (
       <div className="mt-3 flex justify-between rounded-lg border border-slate-800 bg-slate-900 px-3 py-2">
         <div className="text-xs uppercase tracking-wide text-slate-500 mb-1">
           Focus

@@ -1,9 +1,10 @@
 import { useQuery, useMutation } from "convex/react";
 import { api } from "convex/_generated/api";
-import { CATEGORY_COLORS } from "./RepChecklist";
+import { type ProjectId } from "./RepChecklist";
 import { useState } from "react";
 import { levels } from "~/constants/levels";
 import { Loader } from "./Loader";
+import { getCategoryColours } from "~/constants/colours";
 
 const hidden = [
   "Extraction / Design", 
@@ -14,21 +15,27 @@ const hidden = [
   "Limited Palette Study"
 ];
 
-function getCategoryColor(categoryName?: string): string {
+function getCategoryColor(colours: Record<string, string>, categoryName?: string): string {
   if (!categoryName) return "#64748b";
-  return CATEGORY_COLORS[categoryName.toLowerCase()] ?? "#64748b";
+  return colours[categoryName.toLowerCase()] ?? "#64748b";
 }
 
-export const GroupRepChecklist: React.FC = () => {
-  const groups = useQuery(api.projects.getRepGroups);
+export const GroupRepChecklist: React.FC<ProjectId> = ({projectId}) => {
+  const groups = useQuery(api.projects.getRepGroups, {projectId});
   const createRepsFromGroup = useMutation(api.projects.createRepsFromGroup);
   const [completing, setCompleting] = useState<number | null>(null);
 
 
-  const reps = useQuery(api.projects.getAllCompleteReps);
+  const reps = useQuery(api.projects.getAllCompleteReps, {projectId});
   if (!reps) return <Loader/> 
 
-  const LEVELS = levels();
+  const projectName = useQuery(api.projects.getProjectById, {
+    projectId,
+  })?.name;
+
+  const colours = getCategoryColours(projectName ?? "")
+
+  const LEVELS = levels(projectName ?? "");
 
   const totalXp = reps.reduce((sum, rep) => sum + rep.xpValue, 0);
   
@@ -42,7 +49,6 @@ export const GroupRepChecklist: React.FC = () => {
   if (totalXp >= LEVELS[LEVELS.length - 1].xp) {
     currentLevel = LEVELS[LEVELS.length - 1];
   }
-
 
   if (groups === undefined) return <p className="text-sm text-slate-400">Loading…</p>;
   if (groups.length === 0) return <div></div> 
@@ -61,7 +67,7 @@ export const GroupRepChecklist: React.FC = () => {
               <span className="text-sm text-slate-300">{group.name}</span>
               <div className="flex items-center gap-1.5 flex-wrap">
                 {group.entries.map((entry, i) => {
-                  const color = getCategoryColor(entry.categoryName);
+                  const color = getCategoryColor(colours, entry.categoryName);
                   return (
                     <span key={i} className="flex items-center gap-1 text-xs text-slate-500">
                       <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
@@ -78,7 +84,7 @@ export const GroupRepChecklist: React.FC = () => {
                 onClick={async () => {
                   setCompleting(group.groupId);
                   try {
-                    await createRepsFromGroup({ groupId: group.groupId });
+                    await createRepsFromGroup({ groupId: group.groupId, projectId});
                   } finally {
                     setCompleting(null);
                   }

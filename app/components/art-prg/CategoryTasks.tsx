@@ -1,10 +1,10 @@
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { useState } from "react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
 import * as Toast from "@radix-ui/react-toast";
-import { CATEGORY_COLORS } from "~/constants/colours";
+import { getCategoryColours } from "~/constants/colours";
 
 type Category = {
   _id: Id<"categories">;
@@ -33,7 +33,7 @@ type Props = {
 };
 
 
-const CATEGORY_XP_CAPS: Record<string, number> = {
+const ART_CATEGORY_XP_CAPS: Record<string, number> = {
   "form & construction":  50000,
   "value & light":        45000,
   "observation & recall": 45000,
@@ -47,14 +47,29 @@ const CATEGORY_XP_CAPS: Record<string, number> = {
   "gesture":              25000,
 };
 
-const CATEGORY_ORDER = Object.keys(CATEGORY_XP_CAPS);
+const CLIMBING_CATEGORY_XP_CAPS: Record<string, number> = {
+  "movement":  40000,
+  "body tension":        25000,
+  "strength":        20000,
+  "dynamics & power": 20000,
+  "execution":          30000,
+  "capacity":               15000,
+}
 
 export function CategoryTaskTree({ categories, tasks, reps, projectId }: Props) {
   const taskMap = Object.fromEntries(tasks.map(t => [t._id, t]));
 
+  const projectName = useQuery(api.projects.getProjectById, {
+    projectId,
+  })?.name;
+
+  const xpCaps = projectName?.toLowerCase() == "art" ? ART_CATEGORY_XP_CAPS : CLIMBING_CATEGORY_XP_CAPS
+  const order = Object.keys(xpCaps);
+  const colours = getCategoryColours(projectName ?? "")
+
   const sortedCategories = [...categories].sort((a, b) => {
-    const ai = CATEGORY_ORDER.indexOf(a.name.toLowerCase());
-    const bi = CATEGORY_ORDER.indexOf(b.name.toLowerCase());
+    const ai = order.indexOf(a.name.toLowerCase());
+    const bi = order.indexOf(b.name.toLowerCase());
     const aIdx = ai === -1 ? Infinity : ai;
     const bIdx = bi === -1 ? Infinity : bi;
     return aIdx - bIdx;
@@ -77,6 +92,8 @@ export function CategoryTaskTree({ categories, tasks, reps, projectId }: Props) 
           category={category}
           tasks={tasks.filter(task => task.categoryId === category._id)}
           totalXp={categoryXpTotals[category._id] || 0}
+          xpCaps={xpCaps}
+          colours={colours}
         />
       ))}
     </div>
@@ -89,11 +106,15 @@ function CategoryBranch({
   tasks,
   projectId,
   totalXp,
+  xpCaps,
+  colours
 }: {
   category: Category;
   tasks: Task[];
   projectId: Id<"projects">;
   totalXp: number;
+  xpCaps: Record<string, number>,
+  colours: Record<string, string>
 }) {
   const [open, setOpen] = useState(false);
   const [adding, setAdding] = useState(false);
@@ -117,9 +138,9 @@ function CategoryBranch({
     setAdding(false);
   };
 
-  const cap = CATEGORY_XP_CAPS[category.name.toLowerCase()] || 1;
+  const cap = xpCaps[category.name.toLowerCase()] || 1;
   const progress = Math.min(totalXp / cap, 1);
-  const color = CATEGORY_COLORS[category.name.toLowerCase()] || "#64748b"; 
+  const color = colours[category.name.toLowerCase()] || "#64748b"; 
 
   const [openToast, setOpenToast] = useState(false);
   const [toastData, setToastData] = useState<{ title: string; description?: string } | null>(null);
@@ -153,7 +174,7 @@ function CategoryBranch({
           tasks.sort((a, b) => a.xpValue - b.xpValue).map(task => (
             <div onClick={async () => {
                 try {
-                  await completeTask({ taskId: task._id });
+                  await completeTask({ taskId: task._id, projectId });
                   setToastData({ title: `${task.title} completed` });
                   setOpenToast(true);
                 } catch {

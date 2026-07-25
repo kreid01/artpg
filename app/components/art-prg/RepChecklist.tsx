@@ -4,35 +4,34 @@ import * as Checkbox from "@radix-ui/react-checkbox";
 import * as Select from "@radix-ui/react-select";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
+import { getCategoryColours } from "~/constants/colours";
 
-export const CATEGORY_COLORS: Record<string, string> = {
-  "design":               "#ef4444",
-  "rendering":            "#f97316",
-  "clothing & materials":  "#f59e0b",
-  "colour theory":        "#84cc16",
-  "visual library":       "#22c55e",
-  "observation":          "#14b8a6",
-  "composition":          "#0ea5e9",
-  "form & construction":  "#6366f1",
-  "perspective":          "#a855f7",
-  "gesture":              "#ec4899",
-  "anatomy":              "#f97316",
-};
-
-function getCategoryColor(categoryName?: string): string {
+function getCategoryColor(projectName: string, categoryName?: string): string {
   if (!categoryName) return "#64748b"; 
-  return CATEGORY_COLORS[categoryName.toLowerCase()] ?? "#64748b";
+  const colours = getCategoryColours(projectName)
+  return colours[categoryName.toLowerCase()] ?? "#64748b";
 }
 
-export const RepChecklist: React.FC = () => {
+export interface ProjectId {
+  projectId: Id<'projects'>
+}
+
+export const RepChecklist: React.FC<ProjectId> = ({projectId}) => {
   const [adding, setAdding] = useState(false);
   const [title, setTitle] = useState("");
   const [xpValue, setXpValue] = useState(10);
   const [categoryId, setCategoryId] = useState("");
   const [saving, setSaving] = useState(false);
 
-  const reps = useQuery(api.projects.getIncompleteReps) as any;
-  const categories = useQuery(api.projects.getAllCategories, adding ? {} : "skip");
+  const projectName = useQuery(api.projects.getProjectById, {
+    projectId,
+  })?.name;
+
+  const reps = useQuery(api.projects.getIncompleteReps, {projectId}) as any;
+  const categories = useQuery(
+  api.projects.getAllCategories,
+  projectId ? { projectId } : "skip"
+);
   const completeRep = useMutation(api.projects.completeRep);
   const createRep = useMutation(api.projects.createChecklistRep);
 
@@ -40,7 +39,7 @@ export const RepChecklist: React.FC = () => {
     if (!title.trim() || !categoryId) return;
     setSaving(true);
     try {
-      await createRep({ categoryId: categoryId as Id<"categories">, xpValue, title });
+      await createRep({ categoryId: categoryId as Id<"categories">, xpValue, title, projectId});
       setTitle("");
       setXpValue(10);
       setCategoryId("");
@@ -63,7 +62,7 @@ export const RepChecklist: React.FC = () => {
               rep.categoryName ??
               rep.task?.categoryName ??
               rep.category?.name;
-            const color = getCategoryColor(categoryName);
+            const color = getCategoryColor(projectName ?? "", categoryName);
 
             return (
               <li key={rep._id} className="flex items-center gap-3">
@@ -76,8 +75,8 @@ export const RepChecklist: React.FC = () => {
                     // @ts-ignore — inline CSS vars for focus ring colour
                     "--tw-ring-color": color,
                   }}
-                  onCheckedChange={(checked) => {
-                    if (checked) completeRep({ repId: rep._id as Id<"reps"> });
+                  onCheckedChange={(checked: any) => {
+                    if (checked) completeRep({ repId: rep._id as Id<"reps">, projectId });
                   }}
                 >
                   <Checkbox.Indicator>

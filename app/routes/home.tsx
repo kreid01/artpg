@@ -5,54 +5,97 @@ import { SignIn, useUser } from "@clerk/react-router";
 import { XPBar } from "~/components/art-prg/XPBar";
 import { Loader } from "~/components/art-prg/Loader";
 import { AddCustomRepButton } from "~/components/art-prg/AddCustomRepButton";
-import { StatChartButton } from "~/components/art-prg/StatChartButton";
 import { RewardTrackButton } from "~/components/art-prg/RewardTrackButton";
+import { StatChartButton } from "~/components/art-prg/StatChartButton";
 import { XPChartButton } from "~/components/art-prg/XPChartButton";
 import { GroupRepChecklist } from "~/components/art-prg/GroupRepChecklist";
-import { Games } from "~/components/art-prg/Games";
 import { AddJournalEntryButton } from "~/components/art-prg/JournalEntryButton";
+import { useState } from "react";
+import type { Id } from "../../convex/_generated/dataModel";
+import { FaArrowRightArrowLeft } from "react-icons/fa6";
 
 export default function Home() {
   const { isLoaded, isSignedIn } = useUser();
-  const categories = useQuery(api.projects.getAllCategories);
-  const projects = useQuery(api.projects.getAllProjects);
-  const reps = useQuery(api.projects.getAllCompleteReps);
 
-  const projectId = projects?.[0]?._id;
+  const projects = useQuery(api.projects.getAllProjects);
+
+  const [selectedProjectId, setSelectedProjectId] = useState<
+    Id<"projects"> | undefined
+  >();
+
+  const projectId = selectedProjectId ?? projects?.[0]?._id;
+
+  const artProjectId = projects?.[0]?._id;
+  const climbingProjectId = projects?.[1]?._id;
+
+  const categories = useQuery(
+    api.projects.getAllCategories,
+    projectId ? { projectId } : "skip"
+  );
+
+  const reps = useQuery(
+    api.projects.getAllCompleteReps,
+    projectId ? { projectId } : "skip"
+  );
+
   const tasks = useQuery(
     api.projects.getTasksByProject,
     projectId ? { projectId } : "skip"
   );
 
-  if (!isLoaded) return <Loader/> 
+  const changeProject = () => {
+    if (!artProjectId || !climbingProjectId) return;
+
+    if (!selectedProjectId) {
+      setSelectedProjectId(climbingProjectId)
+      return
+    }
+
+    setSelectedProjectId((prev) =>
+      prev === artProjectId ? climbingProjectId : artProjectId
+    );
+  };
+
+  if (!isLoaded) return <Loader />;
   if (!isSignedIn) return <SignIn />;
 
-  if (!categories || !projects || !tasks || !projectId || !reps) return <div><Loader/></div>;
-
-  if (projects.length === 0) return <div><Loader/></div>;
+  if (!projects || !projectId || !categories || !reps || !tasks) {
+    return <Loader />;
+  }
 
   return (
-    <div className="p-4 bg-slate-950 h-screen" >
-        <XPBar/>
-        <div className="md:flex justify-between mx-5 mt-32 lg:mx-40 text-white mb-5">
-        <h1 className="text-2xl">Magisterium</h1>
-        <div className="flex gap-2 mt-2 md:mt-0">
-          {/* <StatChartButton/> */}
-          <AddJournalEntryButton/>
-          <AddCustomRepButton projectId={projectId}/>
-          <XPChartButton/>
-          <RewardTrackButton/>
+    <div className="h-screen bg-slate-950 p-4">
+      <XPBar projectId={projectId} />
+
+      <div className="mx-5 mt-32 mb-5 justify-between text-white md:flex lg:mx-40">
+        <div className="mt-2 flex gap-2 md:mt-0">
+          <button
+            onClick={changeProject}
+            className="rounded bg-emerald-700 px-2 py-1 text-sm font-medium text-white transition-colors hover:bg-emerald-600"
+          >
+            <FaArrowRightArrowLeft/>
+          </button>
+
+          <AddJournalEntryButton />
+          <AddCustomRepButton projectId={projectId} />
+          <XPChartButton projectId={projectId} />
+          <StatChartButton projectId={projectId} />
+          <RewardTrackButton projectId={projectId} />
         </div>
       </div>
-      <div className="lg:flex gap-5 mx-5 lg:mx-40">
+
+      <div className="mx-5 gap-5 lg:mx-40 lg:flex">
         <div className="mb-10 lg:mb-0 lg:w-[30%]">
-          <div className="hidden">
-            <Games/>
-          </div>
-          <GroupRepChecklist/>
+          <GroupRepChecklist projectId={projectId} />
         </div>
+
         <div className="lg:w-[70%]">
-          <CategoryTaskTree reps={reps} tasks={tasks} categories={categories} projectId={projectId}/>
+          <CategoryTaskTree
+            reps={reps}
+            tasks={tasks}
+            categories={categories}
+            projectId={projectId}
+          />
         </div>
       </div>
     </div>

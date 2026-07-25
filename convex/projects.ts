@@ -1,6 +1,8 @@
 import { query } from "./_generated/server";
 import { v } from "convex/values";
 import { mutation } from "./_generated/server";
+import { Doc, Id } from "./_generated/dataModel";
+import { QueryCtx } from "./_generated/server";
 
 export const getAllProjects = query({
   args: {},
@@ -19,22 +21,27 @@ export const getProjectById = query({
 });
 
 export const getAllCategories = query({
-  args: {},
-  handler: async (ctx) => {
-    return await ctx.db.query("categories").collect();
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("categories")
+      .filter((q) => q.eq(q.field("projectId"), args.projectId))
+      .collect();
   },
 });
 
 export const getTasksByCategory = query({
   args: {
+    projectId: v.id("projects"),
     categoryId: v.id("categories"),
   },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("tasks")
-      .withIndex("by_category", (q) =>
-        q.eq("categoryId", args.categoryId)
-      )
+      .withIndex("by_category", (q) => q.eq("categoryId", args.categoryId))
+      .filter((q) => q.eq(q.field("projectId"), args.projectId))
       .collect();
   },
 });
@@ -46,19 +53,28 @@ export const getTasksByProject = query({
   handler: async (ctx, args) => {
     return await ctx.db
       .query("tasks")
-      .withIndex("by_project", (q) =>
-        q.eq("projectId", args.projectId)
-      )
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .collect();
   },
 });
 
 export const updateTaskCategory = mutation({
   args: {
+    projectId: v.id("projects"),
     taskId: v.id("tasks"),
     categoryId: v.id("categories"),
   },
   handler: async (ctx, args) => {
+    const task = await ctx.db.get(args.taskId);
+    if (!task || task.projectId !== args.projectId) {
+      throw new Error("Task not found in this project");
+    }
+
+    const category = await ctx.db.get(args.categoryId);
+    if (!category || category.projectId !== args.projectId) {
+      throw new Error("Category not found in this project");
+    }
+
     await ctx.db.patch(args.taskId, {
       categoryId: args.categoryId,
     });
@@ -97,10 +113,15 @@ export const createTask = mutation({
 });
 
 export const completeTask = mutation({
-  args: { taskId: v.id("tasks") },
-  handler: async (ctx, { taskId }) => {
+  args: {
+    projectId: v.id("projects"),
+    taskId: v.id("tasks"),
+  },
+  handler: async (ctx, { projectId, taskId }) => {
     const task = await ctx.db.get(taskId);
-    if (!task) throw new Error("Task not found");
+    if (!task || task.projectId !== projectId) {
+      throw new Error("Task not found in this project");
+    }
     await ctx.db.insert("reps", {
       taskId,
       completedAt: Date.now(),
@@ -109,32 +130,82 @@ export const completeTask = mutation({
   },
 });
 
+async function getRepProjectId(
+  ctx: QueryCtx,
+  rep: Doc<"reps">
+): Promise<Id<"projects"> | null> {
+  if (rep.categoryId) {
+    const category = await ctx.db.get(rep.categoryId);
+    if (category?.projectId) return category.projectId;
+  }
+  if (rep.taskId) {
+    const task = await ctx.db.get(rep.taskId);
+    if (task?.projectId) return task.projectId;
+  }
+  return null;
+}
+
 export const getAllCompleteReps = query({
-  handler: async (ctx) => {
-    return (await ctx.db.query("reps").collect()).filter(r => r.completedAt)
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, { projectId }) => {
+    const reps = (await ctx.db.query("reps").collect()).filter(
+      (r) => r.completedAt
+    );
+
+    const withProject = await Promise.all(
+      reps.map(async (rep) => ({
+        rep,
+        repProjectId: await getRepProjectId(ctx, rep),
+      }))
+    );
+
+    return withProject
+      .filter(({ repProjectId }) => repProjectId === projectId)
+      .map(({ rep }) => rep);
   },
 });
 
 export const getIncompleteReps = query({
-  handler: async (ctx) => {
-    const reps = (await ctx.db.query("reps").collect()).filter(t => !t.completedAt && !t.groupId);
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, { projectId }) => {
+    const reps = (await ctx.db.query("reps").collect()).filter(
+      (t) => !t.completedAt && !t.groupId
+    );
 
-    return Promise.all(
+    const enriched = await Promise.all(
       reps.map(async (rep) => {
         const category = rep.categoryId
           ? await ctx.db.get(rep.categoryId)
           : null;
-        return { ...rep, categoryName: category?.name ?? null };
+        const repProjectId = await getRepProjectId(ctx, rep);
+        return { ...rep, categoryName: category?.name ?? null, repProjectId };
       })
     );
+
+    return enriched
+      .filter((rep) => rep.repProjectId === projectId)
+      .map(({ repProjectId, ...rest }) => rest);
   },
 });
 
 export const completeRep = mutation({
-  args: { repId: v.id("reps") },
-  handler: async (ctx, { repId }) => {
+  args: {
+    projectId: v.id("projects"),
+    repId: v.id("reps"),
+  },
+  handler: async (ctx, { projectId, repId }) => {
     const rep = await ctx.db.get(repId);
     if (!rep) throw new Error("Rep not found");
+
+    const repProjectId = await getRepProjectId(ctx, rep);
+    if (repProjectId !== projectId) {
+      throw new Error("Rep not found in this project");
+    }
+
     await ctx.db.patch(repId, {
       completedAt: Date.now(),
     });
@@ -142,69 +213,109 @@ export const completeRep = mutation({
 });
 
 export const getAllTasks = query({
-  handler: async (ctx) => {
-    return await ctx.db.query("tasks").collect();
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, { projectId }) => {
+    return await ctx.db
+      .query("tasks")
+      .withIndex("by_project", (q) => q.eq("projectId", projectId))
+      .collect();
   },
 });
 
-
 export const createChecklistRep = mutation({
   args: {
+    projectId: v.id("projects"),
     xpValue: v.number(),
     categoryId: v.id("categories"),
     title: v.optional(v.string()),
-    groupId: v.optional(v.number())
+    groupId: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    const category = await ctx.db.get(args.categoryId);
+    if (!category || category.projectId !== args.projectId) {
+      throw new Error("Category not found in this project");
+    }
+
     await ctx.db.insert("reps", {
       categoryId: args.categoryId,
       xpValue: args.xpValue,
       title: args.title,
-      groupId: args.groupId
+      groupId: args.groupId,
     });
   },
 });
 
 export const createRep = mutation({
   args: {
+    projectId: v.id("projects"),
     xpValue: v.number(),
     categoryId: v.id("categories"),
     title: v.optional(v.string()),
-    groupId: v.optional(v.number())
+    groupId: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    const category = await ctx.db.get(args.categoryId);
+    if (!category || category.projectId !== args.projectId) {
+      throw new Error("Category not found in this project");
+    }
+
     await ctx.db.insert("reps", {
       categoryId: args.categoryId,
       xpValue: args.xpValue,
       completedAt: Date.now(),
       title: args.title,
-      groupId: args.groupId
+      groupId: args.groupId,
     });
   },
 });
 
 export const getLatestGroupId = query({
-  args: {},
-  handler: async (ctx) => {
-    const rep = await ctx.db
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, { projectId }) => {
+    const reps = await ctx.db
       .query("reps")
       .filter((q) => q.neq(q.field("groupId"), undefined))
       .order("desc")
-      .first();
-    return rep?.groupId ?? 0;
+      .collect();
+
+    for (const rep of reps) {
+      const repProjectId = await getRepProjectId(ctx, rep);
+      if (repProjectId === projectId) {
+        return rep.groupId ?? 0;
+      }
+    }
+    return 0;
   },
 });
 
 export const getRepGroups = query({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, { projectId }) => {
     const reps = await ctx.db
       .query("reps")
       .filter((q) => q.neq(q.field("groupId"), undefined))
       .collect();
 
-    const groupMap = new Map<number, typeof reps>();
-    for (const rep of reps) {
+    // Only keep reps belonging to the requested project.
+    const scopedReps = (
+      await Promise.all(
+        reps.map(async (rep) => ({
+          rep,
+          repProjectId: await getRepProjectId(ctx, rep),
+        }))
+      )
+    )
+      .filter(({ repProjectId }) => repProjectId === projectId)
+      .map(({ rep }) => rep);
+
+    const groupMap = new Map<number, typeof scopedReps>();
+    for (const rep of scopedReps) {
       const gid = rep.groupId!;
       if (!groupMap.has(gid)) groupMap.set(gid, []);
       groupMap.get(gid)!.push(rep);
@@ -243,15 +354,30 @@ export const getRepGroups = query({
 });
 
 export const createRepsFromGroup = mutation({
-  args: { groupId: v.float64() },
-  handler: async (ctx, { groupId }) => {
+  args: {
+    projectId: v.id("projects"),
+    groupId: v.float64(),
+  },
+  handler: async (ctx, { projectId, groupId }) => {
     const reps = await ctx.db
       .query("reps")
       .filter((q) => q.eq(q.field("groupId"), groupId))
       .collect();
 
+    // Guard against completing a group that doesn't belong to this project.
+    const scopedReps = (
+      await Promise.all(
+        reps.map(async (rep) => ({
+          rep,
+          repProjectId: await getRepProjectId(ctx, rep),
+        }))
+      )
+    )
+      .filter(({ repProjectId }) => repProjectId === projectId)
+      .map(({ rep }) => rep);
+
     await Promise.all(
-      reps.map((r) =>
+      scopedReps.map((r) =>
         ctx.db.insert("reps", {
           categoryId: r.categoryId,
           xpValue: r.xpValue,
@@ -260,21 +386,6 @@ export const createRepsFromGroup = mutation({
         })
       )
     );
-  },
-});
-
-export const getGames = query({
-  handler: async (ctx) => {
-    return await ctx.db.query("games").collect();
-  },
-});
-
-export const addToPot = mutation({
-  args: { gameId: v.id("games") },
-  handler: async (ctx, { gameId }) => {
-    const game = await ctx.db.get(gameId);
-    if (!game) throw new Error("Game not found");
-    await ctx.db.patch(gameId, { pot: game.pot + 1 });
   },
 });
 

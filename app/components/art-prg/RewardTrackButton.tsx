@@ -3,12 +3,18 @@ import * as Dialog from "@radix-ui/react-dialog"
 import { useQuery } from "convex/react"
 import { api } from "convex/_generated/api"
 import { levels } from "~/constants/levels"
+import type { ProjectId } from "./RepChecklist"
+import { FaArrowTrendUp } from "react-icons/fa6";
 
-const LEVELS = levels();
-
-export const RewardTrackButton = () => {
+export const RewardTrackButton:React.FC<ProjectId> = ({projectId}) => {
   const [open, setOpen] = useState(false)
-  const reps = useQuery(api.projects.getAllCompleteReps)
+  const reps = useQuery(api.projects.getAllCompleteReps, {projectId})
+
+  const projectName = useQuery(api.projects.getProjectById, {
+    projectId,
+  })?.name;
+
+  const LEVELS = levels(projectName ?? "");
 
   const totalXp = reps?.reduce((sum, r) => sum + (r.xpValue ?? 0), 0) ?? 0
   const currentLevel = [...LEVELS].reverse().find(l => totalXp >= l.xp)?.level ?? 1
@@ -17,7 +23,7 @@ export const RewardTrackButton = () => {
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
         <button className="px-2 py-1 rounded bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">
-            Progress 
+          <FaArrowTrendUp/>
         </button>
       </Dialog.Trigger>
 

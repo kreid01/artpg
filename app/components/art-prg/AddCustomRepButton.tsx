@@ -19,8 +19,8 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({ projectId }
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [entries, setEntries] = useState<RepEntry[]>([{ id: 0, categoryId: "", xpValue: 10 }]);
-  const latestGroupId = useQuery(api.projects.getLatestGroupId, open ? {} : "skip");
-  const categories = useQuery(api.projects.getAllCategories);
+  const latestGroupId = useQuery(api.projects.getLatestGroupId, open ? {projectId} : "skip");
+  const categories = useQuery(api.projects.getAllCategories, {projectId});
   const createRep = useMutation(api.projects.createChecklistRep);
 
   function addEntry() {
@@ -54,6 +54,7 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({ projectId }
       await Promise.all(
         entries.map((e) =>
           createRep({
+            projectId,
             title: name,
             categoryId: e.categoryId as Id<"categories">,
             xpValue: e.xpValue,
@@ -71,7 +72,7 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({ projectId }
     <Dialog.Root open={open} onOpenChange={handleClose}>
       <Dialog.Trigger asChild>
         <button className="px-2 py-1 rounded bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">
-          + Custom
+          +
         </button>
       </Dialog.Trigger>
 
@@ -103,7 +104,7 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({ projectId }
                 <div key={entry.id} className="grid grid-cols-[1fr_100px_32px] gap-2 items-center">
                   <Select.Root
                     value={entry.categoryId}
-                    onValueChange={(val) => updateEntry(entry.id, "categoryId", val)} >
+                    onValueChange={(val: any) => updateEntry(entry.id, "categoryId", val)} >
                   <Select.Trigger className="w-full flex items-center justify-between border border-slate-700 text-white rounded-lg px-3 py-2 text-sm bg-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                     <Select.Value placeholder="Select…" />
                     <Select.Icon className="ml-2 text-slate-400 text-xs">▾</Select.Icon>

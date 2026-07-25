@@ -4,27 +4,22 @@ import { RadarChart } from "@mui/x-charts/RadarChart";
 import * as Dialog from "@radix-ui/react-dialog";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
+import type { ProjectId } from "./RepChecklist";
+import { getCategoryColours } from "~/constants/colours";
+import { FaBullseye } from "react-icons/fa6";
 
-const CATEGORY_COLORS: Record<string, string> = {
-  "design": "#ef4444",
-  "rendering": "#f97316",
-  "clothing & materials": "#f59e0b",
-  "colour theory": "#84cc16",
-  "visual library": "#22c55e",
-  "observation": "#14b8a6",
-  "composition": "#0ea5e9",
-  "form & construction": "#6366f1",
-  "perspective": "#a855f7",
-  "gesture": "#ec4899",
-  "anatomy": "#f97316",
-};
-
-export const StatChartButton: React.FC = () => {
+export const StatChartButton: React.FC<ProjectId> = ({projectId}) => {
   const [open, setOpen] = useState(false);
 
-  const reps = useQuery(api.projects.getAllCompleteReps, open ? {} : "skip");
-  const tasks = useQuery(api.projects.getAllTasks, open ? {} : "skip");
-  const categories = useQuery(api.projects.getAllCategories, open ? {} : "skip");
+  const reps = useQuery(api.projects.getAllCompleteReps, open ? {projectId} : "skip");
+  const tasks = useQuery(api.projects.getAllTasks, open ? {projectId} : "skip");
+  const categories = useQuery(api.projects.getAllCategories, open ? {projectId} : "skip");
+
+  const projectName = useQuery(api.projects.getProjectById, {
+    projectId,
+  })?.name;
+
+  const colours = getCategoryColours(projectName ?? "")
 
   const taskMap = useMemo(
     () => new Map((tasks ?? []).map((t) => [t._id, t])),
@@ -61,7 +56,7 @@ export const StatChartButton: React.FC = () => {
       <button
         onClick={() => setOpen(true)}
         className="px-2 py-1 rounded bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">
-        View Stats
+          <FaBullseye/>
       </button>
 
       <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -117,7 +112,7 @@ export const StatChartButton: React.FC = () => {
                     {activeCategories.map((cat, i) => {
                       const xp = xpByCategory.get(cat._id) ?? 0;
                       const pct = Math.round((xp / maxXp) * 100);
-                      const color = CATEGORY_COLORS[cat.name.toLowerCase()] ?? "#64748b"; 
+                      const color = colours[cat.name.toLowerCase()] ?? "#64748b"; 
                       return (
                         <div key={cat._id} className="grid items-center gap-2" style={{ gridTemplateColumns: "120px 1fr 48px" }}>
                           <span className="text-sm text-slate-300 truncate">{cat.name}</span>

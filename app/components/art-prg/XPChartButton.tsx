@@ -3,8 +3,11 @@ import { useState, useMemo } from "react";
 import { useQuery } from "convex/react";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { api } from "convex/_generated/api";
+import type { ProjectId } from "./RepChecklist";
+import { FaChartLine } from "react-icons/fa";
 
-const GOAL_XP = 400_000;
+const ART_GOAL_XP = 400_000;
+const CLIMBING_GOAL_XP = 150_000
 
 const getWeekKey = (dateMs: number): string => {
   const d = new Date(dateMs);
@@ -15,11 +18,17 @@ const getWeekKey = (dateMs: number): string => {
   return monday.toISOString().slice(0, 10);
 }
 
-export const XPChartButton = () => {
+export const XPChartButton: React.FC<ProjectId> = ({projectId}) => {
   const [open, setOpen] = useState(false);
 
-  const reps = useQuery(api.projects.getAllCompleteReps, open ? {} : "skip");
-  const tasks = useQuery(api.projects.getAllTasks, open ? {} : "skip");
+  const projectName = useQuery(api.projects.getProjectById, {
+    projectId,
+  })?.name;
+
+  const goalXp = projectName?.toLowerCase() == "art" ? ART_GOAL_XP : CLIMBING_GOAL_XP
+
+  const reps = useQuery(api.projects.getAllCompleteReps, open ? {projectId} : "skip");
+  const tasks = useQuery(api.projects.getAllTasks, open ? {projectId} : "skip");
 
   const filteredReps = useMemo(() => {
   return (reps ?? []).filter((rep) => {
@@ -50,7 +59,7 @@ export const XPChartButton = () => {
         : 0;
 
     const totalXp = xpPerWeek.reduce((a, b) => a + b, 0);
-    const remaining = Math.max(GOAL_XP - totalXp, 0);
+    const remaining = Math.max(goalXp - totalXp, 0);
     const weeksToGoal = avgXp > 0 ? Math.ceil(remaining / avgXp) : Infinity;
 
     return { weeks, xpPerWeek, avgXp, weeksToGoal };
@@ -68,7 +77,7 @@ export const XPChartButton = () => {
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
         <button className="px-2 py-1 rounded bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">
-            Weekly XP
+          <FaChartLine />
         </button>
       </Dialog.Trigger>
 
@@ -120,7 +129,7 @@ export const XPChartButton = () => {
                       Goal
                     </p>
                     <p className="text-lg font-semibold text-slate-300">
-                      {GOAL_XP.toLocaleString()} XP
+                      {goalXp.toLocaleString()} XP
                     </p>
                   </div>
                 </div>

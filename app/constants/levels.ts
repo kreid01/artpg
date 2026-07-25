@@ -1,5 +1,5 @@
 
-export const levels = () => generateLevels(100)
+export const levels = (projectName: string) => generateLevels(projectName, 100)
 
 const rewardDict: Record<number, string> = {
     70: "Illustration Series",
@@ -10,15 +10,15 @@ const rewardDict: Record<number, string> = {
     95: "Mentorship",
 }
 
-const generateLevels = (maxLevel = 100) => {
+const generateLevels = (projectName: string, maxLevel = 100) => {
   const levels = [];
-  const targetXp = 400_000;
+  const targetXp = projectName.toLowerCase() == "art" ?  400_000 : 150_000
   const k = 0.04;
   const a = targetXp / (Math.exp(k * maxLevel) - 1);
 
   for (let level = 1; level <= maxLevel; level++) {
     const xp = Math.round(a * (Math.exp(k * level) - 1));
-    const reward = rewardDict[level]
+    const reward = projectName.toLowerCase() == "art" ? rewardDict[level] : {}
     levels.push({ level, xp, reward });
   }
 

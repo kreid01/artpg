@@ -2,6 +2,7 @@ import { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useMutation } from "convex/react";
 import { api } from "convex/_generated/api";
+import { FaBookOpen } from "react-icons/fa6";
 
 export const AddJournalEntryButton: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -50,7 +51,7 @@ export const AddJournalEntryButton: React.FC = () => {
     <Dialog.Root open={open} onOpenChange={handleClose}>
       <Dialog.Trigger asChild>
         <button className="px-2 py-1 rounded bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">
-          + Journal
+          <FaBookOpen/>
         </button>
       </Dialog.Trigger>
 
