@@ -31,11 +31,11 @@ export const XPChartButton: React.FC<ProjectId> = ({projectId}) => {
   const tasks = useQuery(api.projects.getAllTasks, open ? {projectId} : "skip");
 
   const filteredReps = useMemo(() => {
-  return (reps ?? []).filter((rep) => {
-    const d = new Date(rep.completedAt ?? new Date());
-    return !(d.getFullYear() === 2026 && d.getMonth() === 3 && d.getDate() === 18);
-  });
-}, [reps]);
+    return (reps ?? []).filter((rep) => {
+      const d = new Date(rep.completedAt ?? new Date());
+      return !(d.getFullYear() === 2026 && d.getMonth() === 3 && d.getDate() === 18);
+    });
+  }, [reps]);
 
   const { weeks, xpPerWeek, avgXp, weeksToGoal } = useMemo(() => {
     if (!filteredReps || filteredReps.length === 0)
@@ -58,12 +58,12 @@ export const XPChartButton: React.FC<ProjectId> = ({projectId}) => {
         ? Math.round(xpPerWeek.reduce((a, b) => a + b, 0) / xpPerWeek.length)
         : 0;
 
-    const totalXp = xpPerWeek.reduce((a, b) => a + b, 0);
+    const totalXp = (reps ?? []).reduce((sum, rep) => sum + rep.xpValue, 0);
     const remaining = Math.max(goalXp - totalXp, 0);
     const weeksToGoal = avgXp > 0 ? Math.ceil(remaining / avgXp) : Infinity;
 
     return { weeks, xpPerWeek, avgXp, weeksToGoal };
-  }, [filteredReps, tasks]);
+  }, [filteredReps, reps, tasks, goalXp]);
 
   const isLoading = filteredReps === undefined || tasks === undefined;
   const hasData = weeks.length > 0;
