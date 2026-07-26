@@ -5,8 +5,9 @@ import * as Select from "@radix-ui/react-select";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
 import { getCategoryColours } from "~/constants/colours";
+import type { ProjectName } from "~/constants/levels";
 
-function getCategoryColor(projectName: string, categoryName?: string): string {
+function getCategoryColor(projectName: ProjectName, categoryName?: string): string {
   if (!categoryName) return "#64748b"; 
   const colours = getCategoryColours(projectName)
   return colours[categoryName.toLowerCase()] ?? "#64748b";
@@ -25,7 +26,7 @@ export const RepChecklist: React.FC<ProjectId> = ({projectId}) => {
 
   const projectName = useQuery(api.projects.getProjectById, {
     projectId,
-  })?.name;
+  })?.name as ProjectName;
 
   const reps = useQuery(api.projects.getIncompleteReps, {projectId}) as any;
   const categories = useQuery(
@@ -62,7 +63,7 @@ export const RepChecklist: React.FC<ProjectId> = ({projectId}) => {
               rep.categoryName ??
               rep.task?.categoryName ??
               rep.category?.name;
-            const color = getCategoryColor(projectName ?? "", categoryName);
+            const color = getCategoryColor(projectName, categoryName);
 
             return (
               <li key={rep._id} className="flex items-center gap-3">
@@ -131,7 +132,7 @@ export const RepChecklist: React.FC<ProjectId> = ({projectId}) => {
               <Select.Content className="z-50 bg-slate-900 border border-slate-700 rounded-lg shadow-lg overflow-hidden">
                 <Select.Viewport className="p-1">
                   {categories?.map((cat) => {
-                    const catColor = getCategoryColor(cat.name);
+                    const catColor = getCategoryColor(projectName, cat.name);
                     return (
                       <Select.Item
                         key={cat._id}

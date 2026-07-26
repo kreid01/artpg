@@ -5,6 +5,7 @@ import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
 import * as Toast from "@radix-ui/react-toast";
 import { getCategoryColours } from "~/constants/colours";
+import { getXpCaps, type ProjectName } from "~/constants/levels";
 
 type Category = {
   _id: Id<"categories">;
@@ -33,39 +34,16 @@ type Props = {
 };
 
 
-const ART_CATEGORY_XP_CAPS: Record<string, number> = {
-  "form & construction":  50000,
-  "value & light":        45000,
-  "observation & recall": 45000,
-  "composition":          40000,
-  "design":               40000,
-  "colour theory":        35000,
-  "anatomy":              35000,
-  "perspective":          30000,
-  "rendering":            30000,
-  "clothing & materials": 25000,
-  "gesture":              25000,
-};
-
-const CLIMBING_CATEGORY_XP_CAPS: Record<string, number> = {
-  "movement":  40000,
-  "body tension":        25000,
-  "strength":        20000,
-  "dynamics & power": 20000,
-  "execution":          30000,
-  "capacity":               15000,
-}
-
 export function CategoryTaskTree({ categories, tasks, reps, projectId }: Props) {
   const taskMap = Object.fromEntries(tasks.map(t => [t._id, t]));
 
   const projectName = useQuery(api.projects.getProjectById, {
     projectId,
-  })?.name;
+  })?.name as ProjectName 
 
-  const xpCaps = projectName?.toLowerCase() == "art" ? ART_CATEGORY_XP_CAPS : CLIMBING_CATEGORY_XP_CAPS
+  const xpCaps = getXpCaps(projectName ?? "art")
   const order = Object.keys(xpCaps);
-  const colours = getCategoryColours(projectName ?? "")
+  const colours = getCategoryColours(projectName ?? "art")
 
   const sortedCategories = [...categories].sort((a, b) => {
     const ai = order.indexOf(a.name.toLowerCase());

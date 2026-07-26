@@ -7,6 +7,7 @@ import type { Id } from "convex/_generated/dataModel";
 import type { ProjectId } from "./RepChecklist";
 import { getCategoryColours } from "~/constants/colours";
 import { FaBullseye } from "react-icons/fa6";
+import type { ProjectName } from "~/constants/levels";
 
 export const StatChartButton: React.FC<ProjectId> = ({projectId}) => {
   const [open, setOpen] = useState(false);
@@ -17,9 +18,9 @@ export const StatChartButton: React.FC<ProjectId> = ({projectId}) => {
 
   const projectName = useQuery(api.projects.getProjectById, {
     projectId,
-  })?.name;
+  })?.name as ProjectName;
 
-  const colours = getCategoryColours(projectName ?? "")
+  const colours = getCategoryColours(projectName ?? "art")
 
   const taskMap = useMemo(
     () => new Map((tasks ?? []).map((t) => [t._id, t])),

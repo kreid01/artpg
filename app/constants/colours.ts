@@ -1,4 +1,9 @@
-export const getCategoryColours = (projectName: string) => projectName.toLowerCase() == "art" ? ART_CATEGORY_COLORS : CLIMBING_CATEGORY_COLORS
+import type { ProjectName } from "./levels";
+
+export const getCategoryColours = (projectName: ProjectName) => {
+  const name = projectName.toLowerCase() as keyof typeof COLOURS_DICT
+  return COLOURS_DICT[name] ?? "gray";
+}
 
 const ART_CATEGORY_COLORS: Record<string, string> = {
   "design":               "#ef4444", 
@@ -21,3 +26,29 @@ const CLIMBING_CATEGORY_COLORS: Record<string, string> = {
   "capacity":        "#f97316", 
   "execution":       "#f59e0b", 
 };
+
+const SCHOLAR_CATEGORY_COLORS: Record<string, string> = {
+  "history":       "#0ea5e9", 
+  "nature & biology":               "#22c55e", 
+  "mythology & folklore":            "#a855f7", 
+  "philosophy": "#ef4444", 
+  "psychology":        "#f97316", 
+  "chess":       "#f59e0b", 
+};
+
+const ENGINEER_CATEGORY_COLORS: Record<string, string> = {
+  "backend":       "#0ea5e9", 
+  "frontend":               "#22c55e", 
+  "software architecture & design":            "#a855f7", 
+  "databases": "#ef4444", 
+  "systems":        "#f97316", 
+  "testing & quality":       "#f59e0b", 
+  "performance & optimisation":              "#ec4899", 
+};
+
+const COLOURS_DICT = {
+  "art": ART_CATEGORY_COLORS,
+  "climbing": CLIMBING_CATEGORY_COLORS,
+  "scholar": SCHOLAR_CATEGORY_COLORS,
+  "engineer": ENGINEER_CATEGORY_COLORS
+}

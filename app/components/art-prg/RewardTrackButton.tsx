@@ -2,7 +2,7 @@ import { useState } from "react"
 import * as Dialog from "@radix-ui/react-dialog"
 import { useQuery } from "convex/react"
 import { api } from "convex/_generated/api"
-import { levels } from "~/constants/levels"
+import { levels, type ProjectName } from "~/constants/levels"
 import type { ProjectId } from "./RepChecklist"
 import { FaArrowTrendUp } from "react-icons/fa6";
 
@@ -12,9 +12,9 @@ export const RewardTrackButton:React.FC<ProjectId> = ({projectId}) => {
 
   const projectName = useQuery(api.projects.getProjectById, {
     projectId,
-  })?.name;
+  })?.name as ProjectName;
 
-  const LEVELS = levels(projectName ?? "");
+  const LEVELS = levels(projectName ?? "art");
 
   const totalXp = reps?.reduce((sum, r) => sum + (r.xpValue ?? 0), 0) ?? 0
   const currentLevel = [...LEVELS].reverse().find(l => totalXp >= l.xp)?.level ?? 1

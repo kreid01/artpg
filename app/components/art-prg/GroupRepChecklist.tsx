@@ -2,7 +2,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "convex/_generated/api";
 import { type ProjectId } from "./RepChecklist";
 import { useState } from "react";
-import { levels } from "~/constants/levels";
+import { levels, type ProjectName } from "~/constants/levels";
 import { Loader } from "./Loader";
 import { getCategoryColours } from "~/constants/colours";
 
@@ -31,11 +31,10 @@ export const GroupRepChecklist: React.FC<ProjectId> = ({projectId}) => {
 
   const projectName = useQuery(api.projects.getProjectById, {
     projectId,
-  })?.name;
+  })?.name as ProjectName;
 
-  const colours = getCategoryColours(projectName ?? "")
-
-  const LEVELS = levels(projectName ?? "");
+  const colours = getCategoryColours(projectName ?? "art")
+  const LEVELS = levels(projectName ?? "art");
 
   const totalXp = reps.reduce((sum, rep) => sum + rep.xpValue, 0);
   

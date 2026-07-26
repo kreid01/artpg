@@ -12,7 +12,12 @@ import { GroupRepChecklist } from "~/components/art-prg/GroupRepChecklist";
 import { AddJournalEntryButton } from "~/components/art-prg/JournalEntryButton";
 import { useState } from "react";
 import type { Id } from "../../convex/_generated/dataModel";
-import { FaArrowRightArrowLeft } from "react-icons/fa6";
+import {
+  FaBookOpen,
+  FaPalette,
+  FaLaptopCode
+} from "react-icons/fa";
+import { GiMountainClimbing } from "react-icons/gi";
 
 export default function Home() {
   const { isLoaded, isSignedIn } = useUser();
@@ -24,9 +29,10 @@ export default function Home() {
   >();
 
   const projectId = selectedProjectId ?? projects?.[0]?._id;
-
   const artProjectId = projects?.[0]?._id;
   const climbingProjectId = projects?.[1]?._id;
+  const scholarProjectId = projects?.[2]?._id;
+  const engineerProjectId = projects?.[3]?._id;
 
   const categories = useQuery(
     api.projects.getAllCategories,
@@ -43,17 +49,9 @@ export default function Home() {
     projectId ? { projectId } : "skip"
   );
 
-  const changeProject = () => {
-    if (!artProjectId || !climbingProjectId) return;
-
-    if (!selectedProjectId) {
-      setSelectedProjectId(climbingProjectId)
-      return
-    }
-
-    setSelectedProjectId((prev) =>
-      prev === artProjectId ? climbingProjectId : artProjectId
-    );
+  const changeProject = (id: Id<"projects"> | undefined) => {
+    if (!artProjectId || !climbingProjectId || !scholarProjectId || !engineerProjectId) return;
+    setSelectedProjectId(id)
   };
 
   if (!isLoaded) return <Loader />;
@@ -68,19 +66,32 @@ export default function Home() {
       <XPBar projectId={projectId} />
 
       <div className="mx-5 mt-32 mb-5 justify-between text-white md:flex lg:mx-40">
-        <div className="mt-2 flex gap-2 md:mt-0">
-          <button
-            onClick={changeProject}
-            className="rounded bg-emerald-700 px-2 py-1 text-sm font-medium text-white transition-colors hover:bg-emerald-600"
-          >
-            <FaArrowRightArrowLeft/>
-          </button>
+        <div className="mt-2 flex w-full justify-between md:mt-0">
+          <div className="flex gap-2">
+            <AddJournalEntryButton />
+            <AddCustomRepButton projectId={projectId} />
+            <XPChartButton projectId={projectId} />
+            <StatChartButton projectId={projectId} />
+            <RewardTrackButton projectId={projectId} />
+          </div>
 
-          <AddJournalEntryButton />
-          <AddCustomRepButton projectId={projectId} />
-          <XPChartButton projectId={projectId} />
-          <StatChartButton projectId={projectId} />
-          <RewardTrackButton projectId={projectId} />
+          <div className="flex gap-2">
+            <button className="px-2 py-1 rounded bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">
+              <FaPalette onClick={() => changeProject(artProjectId)}/>
+            </button>
+
+            <button className="px-2 py-1 rounded bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">
+              <GiMountainClimbing onClick={() => changeProject(climbingProjectId)}/>
+            </button>
+
+            <button className="px-2 py-1 rounded bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">
+              <FaBookOpen onClick={() => changeProject(scholarProjectId)}/>
+            </button>
+
+            <button className="px-2 py-1 rounded bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">
+              <FaLaptopCode onClick={() => changeProject(engineerProjectId)}/>
+            </button>
+          </div>
         </div>
       </div>
 

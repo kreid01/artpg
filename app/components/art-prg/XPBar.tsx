@@ -1,7 +1,7 @@
 import { api } from "convex/_generated/api";
 import { useQuery } from "convex/react";
 import { Loader } from "./Loader";
-import { levels } from "~/constants/levels";
+import { levels, type ProjectName } from "~/constants/levels";
 import type { ProjectId } from "./RepChecklist";
 
 export const XPBar: React.FC<ProjectId> = ({projectId}) => {
@@ -10,7 +10,7 @@ export const XPBar: React.FC<ProjectId> = ({projectId}) => {
 
   const projectName = useQuery(api.projects.getProjectById, {
     projectId,
-  })?.name;
+  })?.name as ProjectName;
 
   if (!projectName || !reps || latestFocus === undefined) return <Loader />;
 
