@@ -29,6 +29,7 @@ const CLIMBING_CATEGORY_COLORS: Record<string, string> = {
 
 const SCHOLAR_CATEGORY_COLORS: Record<string, string> = {
   "history":       "#0ea5e9", 
+  "lanugage": "#6366f1",
   "nature & biology":               "#22c55e", 
   "mythology & folklore":            "#a855f7", 
   "philosophy": "#ef4444", 

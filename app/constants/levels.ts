@@ -43,6 +43,8 @@ const generateLevels = (projectName: ProjectName, maxLevel = 100) => {
   const k = 0.04;
   const a = targetXp / (Math.exp(k * maxLevel) - 1);
 
+  levels.push({ level: 1, xp: 0, reward: rewardDict[1] })
+
   for (let level = 2; level <= maxLevel; level++) {
     const xp = Math.round(a * (Math.exp(k * level) - 1));
     const reward = rewardDict[level] 
@@ -95,7 +97,8 @@ const SCHOLAR_CATEGORY_XP_CAPS: Record<string, number> = {
   "philosophy": 25000,
   "chess":               25000,
   "psychology":          20000,
-  "literature": 30000
+  "literature": 30000,
+  "language": 50000
 }
 
 const ENGINEER_CATEGORY_XP_CAPS: Record<string, number> = {
