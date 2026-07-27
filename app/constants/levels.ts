@@ -28,8 +28,8 @@ const getRewardDict = (projectName: string) => {
 
 const TARGET_XP = {
   "art": 400_000,
+  "scholar": 300_000,
   "climbing": 150_000,
-  "scholar": 200_000,
   "engineer": 200_000
 }
 
