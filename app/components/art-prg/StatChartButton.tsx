@@ -6,21 +6,34 @@ import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
 import type { ProjectId } from "./RepChecklist";
 import { getCategoryColours } from "~/constants/colours";
+import { getXpCaps } from "~/constants/levels";
 import { FaBullseye } from "react-icons/fa6";
 import type { ProjectName } from "~/constants/levels";
 
-export const StatChartButton: React.FC<ProjectId> = ({projectId}) => {
+export const StatChartButton: React.FC<ProjectId> = ({ projectId }) => {
   const [open, setOpen] = useState(false);
 
-  const reps = useQuery(api.projects.getAllCompleteReps, open ? {projectId} : "skip");
-  const tasks = useQuery(api.projects.getAllTasks, open ? {projectId} : "skip");
-  const categories = useQuery(api.projects.getAllCategories, open ? {projectId} : "skip");
+  const reps = useQuery(
+    api.projects.getAllCompleteReps,
+    open ? { projectId } : "skip"
+  );
+
+  const tasks = useQuery(
+    api.projects.getAllTasks,
+    open ? { projectId } : "skip"
+  );
+
+  const categories = useQuery(
+    api.projects.getAllCategories,
+    open ? { projectId } : "skip"
+  );
 
   const projectName = useQuery(api.projects.getProjectById, {
     projectId,
   })?.name as ProjectName;
 
-  const colours = getCategoryColours(projectName ?? "art")
+  const colours = getCategoryColours(projectName ?? "art");
+  const xpCaps = getXpCaps(projectName ?? "art");
 
   const taskMap = useMemo(
     () => new Map((tasks ?? []).map((t) => [t._id, t])),
@@ -29,61 +42,76 @@ export const StatChartButton: React.FC<ProjectId> = ({projectId}) => {
 
   const xpByCategory = useMemo(() => {
     const acc = new Map<string, number>();
+
     for (const rep of reps ?? []) {
-      const catId = rep.categoryId ?? taskMap.get(rep.taskId as Id<"tasks">)?.categoryId;
+      const catId =
+        rep.categoryId ??
+        taskMap.get(rep.taskId as Id<"tasks">)?.categoryId;
+
       if (!catId) continue;
+
       acc.set(catId, (acc.get(catId) ?? 0) + rep.xpValue);
     }
+
     return acc;
   }, [reps, taskMap]);
 
-  
-  const activeCategories = useMemo(() => categories ?? [], [categories]);
+  const activeCategories = useMemo(
+    () => categories ?? [],
+    [categories]
+  );
 
   const totalXp = useMemo(
-    () => Array.from(xpByCategory.values()).reduce((a, b) => a + b, 0),
+    () =>
+      Array.from(xpByCategory.values()).reduce(
+        (a, b) => a + b,
+        0
+      ),
     [xpByCategory]
   );
 
-  const maxXp = useMemo(
-    () => Math.max(...Array.from(xpByCategory.values()), 1),
-    [xpByCategory]
-  );
-
-  const isLoading = reps === undefined || tasks === undefined || categories === undefined;
+  const isLoading =
+    reps === undefined ||
+    tasks === undefined ||
+    categories === undefined;
 
   return (
     <>
       <button
         onClick={() => setOpen(true)}
-        className="px-2 py-1 rounded bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">
-          <FaBullseye/>
+        className="px-2 py-1 rounded bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors"
+      >
+        <FaBullseye />
       </button>
 
       <Dialog.Root open={open} onOpenChange={setOpen}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40" />
-          <Dialog.Content className="fixed z-50 left-1/2 top-1/2 text-white -translate-x-1/2 -translate-y-1/2 bg-slate-950 rounded-2xl shadow-xl w-full lg:w-[70%]  overflow-hidden">
 
+          <Dialog.Content className="fixed z-50 left-1/2 top-1/2 text-white -translate-x-1/2 -translate-y-1/2 bg-slate-950 rounded-2xl shadow-xl w-full lg:w-[70%] overflow-hidden">
             <div className="px-6 pt-6 pb-2 flex items-center justify-between">
               <Dialog.Title className="text-base font-semibold text-white">
                 XP by Category
               </Dialog.Title>
+
               <div>
                 <span className="text-sm text-slate-400">
                   {totalXp.toLocaleString()} total XP
                 </span>
-              <Dialog.Close asChild>
-                <button className="px-3 ml-5 py-1.5 rounded-lg border border-slate-700 text-sm text-slate-300 hover:bg-slate-800 transition-colors">
-                  Close
-                </button>
-              </Dialog.Close>
+
+                <Dialog.Close asChild>
+                  <button className="px-3 ml-5 py-1.5 rounded-lg border border-slate-700 text-sm text-slate-300 hover:bg-slate-800 transition-colors">
+                    Close
+                  </button>
+                </Dialog.Close>
               </div>
             </div>
 
             <div className="px-6 pb-4">
               {isLoading ? (
-                <p className="text-slate-400 text-sm text-center py-10">Loading…</p>
+                <p className="text-slate-400 text-sm text-center py-10">
+                  Loading…
+                </p>
               ) : activeCategories.length === 0 ? (
                 <p className="text-slate-400 text-sm text-center py-10">
                   No reps recorded yet.
@@ -95,35 +123,65 @@ export const StatChartButton: React.FC<ProjectId> = ({projectId}) => {
                     series={[
                       {
                         label: "XP",
-                        data: activeCategories.map((c) => xpByCategory.get(c._id) ?? 0),
-                        color: "#22c55e",
-                        fillArea: true
+                        data: activeCategories.map((cat) => {
+                          const xp = xpByCategory.get(cat._id) ?? 0;
+                          const cap =
+                            xpCaps[cat.name.toLowerCase()] ?? 1;
 
+                          return Math.min(xp, cap);
+                        }),
+                        color: "#22c55e",
+                        fillArea: true,
                       },
                     ]}
                     radar={{
-                      metrics: activeCategories.map((c) => ({
-                        name: c.name,
-                        max: maxXp,
+                      metrics: activeCategories.map((cat) => ({
+                        name: cat.name,
+                        max:
+                          xpCaps[cat.name.toLowerCase()] ?? 1,
                       })),
                     }}
                   />
 
                   <div className="mt-4 space-y-2.5">
-                    {activeCategories.map((cat, i) => {
-                      const xp = xpByCategory.get(cat._id) ?? 0;
-                      const pct = Math.round((xp / maxXp) * 100);
-                      const color = colours[cat.name.toLowerCase()] ?? "#64748b"; 
+                    {activeCategories.map((cat) => {
+                      const xp =
+                        xpByCategory.get(cat._id) ?? 0;
+
+                      const cap =
+                        xpCaps[cat.name.toLowerCase()] ?? 1;
+
+                      const pct = Math.min(
+                        100,
+                        (xp / cap) * 100
+                      );
+
+                      const color =
+                        colours[cat.name.toLowerCase()] ??
+                        "#64748b";
+
                       return (
-                        <div key={cat._id} className="grid items-center gap-2" style={{ gridTemplateColumns: "120px 1fr 48px" }}>
-                          <span className="text-sm text-slate-300 truncate">{cat.name}</span>
+                        <div
+                          key={cat._id}
+                          className="grid items-center gap-2"
+                          style={{
+                            gridTemplateColumns:
+                              "150px 1fr",
+                          }}
+                        >
+                          <span className="text-sm text-slate-300 truncate">
+                            {cat.name}
+                          </span>
+
                           <div className="h-2 rounded-l-full bg-slate-800 overflow-hidden">
                             <div
                               className="h-full rounded-full"
-                              style={{ width: `${pct}%`, backgroundColor: color }}
+                              style={{
+                                width: `${pct}%`,
+                                backgroundColor: color,
+                              }}
                             />
                           </div>
-                          <span className="text-sm text-slate-400 text-right">{xp.toLocaleString()}</span>
                         </div>
                       );
                     })}
@@ -131,7 +189,6 @@ export const StatChartButton: React.FC<ProjectId> = ({projectId}) => {
                 </>
               )}
             </div>
-
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>

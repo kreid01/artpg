@@ -3,13 +3,27 @@ export const levels = (projectName: ProjectName) => generateLevels(projectName, 
 
 export type ProjectName = "Engineering" | "Scholar" | "Art" | "Climbing"
 
-const rewardDict: Record<number, string> = {
+const artRewardDict: Record<number, string> = {
     70: "Illustration Series",
     75: "Portfolio Work",
     80: "Art Station",
     85: "Comissions",
     90: "Social Media",
     95: "Mentorship",
+}
+
+const climbingRewardDict: Record<number, string> = {
+  75: "V6",
+  85: "V7",
+  95: "V8",
+  100: "V9",
+}
+
+const getRewardDict = (projectName: string) => {
+  const name =  projectName.toLowerCase()
+  if (name == "art") return artRewardDict
+  if (name == "climbing") return climbingRewardDict;
+  return {}
 }
 
 const TARGET_XP = {
@@ -24,12 +38,14 @@ const generateLevels = (projectName: ProjectName, maxLevel = 100) => {
   const name = projectName.toLowerCase() as keyof typeof TARGET_XP;
   const targetXp = TARGET_XP[name] 
 
+  const rewardDict = getRewardDict(projectName) 
+
   const k = 0.04;
   const a = targetXp / (Math.exp(k * maxLevel) - 1);
 
-  for (let level = 1; level <= maxLevel; level++) {
+  for (let level = 2; level <= maxLevel; level++) {
     const xp = Math.round(a * (Math.exp(k * level) - 1));
-    const reward = projectName.toLowerCase() == "art" ? rewardDict[level] : {}
+    const reward = rewardDict[level] 
     levels.push({ level, xp, reward });
   }
 
@@ -73,12 +89,13 @@ const CLIMBING_CATEGORY_XP_CAPS: Record<string, number> = {
 }
 
 const SCHOLAR_CATEGORY_XP_CAPS: Record<string, number> = {
-  "history":  50000,
-  "mythology & folklore":        50000,
+  "history":  60000,
+  "mythology & folklore":        60000,
   "nature & biology":        30000,
   "philosophy": 25000,
   "chess":               25000,
   "psychology":          20000,
+  "literature": 30000
 }
 
 const ENGINEER_CATEGORY_XP_CAPS: Record<string, number> = {
