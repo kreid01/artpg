@@ -5,9 +5,7 @@ import { LineChart } from "@mui/x-charts/LineChart";
 import { api } from "convex/_generated/api";
 import type { ProjectId } from "./RepChecklist";
 import { FaChartLine } from "react-icons/fa";
-
-const ART_GOAL_XP = 400_000;
-const CLIMBING_GOAL_XP = 150_000
+import { getTargetXp, type ProjectName } from "~/constants/levels";
 
 const getWeekKey = (dateMs: number): string => {
   const d = new Date(dateMs);
@@ -23,9 +21,9 @@ export const XPChartButton: React.FC<ProjectId> = ({projectId}) => {
 
   const projectName = useQuery(api.projects.getProjectById, {
     projectId,
-  })?.name;
+  })?.name as ProjectName;
 
-  const goalXp = projectName?.toLowerCase() == "art" ? ART_GOAL_XP : CLIMBING_GOAL_XP
+  const goalXp = getTargetXp(projectName ?? "art")
 
   const reps = useQuery(api.projects.getAllCompleteReps, open ? {projectId} : "skip");
   const tasks = useQuery(api.projects.getAllTasks, open ? {projectId} : "skip");

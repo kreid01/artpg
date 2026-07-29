@@ -33,11 +33,15 @@ const TARGET_XP = {
   "engineer": 200_000
 }
 
+export const getTargetXp = (projectName: ProjectName) => {
+  const name = projectName?.toLowerCase() as keyof typeof TARGET_XP;
+  return TARGET_XP[name] 
+}
+
 const generateLevels = (projectName: ProjectName, maxLevel = 100) => {
   const levels = [];
-  const name = projectName.toLowerCase() as keyof typeof TARGET_XP;
-  const targetXp = TARGET_XP[name] 
 
+  const targetXp = getTargetXp(projectName)
   const rewardDict = getRewardDict(projectName) 
 
   const k = 0.04;
@@ -93,12 +97,13 @@ const CLIMBING_CATEGORY_XP_CAPS: Record<string, number> = {
 const SCHOLAR_CATEGORY_XP_CAPS: Record<string, number> = {
   "history":  60000,
   "mythology & folklore":        60000,
-  "nature & biology":        30000,
-  "philosophy": 25000,
+  "language": 50000,
+  "nature & biology":        40000,
+  "literature": 35000,
+  "space":               30000,
+  "philosophy":          30000,
+  "psychology":          30000,
   "chess":               25000,
-  "psychology":          20000,
-  "literature": 30000,
-  "language": 50000
 }
 
 const ENGINEER_CATEGORY_XP_CAPS: Record<string, number> = {
