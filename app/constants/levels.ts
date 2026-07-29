@@ -28,7 +28,7 @@ const getRewardDict = (projectName: string) => {
 
 const TARGET_XP = {
   "art": 400_000,
-  "scholar": 300_000,
+  "scholar": 350_000,
   "climbing": 150_000,
   "engineer": 200_000
 }
@@ -95,15 +95,15 @@ const CLIMBING_CATEGORY_XP_CAPS: Record<string, number> = {
 }
 
 const SCHOLAR_CATEGORY_XP_CAPS: Record<string, number> = {
-  "history":  60000,
-  "mythology & folklore":        60000,
-  "language": 50000,
+  "history":  50000,
+  "mythology & folklore":        50000,
+  "language": 40000,
   "nature & biology":        40000,
-  "literature": 35000,
+  "literature": 30000,
   "space":               30000,
-  "philosophy":          30000,
-  "psychology":          30000,
-  "chess":               25000,
+  "philosophy":          20000,
+  "psychology":          20000,
+  "chess":               20000,
 }
 
 const ENGINEER_CATEGORY_XP_CAPS: Record<string, number> = {
