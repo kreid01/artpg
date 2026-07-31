@@ -83,7 +83,7 @@ export const StatChartButton: React.FC<ProjectId> = ({ projectId }) => {
       <Dialog.Root open={open} onOpenChange={setOpen}>
         <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-40 bg-black/70 backdrop-blur-md" />
-          <Dialog.Content className=" fixed left-1/2 top-1/2 z-50 w-[97vw] max-w-6xl -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-[#8d6d2c] bg-linear-to-b from-[#1d232b] via-[#171c22] to-[#101419] text-white shadow-[0_0_50px_rgba(0,0,0,.7)] " >
+          <Dialog.Content className=" fixed left-1/2 top-1/2 z-50 w-[95vw] max-w-6xl -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-[#8d6d2c] bg-linear-to-b from-[#1d232b] via-[#171c22] to-[#101419] text-white shadow-[0_0_50px_rgba(0,0,0,.7)] " >
             <div className="h-0.75 w-full bg-linear-to-r from-[#6d531e] via-[#d4af37] to-[#6d531e]" />
             <div className="flex items-center justify-between border-b border-[#353d47] px-6 py-5">
 
@@ -153,58 +153,6 @@ export const StatChartButton: React.FC<ProjectId> = ({ projectId }) => {
                       })),
                     }}
                   />
-                </div>
-
-                <div
-                  className="
-                    rounded-2xl
-                    border
-                    border-[#3b434f]
-                    bg-[#11161c]
-                    p-6 " >
-                  <div className="mb-5 border-b border-[#353d47] pb-3">
-                    <h3 className="text-lg font-semibold text-white">
-                      Skills 
-                    </h3>
-                  </div>
-
-                  <div className="space-y-5 overflow-scroll h-10 sm:h-40 md:h-100 lg:h-full">
-
-                    {activeCategories.map((cat) => {
-                      const xp = xpByCategory.get(cat._id) ?? 0;
-                      const cap = xpCaps[cat.name.toLowerCase()] ?? 1;
-                      const pct = Math.min( 100, (xp / cap) * 100);
-
-                      const color =
-                        colours[cat.name.toLowerCase()] ??
-                        "#64748b";
-
-                      return (
-                        <div key={cat._id}>
-                          <div className="mb-2 flex items-center justify-between">
-                            <span className="font-medium text-white">
-                              {cat.name}
-                            </span>
-                            <span className="text-sm text-slate-400">
-                              {xp.toLocaleString()} / {cap.toLocaleString()}
-                            </span>
-                          </div>
-
-                          <div className="rounded-full border border-[#4d5663] bg-[#0d1014] p-0.5">
-                            <div className="relative h-4 overflow-hidden rounded-full">
-                             <div className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
-                                style={{
-                                  width: `${pct}%`,
-                                  backgroundColor: color,
-                                }}>
-                                <div className="absolute inset-x-0 top-0 h-1/2 bg-white/10" />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
                 </div>
               </div>
             )}
