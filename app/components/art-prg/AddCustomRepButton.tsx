@@ -162,7 +162,7 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({ projectId }
             </button>
             </div>
 
-            <div className="flex items-center justify-end gap-3 border-t border-[#353d47] px-6 py-5">
+            <div className="flex items-center justify-end gap-3 border-t border-[#353d47] px-6 py-4">
               <Dialog.Close asChild>
                 <CloseButton />
               </Dialog.Close>
@@ -170,7 +170,7 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({ projectId }
               <button
                 onClick={handleSave}
                 disabled={!isValid || saving}
-                className="rounded-lg border border-amber-700 bg-linear-to-b from-[#8d6d2c] to-[#6d531e] px-5 py-2.5 font-semibold text-white transition-all duration-300 hover:brightness-110 hover:shadow-[0_0_12px_rgba(255,190,70,.25)] disabled:cursor-not-allowed disabled:opacity-50" >
+                className="rounded-md h-10 text-md border border-amber-500 bg-linear-to-b from-[#8d6d2c] to-[#6d531e] px-5 py-1 font-semibold text-white transition-all duration-300 hover:brightness-110 hover:shadow-[0_0_12px_rgba(255,190,70,.25)] disabled:cursor-not-allowed disabled:opacity-50" >
                 {saving ? "Creating..." : `Create ${entries.length > 1 ? `${entries.length} Reps` : "Rep"}`}
               </button>
             </div>

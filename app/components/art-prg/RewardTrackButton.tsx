@@ -67,31 +67,28 @@ export const RewardTrackButton:React.FC<ProjectId> = ({projectId}) => {
 
                   return (
                     <tr key={level} className={`transition-all duration-300 ${isCurrent ? "bg-[#2b2315]" : isUnlocked ? "hover:bg-[#1b2027]" : "opacity-50"}`}>
-                      <td className="border-b border-[#2e3742] px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <span className={`flex h-9 w-9 items-center justify-center rounded-full border text-sm font-bold ${isCurrent ? "border-amber-400 bg-[#3a3118] text-amber-300" : isUnlocked ? "border-[#555] bg-[#1d232b] text-white" : "border-[#333] bg-[#12161a] text-slate-500"}`}>
-                            {level}
-                          </span>
-                          {isCurrent && <span className="rounded-full border border-amber-500 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-300">Current</span>}
-                        </div>
+                      <td className="border-b border-[#2e3742] px-6 py-1">
+                        <span className={`flex h-9 w-9 items-center justify-center rounded-full border text-sm font-bold ${isCurrent ? "border-amber-400 bg-[#3a3118] text-amber-300" : isUnlocked ? "border-[#555] bg-[#1d232b] text-white" : "border-[#333] bg-[#12161a] text-slate-500"}`}>
+                          {level}
+                        </span>
                       </td>
 
-                      <td className="border-b border-[#2e3742] px-6 py-4">
-                        <div className="flex items-center gap-3">
+                      <td className="border-b border-[#2e3742] px-6 py-1">
+                        <div className="flex items-center gap-2">
                           <img src={getRankImage(level)} alt={rank} className="h-8 w-8" />
                           <span className={isUnlocked ? "text-slate-300" : "text-slate-600"}>{rank ?? "—"}</span>
                         </div>
                       </td>
 
-                      <td className={`border-b border-[#2e3742] px-6 py-4 font-mono ${isUnlocked ? "text-slate-300" : "text-slate-600"}`}>
+                      <td className={`border-b border-[#2e3742] px-6 py-1 font-mono ${isUnlocked ? "text-slate-300" : "text-slate-600"}`}>
                         {xp.toLocaleString()}
                       </td>
 
-                      <td className="border-b border-[#2e3742] px-6 py-4 font-mono text-slate-400">
+                      <td className="border-b border-[#2e3742] px-6 py-1 font-mono text-slate-400">
                         +{toNext}
                       </td>
 
-                      <td className="border-b border-[#2e3742] px-6 py-4">
+                      <td className="border-b border-[#2e3742] px-6 py-1">
                         {reward ? (
                           <span className="rounded-lg border border-[#3b434f] bg-[#11161c] px-3 py-1 text-xs text-slate-200">
                             {reward}
