@@ -162,7 +162,7 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({ projectId }
             </button>
             </div>
 
-            <div className="flex items-center justify-end gap-3 border-t border-[#353d47] px-6 py-4">
+            <div className="flex items-center -mb-6 justify-end gap-3 border-t border-[#353d47] px-6 py-4">
               <Dialog.Close asChild>
                 <CloseButton />
               </Dialog.Close>

@@ -115,10 +115,10 @@ export const XPChartButton: React.FC<ProjectId> = ({projectId}) => {
       <>
       <div className="mb-6 grid gap-4 grid-cols-3">
         <div className="rounded-xl border border-[#3b434f] bg-[#11161c] p-4">
-          <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500">
+          <p className="text-[8px] md:text-[10px] uppercase tracking-[0.25em] text-slate-500">
             Weekly Average
           </p>
-          <p className="mt-2 text-xl font-bold text-cyan-300">
+          <p className="mt-2 text-md md:text-xl font-bold text-cyan-300">
             {avgXp.toLocaleString()}
           </p>
           <p className="mt-1 text-xs text-slate-500">
@@ -128,11 +128,11 @@ export const XPChartButton: React.FC<ProjectId> = ({projectId}) => {
 
         <div className="rounded-xl border border-[#3b434f] bg-[#11161c] p-4">
 
-          <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500">
+          <p className="text-[8px] md:text-[10px] uppercase tracking-[0.25em] text-slate-500">
             Estimated Finish
           </p>
 
-          <p className="mt-2 text-xl font-bold text-amber-400">
+          <p className="mt-2 text-md md:text-xl font-bold text-amber-400">
             {weeksToGoal === Infinity
               ? "∞"
               : weeksToGoal.toLocaleString()}
@@ -146,11 +146,11 @@ export const XPChartButton: React.FC<ProjectId> = ({projectId}) => {
 
         <div className="rounded-xl border border-[#3b434f] bg-[#11161c] p-4">
 
-          <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500">
+          <p className="text-[8px] md:text-[10px] uppercase tracking-[0.25em] text-slate-500">
             Target XP
           </p>
 
-          <p className="mt-2 text-xl font-bold text-white">
+          <p className="mt-2 text-md md:text-xl font-bold text-white">
             {goalXp.toLocaleString()}
           </p>
 

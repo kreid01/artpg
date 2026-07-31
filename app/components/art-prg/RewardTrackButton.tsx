@@ -48,7 +48,7 @@ export const RewardTrackButton:React.FC<ProjectId> = ({projectId}) => {
             </div>
           </div>
           <div className="flex-1 overflow-y-auto">
-            <table className="w-full border-separate border-spacing-0">
+            <table className="border-separate border-spacing-0 w-[100vw]">
               <thead className="sticky top-0 z-10 bg-[#171c22]">
                 <tr className="border-b border-[#353d47]">
                   <th className="px-6 py-4 text-left text-xs uppercase tracking-[0.25em] text-amber-500">Level</th>
