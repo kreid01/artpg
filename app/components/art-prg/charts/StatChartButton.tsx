@@ -4,12 +4,12 @@ import { RadarChart } from "@mui/x-charts/RadarChart";
 import * as Dialog from "@radix-ui/react-dialog";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
-import type { ProjectId } from "./RepChecklist";
 import { getCategoryColours } from "~/constants/colours";
 import { getXpCaps } from "~/constants/levels";
 import { FaBullseye } from "react-icons/fa6";
 import type { ProjectName } from "~/constants/levels";
-import { ProjectButton } from "~/routes/home";
+import { ProjectButton, type ProjectId } from "~/routes/home";
+import { CloseButton } from "../utils/CloseButton";
 
 export const StatChartButton: React.FC<ProjectId> = ({ projectId }) => {
   const [open, setOpen] = useState(false);
@@ -122,25 +122,7 @@ export const StatChartButton: React.FC<ProjectId> = ({ projectId }) => {
 
               <div className="flex items-center gap-5">
                 <Dialog.Close asChild>
-                  <button
-                    className="
-                      rounded-lg
-                      border
-                      border-[#8d6d2c]
-                      bg-linear-to-b
-                      from-[#2b2315]
-                      to-[#17130d]
-                      px-5
-                      py-2.5
-                      font-semibold
-                      text-amber-300
-                      transition-all
-                      duration-300
-                      hover:border-amber-400
-                      hover:text-white
-                      hover:shadow-[0_0_12px_rgba(255,190,70,.25)] " >
-                    Dismiss
-                  </button>
+                  <CloseButton/>
                 </Dialog.Close>
               </div>
             </div>

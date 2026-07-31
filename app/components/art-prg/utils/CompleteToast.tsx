@@ -16,25 +16,7 @@ export const CompleteToast: React.FC<ToastProps> = ({
       <Toast.Root
         open={openToast}
         onOpenChange={setOpenToast}
-        className="
-    fixed
-    bottom-6
-    right-6
-    w-85
-    overflow-hidden
-    rounded-xl
-    border
-    border-[#8d6d2c]
-    bg-linear-to-b
-    from-[#1b2027]
-    via-[#171c22]
-    to-[#101419]
-    shadow-[0_0_30px_rgba(0,0,0,.6)]
-    animate-in
-    slide-in-from-right
-    duration-300
-  "
-      >
+        className=" fixed bottom-6 right-6 w-85 overflow-hidden rounded-xl border border-[#8d6d2c] bg-linear-to-b from-[#1b2027] via-[#171c22] to-[#101419] shadow-[0_0_30px_rgba(0,0,0,.6)] animate-in slide-in-from-right duration-300 " >
         <div className="h-1 w-full bg-linear-to-r from-amber-700 via-yellow-400 to-amber-700" />
         <div className="flex items-start gap-4 p-4">
           <div className="flex-1">
@@ -55,20 +37,7 @@ export const CompleteToast: React.FC<ToastProps> = ({
         </div>
       </Toast.Root>
 
-      <Toast.Viewport
-        className="
-    fixed
-    bottom-0
-    right-0
-    z-50
-    flex
-    w-90
-    max-w-full
-    flex-col
-    gap-3
-    p-6
-  "
-      />
+      <Toast.Viewport className=" fixed bottom-0 right-0 z-50 flex w-90 max-w-full flex-col gap-3 p-6 " />
     </>
   );
 };

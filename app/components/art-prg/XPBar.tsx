@@ -1,8 +1,8 @@
 import { api } from "convex/_generated/api";
 import { useQuery } from "convex/react";
-import { Loader } from "./Loader";
+import { Loader } from "./utils/Loader";
 import { getRankImage, levels, type ProjectName } from "~/constants/levels";
-import type { ProjectId } from "./RepChecklist";
+import type { ProjectId } from "~/routes/home";
 
 export const XPBar: React.FC<ProjectId> = ({projectId}) => {
   const reps = useQuery(api.projects.getAllCompleteReps, {projectId});

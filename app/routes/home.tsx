@@ -3,13 +3,8 @@ import { api } from "../../convex/_generated/api";
 import { CategoryTaskTree } from "~/components/art-prg/CategoryTasks";
 import { SignIn, useUser } from "@clerk/react-router";
 import { XPBar } from "~/components/art-prg/XPBar";
-import { Loader } from "~/components/art-prg/Loader";
-import { AddCustomRepButton } from "~/components/art-prg/AddCustomRepButton";
-import { RewardTrackButton } from "~/components/art-prg/RewardTrackButton";
-import { StatChartButton } from "~/components/art-prg/StatChartButton";
-import { XPChartButton } from "~/components/art-prg/XPChartButton";
+import { Loader } from "~/components/art-prg/utils/Loader";
 import { GroupRepChecklist } from "~/components/art-prg/GroupRepChecklist";
-import { AddJournalEntryButton } from "~/components/art-prg/JournalEntryButton";
 import { useState } from "react";
 import type { Id } from "../../convex/_generated/dataModel";
 import {
@@ -18,6 +13,10 @@ import {
   FaLaptopCode
 } from "react-icons/fa";
 import { GiMountainClimbing } from "react-icons/gi";
+
+export interface ProjectId {
+  projectId: Id<'projects'>
+}
 
 export default function Home() {
   const { isLoaded, isSignedIn } = useUser();
@@ -66,14 +65,8 @@ export default function Home() {
       <XPBar projectId={projectId} />
 
       <div className="mx-5 mt-32 mb-5 justify-between text-white md:flex lg:mx-40">
-        <div className="mt-2 flex w-full justify-between md:mt-0">
-          <div className="flex gap-2">
-            {/* <AddJournalEntryButton /> */}
-            <AddCustomRepButton projectId={projectId} />
-            <XPChartButton projectId={projectId} />
-            <StatChartButton projectId={projectId} />
-            <RewardTrackButton projectId={projectId} />
-          </div>
+        <div className="mt-2 flex w-full justify-between">
+          <BurgerMenu projectId={projectId}/>
 
           <div className="flex gap-3">
             <div className="flex gap-2">
@@ -124,6 +117,7 @@ export default function Home() {
 }
 
 import clsx from "clsx";
+import { BurgerMenu } from "~/components/art-prg/utils/BurgerMenu";
 
 type ProjectButtonProps = {
   icon: React.ReactNode;
@@ -140,7 +134,7 @@ export function ProjectButton({
     <button
       onClick={onClick}
       className={clsx(
-        "group relative overflow-hidden rounded-xl border px-3 py-2 transition-all duration-300",
+        "group relative overflow-hidden rounded-xl border px-4 py-2 transition-all duration-300",
         "bg-linear-to-b from-[#1b2027] via-[#171c22] to-[#111418]",
         active
           ? "border-amber-400 shadow-[0_0_18px_rgba(255,190,70,.35)]"

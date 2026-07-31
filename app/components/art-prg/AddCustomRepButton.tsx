@@ -5,6 +5,7 @@ import * as Select from "@radix-ui/react-select";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
 import { ProjectButton } from "~/routes/home";
+import { CloseButton } from "./utils/CloseButton";
 
 interface CustomRepButtonProps {
   projectId: Id<"projects">;
@@ -77,46 +78,55 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({ projectId }
 
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40" />
-        <Dialog.Content className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-950 rounded-2xl shadow-xl p-6 w-full md:w-[50vw] max-h-[80vh] flex flex-col">
-          <Dialog.Title className="text-lg font-semibold text-white mb-1">
-            Add Custom Grouped Reps
-          </Dialog.Title>
+      <Dialog.Content className="fixed left-1/2 top-1/2 z-50 flex max-h-[85vh] w-[95vw] max-w-4xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-[#8d6d2c] bg-gradient-to-b from-[#1d232b] via-[#171c22] to-[#101419] text-white shadow-[0_0_50px_rgba(0,0,0,.7)]">
 
-          <div className="mb-4">
-            <label className="block text-xs text-slate-500 font-medium uppercase tracking-wide mb-1">Name</label>
+        <div className="h-0.75 w-full bg-linear-to-r from-[#6d531e] via-[#d4af37] to-[#6d531e]" />
+        <div className="flex items-center justify-between border-b border-[#353d47] px-6 py-5">
+          <div className="flex items-center gap-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full border border-amber-700 bg-[#2b2315] text-2xl font-bold text-amber-300">
+              +
+            </div>
+
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-amber-500">Quest Editor</p>
+              <Dialog.Title className="text-2xl font-bold text-white">Create Custom Quest</Dialog.Title>
+              <p className="mt-1 text-sm text-slate-400">Create one or more custom XP rewards.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-6">
+          <div className="mb-6">
+            <label className="mb-2 block text-[10px] uppercase tracking-[0.25em] text-amber-500">Quest Name</label>
             <input
-              className="w-full border border-slate-700 text-white bg-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full rounded-xl border border-[#3b434f] bg-[#11161c] px-4 py-3 text-sm text-white placeholder:text-slate-600 transition-colors focus:border-amber-400 focus:outline-none"
               placeholder="e.g. Anatomy Study"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </div>
 
-          <div className="flex-1 overflow-y-auto space-y-2 pr-1 mb-4">
-            <div className="grid grid-cols-[1fr_1fr_32px] gap-2 px-1">
-              <span className="text-xs text-slate-500 font-medium uppercase tracking-wide">Category</span>
-              <span className="text-xs text-slate-500 font-medium uppercase tracking-wide">XP</span>
-              <span />
-            </div>
+          <div className="mb-3 grid grid-cols-[1fr_110px_36px] gap-3 px-1">
+            <span className="text-[10px] uppercase tracking-[0.25em] text-amber-500">Category</span>
+            <span className="text-[10px] uppercase tracking-[0.25em] text-amber-500">XP</span>
+            <span />
+          </div>
 
-            {entries.map((entry, idx) => (
-                <div key={entry.id} className="grid grid-cols-[1fr_100px_32px] gap-2 items-center">
-                  <Select.Root
-                    value={entry.categoryId}
-                    onValueChange={(val: any) => updateEntry(entry.id, "categoryId", val)} >
-                  <Select.Trigger className="w-full flex items-center justify-between border border-slate-700 text-white rounded-lg px-3 py-2 text-sm bg-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                    <Select.Value placeholder="Select…" />
-                    <Select.Icon className="ml-2 text-slate-400 text-xs">▾</Select.Icon>
+          <div className="space-y-3">
+           {entries.map((entry) => (
+              <div key={entry.id} className="grid grid-cols-[1fr_110px_40px] items-center gap-3 rounded-xl border border-[#3b434f] bg-[#11161c] p-3">
+
+                <Select.Root value={entry.categoryId} onValueChange={(val: any) => updateEntry(entry.id, "categoryId", val)}>
+                  <Select.Trigger className="flex w-full items-center justify-between rounded-lg border border-[#4b5563] bg-[#161c23] px-3 py-2.5 text-sm text-white transition-colors hover:border-amber-500 focus:border-amber-400 focus:outline-none">
+                    <Select.Value placeholder="Select category..." />
+                    <Select.Icon className="text-slate-400">▾</Select.Icon>
                   </Select.Trigger>
+
                   <Select.Portal>
-                    <Select.Content className="z-50 text-white bg-slate-900 border border-slate-700 rounded-lg shadow-lg overflow-hidden">
-                      <Select.Viewport className="p-1">
+                    <Select.Content className="z-50 overflow-hidden rounded-xl border border-[#8d6d2c] bg-[#171c22] shadow-[0_10px_30px_rgba(0,0,0,.6)]">
+                      <Select.Viewport className="p-2">
                         {categories?.map((cat) => (
-                          <Select.Item
-                            key={cat._id}
-                            value={cat._id}
-                            className="flex items-center px-3 py-2 text-sm rounded-md cursor-pointer hover:bg-slate-700 focus:bg-emerald-700 outline-none"
-                          >
+                          <Select.Item key={cat._id} value={cat._id} className="cursor-pointer rounded-lg px-3 py-2 text-sm text-slate-200 outline-none transition-colors hover:bg-[#2b2315] hover:text-amber-300 focus:bg-[#2b2315] focus:text-amber-300">
                             <Select.ItemText>{cat.name}</Select.ItemText>
                           </Select.Item>
                         ))}
@@ -128,41 +138,39 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({ projectId }
                 <input
                   type="number"
                   min={1}
-                  className="w-full border border-slate-700 text-white bg-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   value={entry.xpValue}
                   onChange={(e) => updateEntry(entry.id, "xpValue", Number(e.target.value))}
+                  className="w-full rounded-lg border border-[#4b5563] bg-[#161c23] px-3 py-2.5 text-center text-white transition-colors focus:border-amber-400 focus:outline-none"
                 />
 
                 <button
                   onClick={() => removeEntry(entry.id)}
                   disabled={entries.length === 1}
-                  className="flex items-center justify-center w-8 h-8 rounded-lg text-slate-500 hover:text-red-400 hover:bg-slate-800 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
                   aria-label="Remove row"
-                >
+                  className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#4b5563] bg-[#161c23] text-slate-500 transition-all duration-300 hover:border-red-500 hover:bg-red-900/20 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-30" >
                   ✕
                 </button>
+
               </div>
             ))}
 
             <button
               onClick={addEntry}
-              className="mt-1 flex items-center gap-1.5 text-sm text-emerald-500 hover:text-emerald-400 transition-colors px-1" >
-              <span className="text-base leading-none">+</span> Add another
+              className="mt-4 flex w-full items-center justify-center rounded-xl border border-dashed border-amber-700 bg-[#11161c] py-3 font-medium text-amber-400 transition-all duration-300 hover:border-amber-400 hover:bg-[#2b2315] hover:shadow-[0_0_12px_rgba(255,190,70,.15)]" >
+              + Add Another Category
             </button>
-          </div>
+            </div>
 
-          <div className="flex items-center justify-between pt-3 border-t border-slate-800">
-            <div className="flex gap-2">
+            <div className="flex items-center justify-end gap-3 border-t border-[#353d47] px-6 py-5">
               <Dialog.Close asChild>
-                <button className="px-3 py-1.5 rounded-lg border border-slate-700 text-sm text-slate-300 hover:bg-slate-800 transition-colors">
-                  Cancel
-                </button>
+                <CloseButton />
               </Dialog.Close>
+
               <button
                 onClick={handleSave}
                 disabled={!isValid || saving}
-                className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors" >
-                {saving ? "Creating…" : `Create ${entries.length > 1 ? `${entries.length} reps` : "rep"}`}
+                className="rounded-lg border border-amber-700 bg-linear-to-b from-[#8d6d2c] to-[#6d531e] px-5 py-2.5 font-semibold text-white transition-all duration-300 hover:brightness-110 hover:shadow-[0_0_12px_rgba(255,190,70,.25)] disabled:cursor-not-allowed disabled:opacity-50" >
+                {saving ? "Creating..." : `Create ${entries.length > 1 ? `${entries.length} Reps` : "Rep"}`}
               </button>
             </div>
           </div>

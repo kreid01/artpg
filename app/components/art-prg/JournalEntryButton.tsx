@@ -4,6 +4,7 @@ import { useMutation } from "convex/react";
 import { api } from "convex/_generated/api";
 import { FaBookOpen } from "react-icons/fa6";
 import { ProjectButton } from "~/routes/home";
+import { CloseButton } from "./utils/CloseButton";
 
 export const AddJournalEntryButton: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -57,71 +58,51 @@ export const AddJournalEntryButton: React.FC = () => {
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40" />
 
-        <Dialog.Content className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-950 rounded-2xl shadow-xl p-6 w-full max-w-xl flex flex-col">
-          <Dialog.Title className="text-lg font-semibold text-white mb-5">
-            Daily Journal
-          </Dialog.Title>
-
-          <div className="space-y-5">
-            <div>
-              <label className="block text-xs text-slate-500 font-medium uppercase tracking-wide mb-2">
-                Wins
-              </label>
-
-              <textarea
-                rows={4}
-                value={wins}
-                onChange={(e) => setWins(e.target.value)}
-                placeholder="What went well this week?"
-                className="w-full border border-slate-700 text-white bg-slate-900 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              />
+          <Dialog.Content className="fixed left-1/2 top-1/2 z-50 flex w-[95vw] max-w-3xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-[#8d6d2c] bg-gradient-to-b from-[#1d232b] via-[#171c22] to-[#101419] text-white shadow-[0_0_50px_rgba(0,0,0,.7)]">
+            <div className="h-0.75 w-full bg-linear-to-r from-[#6d531e] via-[#d4af37] to-[#6d531e]" />
+            <div className="flex items-center justify-between border-b border-[#353d47] px-6 py-5">
+              <div className="flex items-center gap-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full border border-amber-700 bg-[#2b2315] text-2xl text-amber-300">
+                  <FaBookOpen />
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-amber-500">Journal</p>
+                  <Dialog.Title className="text-2xl font-bold text-white">Daily Reflection</Dialog.Title>
+                </div>
+              </div>
             </div>
 
-            <div>
-              <label className="block text-xs text-slate-500 font-medium uppercase tracking-wide mb-2">
-                What could improve?
-              </label>
+            <div className="space-y-6 p-6">
+              <div>
+                <label className="mb-2 block text-[10px] uppercase tracking-[0.25em] text-amber-500">Wins</label>
+                <textarea rows={4} value={wins} onChange={(e) => setWins(e.target.value)} placeholder="What went well today?" className="w-full rounded-xl border border-[#3b434f] bg-[#11161c] px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:border-amber-400 focus:outline-none" />
+              </div>
 
-              <textarea
-                rows={4}
-                value={toImprove}
-                onChange={(e) => setToImprove(e.target.value)}
-                placeholder="What could have gone better?"
-                className="w-full border border-slate-700 text-white bg-slate-900 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              />
+              <div>
+                <label className="mb-2 block text-[10px] uppercase tracking-[0.25em] text-amber-500">Areas To Improve</label>
+                <textarea rows={4} value={toImprove} onChange={(e) => setToImprove(e.target.value)} placeholder="What could have gone better?" className="w-full rounded-xl border border-[#3b434f] bg-[#11161c] px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:border-amber-400 focus:outline-none" />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-[10px] uppercase tracking-[0.25em] text-amber-500">Next Focus</label>
+                <textarea rows={3} value={focus} onChange={(e) => setFocus(e.target.value)} placeholder="What is tomorrow's main objective?" className="w-full rounded-xl border border-[#3b434f] bg-[#11161c] px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:border-amber-400 focus:outline-none" />
+              </div>
             </div>
 
-            <div>
-              <label className="block text-xs text-slate-500 font-medium uppercase tracking-wide mb-2">
-                Next Weeks Focus
-              </label>
+            <div className="flex items-center justify-end gap-3 border-t border-[#353d47] px-6 py-5">
+              <Dialog.Close asChild>
+                <CloseButton />
+              </Dialog.Close>
 
-              <textarea
-                rows={3}
-                value={focus}
-                onChange={(e) => setFocus(e.target.value)}
-                placeholder="What's the main thing to focus on next week?"
-                className="w-full border border-slate-700 text-white bg-slate-900 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between pt-5 mt-5 border-t border-slate-800">
-            <Dialog.Close asChild>
-              <button className="px-3 py-1.5 rounded-lg border border-slate-700 text-sm text-slate-300 hover:bg-slate-800 transition-colors">
-                Cancel
+              <button
+                onClick={handleSave}
+                disabled={!isValid || saving}
+                className="rounded-lg border border-amber-700 bg-linear-to-b from-[#8d6d2c] to-[#6d531e] px-5 py-2.5 font-semibold text-white transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {saving ? "Saving..." : "Save Entry"}
               </button>
-            </Dialog.Close>
-
-            <button
-              onClick={handleSave}
-              disabled={!isValid || saving}
-              className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {saving ? "Saving..." : "Save Entry"}
-            </button>
-          </div>
-        </Dialog.Content>
+            </div>
+          </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
   );
