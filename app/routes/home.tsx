@@ -99,7 +99,7 @@ export default function Home() {
       </div>
 
       <div className="mx-5 gap-5 lg:mx-40 lg:flex">
-        <div className="lg:w-[30%]">
+        <div className="lg:w-[30%] mb-2">
           <GroupRepChecklist projectId={projectId} />
         </div>
 
