@@ -4,12 +4,11 @@ export const levels = (projectName: ProjectName) => generateLevels(projectName, 
 export type ProjectName = "Engineering" | "Scholar" | "Art" | "Climbing"
 
 const artRewardDict: Record<number, string> = {
-    70: "Illustration Series",
-    75: "Portfolio Work",
-    80: "Art Station",
-    85: "Comissions",
-    90: "Social Media",
+    70: "Intermediate",
+    80: "Portfolio Work",
+    90: "Comissions",
     95: "Mentorship",
+    100: "Job Ready"
 }
 
 const climbingRewardDict: Record<number, string> = {
@@ -28,9 +27,9 @@ const getRewardDict = (projectName: string) => {
 
 const TARGET_XP = {
   "art": 400_000,
-  "scholar": 350_000,
+  "scholar": 300_000,
+  "engineer": 200_000,
   "climbing": 150_000,
-  "engineer": 200_000
 }
 
 export const getTargetXp = (projectName: ProjectName) => {
