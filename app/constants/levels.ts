@@ -38,12 +38,12 @@ const rankDict: Record<number, string> = {
   89: "Diamond I",
 
   90: "Master",
-  94: "Grandmaster",
+  95: "Grandmaster",
   98: "Challenger",
 };
 
 export function getRankImage(level: number): string {
-  if (level >= 100) return "/ranks/challenger.png";
+  if (level >= 98) return "/ranks/challenger.png";
   if (level >= 95) return "/ranks/grandmaster.png";
   if (level >= 90) return "/ranks/master.png";
   if (level >= 86) return "/ranks/diamond.png";
