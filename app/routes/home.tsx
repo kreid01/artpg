@@ -68,7 +68,7 @@ export default function Home() {
       <div className="mx-5 mt-32 mb-5 justify-between text-white md:flex lg:mx-40">
         <div className="mt-2 flex w-full justify-between md:mt-0">
           <div className="flex gap-2">
-            <AddJournalEntryButton />
+            {/* <AddJournalEntryButton /> */}
             <AddCustomRepButton projectId={projectId} />
             <XPChartButton projectId={projectId} />
             <StatChartButton projectId={projectId} />
@@ -106,7 +106,7 @@ export default function Home() {
       </div>
 
       <div className="mx-5 gap-5 lg:mx-40 lg:flex">
-        <div className="mb-10 lg:mb-0 lg:w-[30%]">
+        <div className="lg:w-[30%]">
           <GroupRepChecklist projectId={projectId} />
         </div>
 
