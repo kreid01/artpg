@@ -83,29 +83,7 @@ export const StatChartButton: React.FC<ProjectId> = ({ projectId }) => {
       <Dialog.Root open={open} onOpenChange={setOpen}>
         <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-40 bg-black/70 backdrop-blur-md" />
-          <Dialog.Content
-            className="
-              fixed
-              left-1/2
-              top-1/2
-              z-50
-              w-[95vw]
-              max-w-6xl
-              -translate-x-1/2
-              -translate-y-1/2
-              overflow-hidden
-              rounded-2xl
-              border
-              border-[#8d6d2c]
-              bg-linear-to-b
-              from-[#1d232b]
-              via-[#171c22]
-              to-[#101419]
-              text-white
-              shadow-[0_0_50px_rgba(0,0,0,.7)]
-            "
-          >
-
+          <Dialog.Content className=" fixed left-1/2 top-1/2 z-50 w-[97vw] max-w-6xl -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-[#8d6d2c] bg-linear-to-b from-[#1d232b] via-[#171c22] to-[#101419] text-white shadow-[0_0_50px_rgba(0,0,0,.7)] " >
             <div className="h-0.75 w-full bg-linear-to-r from-[#6d531e] via-[#d4af37] to-[#6d531e]" />
             <div className="flex items-center justify-between border-b border-[#353d47] px-6 py-5">
 
@@ -127,7 +105,7 @@ export const StatChartButton: React.FC<ProjectId> = ({ projectId }) => {
               </div>
             </div>
 
-            <div className="px-6 pb-6 mt-4">
+            <div className="px-2 pb-6 mt-4">
             {isLoading ? (
               <div className="flex h-125 items-center justify-center text-slate-400">
                 Loading mastery...
@@ -154,7 +132,7 @@ export const StatChartButton: React.FC<ProjectId> = ({ projectId }) => {
                   </div>
 
                   <RadarChart
-                    height={340}
+                    height={300}
                     series={[
                       {
                         label: "Mastery",
@@ -190,7 +168,7 @@ export const StatChartButton: React.FC<ProjectId> = ({ projectId }) => {
                     </h3>
                   </div>
 
-                  <div className="space-y-5">
+                  <div className="space-y-5 overflow-scroll h-10 sm:h-40 md:h-100 lg:h-full">
 
                     {activeCategories.map((cat) => {
                       const xp = xpByCategory.get(cat._id) ?? 0;

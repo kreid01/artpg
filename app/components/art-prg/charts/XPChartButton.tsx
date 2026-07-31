@@ -82,7 +82,7 @@ export const XPChartButton: React.FC<ProjectId> = ({projectId}) => {
         <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40" />
         <Dialog.Content className=" fixed left-1/2 top-1/2 z-50 w-[98vw] max-w-6xl -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-[#8d6d2c] bg-linear-to-b from-[#1d232b] via-[#171c22] to-[#101419] text-white shadow-[0_0_50px_rgba(0,0,0,.7)] ">
           <div className="h-0.75 w-full bg-linear-to-r from-[#6d531e] via-[#d4af37] to-[#6d531e]" />
-          <div className="flex items-center justify-between border-b border-[#353d47] px-2 py-5">
+          <div className="flex items-center justify-between border-b border-[#353d47] px-6 py-5">
 
             <div className="flex items-center gap-4">
               <div>
