@@ -48,14 +48,13 @@ export const RewardTrackButton:React.FC<ProjectId> = ({projectId}) => {
             </div>
           </div>
           <div className="flex-1 overflow-y-auto">
-            <table className="border-separate border-spacing-0 w-[100vw]">
+            <table className="w-full border-separate border-spacing-0">
               <thead className="sticky top-0 z-10 bg-[#171c22]">
                 <tr className="border-b border-[#353d47]">
-                  <th className="px-6 py-4 text-left text-xs uppercase tracking-[0.25em] text-amber-500">Level</th>
-                  <th className="px-6 py-4 text-left text-xs uppercase tracking-[0.25em] text-amber-500">Rank</th>
-                  <th className="px-6 py-4 text-left text-xs uppercase tracking-[0.25em] text-amber-500">XP Required</th>
-                  <th className="px-6 py-4 text-left text-xs uppercase tracking-[0.25em] text-amber-500">To Next</th>
-                  <th className="px-6 py-4 text-left text-xs uppercase tracking-[0.25em] text-amber-500">Reward</th>
+                  <th className="px-3 py-3 text-left text-[10px] uppercase tracking-[0.25em] text-amber-500">Level</th>
+                  <th className="px-3 py-3 text-left text-[10px] uppercase tracking-[0.25em] text-amber-500">Rank</th>
+                  <th className="px-3 py-3 text-left text-[10px] uppercase tracking-[0.25em] text-amber-500">Required</th>
+                  <th className="px-3 py-3 text-left text-[10px] uppercase tracking-[0.25em] text-amber-500">Reward</th>
                 </tr>
               </thead>
                 <tbody>
@@ -66,31 +65,25 @@ export const RewardTrackButton:React.FC<ProjectId> = ({projectId}) => {
                   const isUnlocked = totalXp >= xp;
 
                   return (
-                    <tr key={level} className={`transition-all duration-300 ${isCurrent ? "bg-[#2b2315]" : isUnlocked ? "hover:bg-[#1b2027]" : "opacity-50"}`}>
-                      <td className="border-b border-[#2e3742] px-6 py-1">
-                        <span className={`flex h-9 w-9 items-center justify-center rounded-full border text-sm font-bold ${isCurrent ? "border-amber-400 bg-[#3a3118] text-amber-300" : isUnlocked ? "border-[#555] bg-[#1d232b] text-white" : "border-[#333] bg-[#12161a] text-slate-500"}`}>
-                          {level}
-                        </span>
+                    <tr key={level} className={`w-5 transition-all duration-300 ${isCurrent ? "bg-[#2b2315]" : isUnlocked ? "hover:bg-[#1b2027]" : "opacity-50"}`}>
+                      <td className="border-b border-[#2e3742] text-[10px] px-3 py-3">
+                        {level}
                       </td>
 
-                      <td className="border-b border-[#2e3742] px-6 py-1">
+                      <td className="border-b border-[#2e3742] text-[10px] px-3 py-3">
                         <div className="flex items-center gap-2">
                           <img src={getRankImage(level)} alt={rank} className="h-8 w-8" />
                           <span className={isUnlocked ? "text-slate-300" : "text-slate-600"}>{rank ?? "—"}</span>
                         </div>
                       </td>
 
-                      <td className={`border-b border-[#2e3742] px-6 py-1 font-mono ${isUnlocked ? "text-slate-300" : "text-slate-600"}`}>
+                      <td className={`border-b border-[#2e3742] text-[10px] px-3 py-3 font-mono ${isUnlocked ? "text-slate-300" : "text-slate-600"}`}>
                         {xp.toLocaleString()}
                       </td>
 
-                      <td className="border-b border-[#2e3742] px-6 py-1 font-mono text-slate-400">
-                        +{toNext}
-                      </td>
-
-                      <td className="border-b border-[#2e3742] px-6 py-1">
+                      <td className="border-b border-[#2e3742] text-[10px] px-3 py-3">
                         {reward ? (
-                          <span className="rounded-lg border border-[#3b434f] bg-[#11161c] px-3 py-1 text-xs text-slate-200">
+                          <span className="text-slate-200">
                             {reward}
                           </span>
                         ) : (
