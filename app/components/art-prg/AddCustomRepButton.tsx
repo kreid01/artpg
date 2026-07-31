@@ -4,6 +4,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import * as Select from "@radix-ui/react-select";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
+import { ProjectButton } from "~/routes/home";
 
 interface CustomRepButtonProps {
   projectId: Id<"projects">;
@@ -71,9 +72,7 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({ projectId }
   return (
     <Dialog.Root open={open} onOpenChange={handleClose}>
       <Dialog.Trigger asChild>
-        <button className="px-2 py-1 rounded bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">
-          +
-        </button>
+        <ProjectButton icon={<span>+</span>}/>
       </Dialog.Trigger>
 
       <Dialog.Portal>

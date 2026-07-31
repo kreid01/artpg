@@ -6,6 +6,7 @@ import { api } from "convex/_generated/api";
 import type { ProjectId } from "./RepChecklist";
 import { FaChartLine } from "react-icons/fa";
 import { getTargetXp, type ProjectName } from "~/constants/levels";
+import { ProjectButton } from "~/routes/home";
 
 const getWeekKey = (dateMs: number): string => {
   const d = new Date(dateMs);
@@ -74,9 +75,7 @@ export const XPChartButton: React.FC<ProjectId> = ({projectId}) => {
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        <button className="px-2 py-1 rounded bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">
-          <FaChartLine />
-        </button>
+        <ProjectButton icon={<FaChartLine/>}/>
       </Dialog.Trigger>
 
       <Dialog.Portal>

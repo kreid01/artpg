@@ -1,7 +1,7 @@
 import { api } from "convex/_generated/api";
 import { useQuery } from "convex/react";
 import { Loader } from "./Loader";
-import { levels, type ProjectName } from "~/constants/levels";
+import { getRankImage, levels, type ProjectName } from "~/constants/levels";
 import type { ProjectId } from "./RepChecklist";
 
 export const XPBar: React.FC<ProjectId> = ({projectId}) => {
@@ -35,45 +35,61 @@ export const XPBar: React.FC<ProjectId> = ({projectId}) => {
   const xpIntoLevel = totalXp - currentLevel.xp;
   const xpNeeded = nextLevel ? nextLevel.xp - currentLevel.xp : 1;
   const pct = nextLevel ? Math.min(100, Math.round((xpIntoLevel / xpNeeded) * 100)) : 100;
+return (
+  <div className="fixed top-0 left-0 right-0 z-50 border-b border-[#5c4a1f] bg-gradient-to-b from-[#14181d] to-[#0c0f13] px-6 py-3 shadow-lg">
+    <div className="mb-3 flex items-center justify-between">
 
-  return (
-  <div className="fixed bg-slate-950 top-0 left-0 right-0 z-50 border-b px-6 py-3">
-    <div className="flex justify-between items-center mb-2 text-sm">
-      <span className="font-medium text-gray-100">
-        Level {currentLevel.level}
-      </span>
+      <div>
+        <p className="text-xs uppercase tracking-widest text-amber-500">
+          Rank
+        </p>
+        <p className="text-xl font-bold text-white">
+          Level {currentLevel.level}
+        </p>
+      </div>
 
-      <span className="text-gray-100">
-        {nextLevel
-          ? `${xpIntoLevel.toLocaleString()} / ${xpNeeded.toLocaleString()} XP`
-          : "Max level!"}
-      </span>
+      <img
+        src={getRankImage(currentLevel.level)}
+        alt="Rank"
+        className="h-20 w-20 drop-shadow-[0_0_10px_rgba(255,215,120,.35)]"
+      />
 
-      <span className="text-gray-100">
-        {totalXp.toLocaleString()} total XP
-      </span>
+      <div className="text-right">
+        <p className="text-sm text-slate-300">
+          {nextLevel
+            ? `${xpIntoLevel.toLocaleString()} / ${xpNeeded.toLocaleString()} XP`
+            : "MAX LEVEL"}
+        </p>
+
+        <p className="text-xs text-slate-500">
+          {totalXp.toLocaleString()} XP
+        </p>
+      </div>
+
     </div>
 
-    <div className="relative h-6 bg-slate-950 border-2 rounded-full overflow-hidden">
+    <div className="relative h-5 overflow-hidden rounded-full border border-[#92753a] bg-[#1a1f24] shadow-inner">
+
       <div
-        className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+        className="absolute inset-y-0 left-0 rounded-full
+                   bg-linear-to-r
+                   from-cyan-700
+                   via-cyan-400
+                   to-cyan-300
+                   transition-all duration-700"
         style={{ width: `${pct}%` }}
-      />
-      <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-white drop-shadow-sm">
+      >
+
+        <div className="h-1/2 w-full bg-white/20" />
+      </div>
+
+      <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-white/5 to-transparent" />
+
+      <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold tracking-wide text-white">
         {pct}%
       </span>
-    </div>
 
-    {latestFocus && projectId.toLowerCase() == "art" && (
-      <div className="mt-3 flex justify-between rounded-lg border border-slate-800 bg-slate-900 px-3 py-2">
-        <div className="text-xs uppercase tracking-wide text-slate-500 mb-1">
-          Focus
-        </div>
-        <div className="text-sm text-slate-100">
-          {latestFocus}
-        </div>
-      </div>
-    )}
+    </div>
   </div>
 );
 }

@@ -5,6 +5,7 @@ import { api } from "convex/_generated/api"
 import { levels, type ProjectName } from "~/constants/levels"
 import type { ProjectId } from "./RepChecklist"
 import { FaArrowTrendUp } from "react-icons/fa6";
+import { ProjectButton } from "~/routes/home"
 
 export const RewardTrackButton:React.FC<ProjectId> = ({projectId}) => {
   const [open, setOpen] = useState(false)
@@ -22,9 +23,7 @@ export const RewardTrackButton:React.FC<ProjectId> = ({projectId}) => {
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        <button className="px-2 py-1 rounded bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">
-          <FaArrowTrendUp/>
-        </button>
+        <ProjectButton icon={<FaArrowTrendUp/>}/>
       </Dialog.Trigger>
 
       <Dialog.Portal>
@@ -52,13 +51,14 @@ export const RewardTrackButton:React.FC<ProjectId> = ({projectId}) => {
               <thead className="sticky top-0 bg-slate-950 border-b border-slate-800 z-10">
                 <tr>
                   <th className="text-left px-6 py-3 text-slate-400 font-medium w-20">Level</th>
+                  <th className="text-left px-6 py-3 text-slate-400 font-medium">Rank</th>
                   <th className="text-left px-6 py-3 text-slate-400 font-medium">XP Required</th>
                   <th className="text-left px-6 py-3 text-slate-400 font-medium">XP to Next</th>
                   <th className="text-left px-6 py-3 text-slate-400 font-medium">Reward</th>
                 </tr>
               </thead>
               <tbody>
-                {LEVELS.map(({ level, xp, reward }, i) => {
+                {LEVELS.map(({ level, xp, reward, rank }, i) => {
                   const next = LEVELS[i + 1];
                   const toNext = next ? (next.xp - xp).toLocaleString() : "—";
                   const isMilestone = level % 10 === 0;
@@ -92,6 +92,9 @@ export const RewardTrackButton:React.FC<ProjectId> = ({projectId}) => {
                             <span className="text-xs text-emerald-500/70">★</span>
                           )}
                         </span>
+                      </td>
+                      <td className={`px-6 py-2.5 font-mono ${isAchieved ? "text-slate-300" : "text-slate-600"}`}>
+                        {rank ?? "-"}
                       </td>
                       <td className={`px-6 py-2.5 font-mono ${isAchieved ? "text-slate-300" : "text-slate-600"}`}>
                         {xp.toLocaleString()}

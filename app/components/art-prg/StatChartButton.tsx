@@ -9,6 +9,7 @@ import { getCategoryColours } from "~/constants/colours";
 import { getXpCaps } from "~/constants/levels";
 import { FaBullseye } from "react-icons/fa6";
 import type { ProjectName } from "~/constants/levels";
+import { ProjectButton } from "~/routes/home";
 
 export const StatChartButton: React.FC<ProjectId> = ({ projectId }) => {
   const [open, setOpen] = useState(false);
@@ -77,12 +78,7 @@ export const StatChartButton: React.FC<ProjectId> = ({ projectId }) => {
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className="px-2 py-1 rounded bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors"
-      >
-        <FaBullseye />
-      </button>
+      <ProjectButton icon={<FaBullseye/>} onClick={() => setOpen(true)}/>
 
       <Dialog.Root open={open} onOpenChange={setOpen}>
         <Dialog.Portal>

@@ -75,22 +75,32 @@ export default function Home() {
             <RewardTrackButton projectId={projectId} />
           </div>
 
-          <div className="flex gap-2">
-            <button className="px-2 py-1 rounded bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">
-              <FaPalette onClick={() => changeProject(artProjectId)}/>
-            </button>
+          <div className="flex gap-3">
+            <div className="flex gap-2">
+              <ProjectButton
+                icon={<FaPalette />}
+                active={projectId === artProjectId}
+                onClick={() => changeProject(artProjectId)}
+              />
 
-            <button className="px-2 py-1 rounded bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">
-              <GiMountainClimbing onClick={() => changeProject(climbingProjectId)}/>
-            </button>
+              <ProjectButton
+                icon={<GiMountainClimbing />}
+                active={projectId === climbingProjectId}
+                onClick={() => changeProject(climbingProjectId)}
+              />
 
-            <button className="px-2 py-1 rounded bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">
-              <FaBookOpen onClick={() => changeProject(scholarProjectId)}/>
-            </button>
+              <ProjectButton
+                icon={<FaBookOpen />}
+                active={projectId === scholarProjectId}
+                onClick={() => changeProject(scholarProjectId)}
+              />
 
-            <button className="px-2 py-1 rounded bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">
-              <FaLaptopCode onClick={() => changeProject(engineerProjectId)}/>
-            </button>
+              <ProjectButton
+                icon={<FaLaptopCode />}
+                active={projectId === engineerProjectId}
+                onClick={() => changeProject(engineerProjectId)}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -110,5 +120,44 @@ export default function Home() {
         </div>
       </div>
     </div>
+  );
+}
+
+import clsx from "clsx";
+
+type ProjectButtonProps = {
+  icon: React.ReactNode;
+  active?: boolean;
+  onClick?: () => void;
+};
+
+export function ProjectButton({
+  icon,
+  active = false,
+  onClick,
+}: ProjectButtonProps) {
+  return (
+    <button
+      onClick={onClick}
+      className={clsx(
+        "group relative overflow-hidden rounded-xl border px-3 py-2 transition-all duration-300",
+        "bg-linear-to-b from-[#1b2027] via-[#171c22] to-[#111418]",
+        active
+          ? "border-amber-400 shadow-[0_0_18px_rgba(255,190,70,.35)]"
+          : "border-[#3c4654] hover:border-amber-500 hover:shadow-[0_0_14px_rgba(255,190,70,.15)]"
+      )} >
+      <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-white/5 via-transparent to-black/20" />
+      <div
+        className={clsx(
+          "absolute left-0 top-0 h-0.5 w-full transition-opacity",
+          active
+            ? "bg-linear-to-r from-amber-700 via-yellow-300 to-amber-700"
+            : "opacity-0 group-hover:opacity-100 bg-linear-to-r from-amber-700 via-yellow-300 to-amber-700"
+        )} />
+
+      <div className="relative flex items-center gap-3">
+        {icon}
+      </div>
+    </button>
   );
 }
