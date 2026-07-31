@@ -7,6 +7,7 @@ import type { ProjectId } from "./RepChecklist";
 import { FaChartLine } from "react-icons/fa";
 import { getTargetXp, type ProjectName } from "~/constants/levels";
 import { ProjectButton } from "~/routes/home";
+import { FaXmark } from "react-icons/fa6";
 
 const getWeekKey = (dateMs: number): string => {
   const d = new Date(dateMs);
@@ -80,98 +81,230 @@ export const XPChartButton: React.FC<ProjectId> = ({projectId}) => {
 
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40" />
-        <Dialog.Content className="fixed z-50 left-1/2 top-1/2 text-white -translate-x-1/2 -translate-y-1/2 bg-slate-950 rounded-2xl shadow-xl w-full lg:w-[70%] overflow-hidden">
+        <Dialog.Content
+  className="
+    fixed
+    left-1/2
+    top-1/2
+    z-50
+    w-[95vw]
+    max-w-6xl
+    -translate-x-1/2
+    -translate-y-1/2
+    overflow-hidden
+    rounded-2xl
+    border
+    border-[#8d6d2c]
+    bg-linear-to-b
+    from-[#1d232b]
+    via-[#171c22]
+    to-[#101419]
+    text-white
+    shadow-[0_0_50px_rgba(0,0,0,.7)] ">
+  <div className="h-0.75 w-full bg-linear-to-r from-[#6d531e] via-[#d4af37] to-[#6d531e]" />
+  <div className="flex items-center justify-between border-b border-[#353d47] px-6 py-5">
 
-          <div className="px-6 pt-6 pb-2 flex items-center justify-between">
-            <Dialog.Title className="text-base font-semibold text-white">
-                Weekly XP
-            </Dialog.Title>
-            <Dialog.Close asChild>
-              <button className="px-3 py-1.5 rounded-lg border border-slate-700 text-sm text-slate-300 hover:bg-slate-800 transition-colors">
-                Close
-              </button>
-            </Dialog.Close>
-          </div>
+    <div className="flex items-center gap-4">
+      <div>
 
-          <div className="px-6 pb-6">
-            {isLoading ? (
-              <p className="text-slate-400 text-sm text-center py-10">Loading…</p>
-            ) : !hasData ? (
-              <p className="text-slate-400 text-sm text-center py-10">
-                No reps recorded yet.
-              </p>
-            ) : (
-              <>
-                <div className="mb-4 flex flex-wrap gap-4 rounded-xl bg-slate-900 border border-slate-800 px-4 py-3">
-                  <div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-0.5">
-                      Avg XP / week
-                    </p>
-                    <p className="text-lg font-semibold text-emerald-400">
-                      {avgXp.toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="w-px bg-slate-800 self-stretch" />
-                  <div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-0.5">
-                      Weeks to 300k
-                    </p>
-                    <p className="text-lg font-semibold text-amber-400">
-                      {weeksToGoal === Infinity ? "∞" : weeksToGoal.toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="w-px bg-slate-800 self-stretch" />
-                  <div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-0.5">
-                      Goal
-                    </p>
-                    <p className="text-lg font-semibold text-slate-300">
-                      {goalXp.toLocaleString()} XP
-                    </p>
-                  </div>
-                </div>
+        <p className="text-[10px] uppercase tracking-[0.3em] text-amber-500">
+          Progress
+        </p>
 
-                <LineChart
-                  height={260}
-                  xAxis={[
-                    {
-                      scaleType: "point",
-                      data: formattedWeeks,
-                      tickLabelStyle: { fill: "#94a3b8", fontSize: 11 },
-                    },
-                  ]}
-                  yAxis={[
-                    {
-                      tickLabelStyle: { fill: "#94a3b8", fontSize: 11 },
-                    },
-                  ]}
-                  series={[
-                    {
-                      label: "XP By Week",
-                      data: xpPerWeek,
-                      color: "#22c55e",
-                      area: true,
-                      showMark: true,
-                    },
-                    {
-                      label: "Weekly avg",
-                      data: Array(xpPerWeek.length).fill(avgXp),
-                      color: "#f59e0b",
-                      showMark: false,
-                      curve: "linear",
-                    },
-                  ]}
-                  sx={{
-                    "& .MuiChartsAxis-line": { stroke: "#334155" },
-                    "& .MuiChartsAxis-tick": { stroke: "#334155" },
-                    "& .MuiChartsLegend-mark": { rx: 3 },
-                    "& .MuiAreaElement-root": { opacity: 0.15 },
-                    backgroundColor: "transparent",
-                  }}
-                />
-              </>
-            )}
-          </div>
+        <Dialog.Title className="text-2xl font-bold text-white">
+          Weekly XP earned 
+        </Dialog.Title>
+      </div>
+    </div>
+
+    <Dialog.Close asChild>
+      <button
+        className="
+          rounded-lg
+          border
+          border-[#8d6d2c]
+          bg-linear-to-b
+          from-[#2b2315]
+          to-[#17130d]
+          px-5
+          py-2.5
+          font-semibold
+          text-amber-300
+          transition-all
+          duration-300
+          hover:border-amber-400
+          hover:text-white
+          hover:shadow-[0_0_12px_rgba(255,190,70,.25)] " >
+        <FaXmark/>
+      </button>
+    </Dialog.Close>
+
+  </div>
+         <div className="px-6 pb-6 mt-2">
+
+  {isLoading ? (
+    <div className="flex h-105 items-center justify-center text-slate-400">
+      Loading journey...
+    </div>
+  ) : !hasData ? (
+    <div className="flex h-105 items-center justify-center text-slate-400">
+      No XP recorded yet.
+    </div>
+  ) : (
+    <>
+      <div className="mb-6 grid gap-4 md:grid-cols-3">
+
+        <div className="rounded-xl border border-[#3b434f] bg-[#11161c] p-4">
+
+          <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500">
+            Weekly Average
+          </p>
+
+          <p className="mt-2 text-3xl font-bold text-cyan-300">
+            {avgXp.toLocaleString()}
+          </p>
+
+          <p className="mt-1 text-xs text-slate-500">
+            XP per week
+          </p>
+
+        </div>
+
+        <div className="rounded-xl border border-[#3b434f] bg-[#11161c] p-4">
+
+          <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500">
+            Estimated Finish
+          </p>
+
+          <p className="mt-2 text-3xl font-bold text-amber-400">
+            {weeksToGoal === Infinity
+              ? "∞"
+              : weeksToGoal.toLocaleString()}
+          </p>
+
+          <p className="mt-1 text-xs text-slate-500">
+            Weeks remaining
+          </p>
+
+        </div>
+
+        <div className="rounded-xl border border-[#3b434f] bg-[#11161c] p-4">
+
+          <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500">
+            Target XP
+          </p>
+
+          <p className="mt-2 text-3xl font-bold text-white">
+            {goalXp.toLocaleString()}
+          </p>
+
+          <p className="mt-1 text-xs text-slate-500">
+            Final milestone
+          </p>
+
+        </div>
+
+      </div>
+
+      <div
+        className="
+          rounded-2xl
+          border
+          border-[#3b434f]
+          bg-[#11161c]
+          p-6
+        "
+      >
+
+        <div className="mb-5 border-b border-[#353d47] pb-3">
+
+          <h3 className="text-lg font-semibold text-white">
+            Weekly Progress
+          </h3>
+
+          <p className="text-sm text-slate-500">
+            XP earned each week across your journey.
+          </p>
+
+        </div>
+
+        <LineChart
+          height={320}
+          xAxis={[
+            {
+              scaleType: "point",
+              data: formattedWeeks,
+              tickLabelStyle: {
+                fill: "#94a3b8",
+                fontSize: 11,
+              },
+            },
+          ]}
+          yAxis={[
+            {
+              tickLabelStyle: {
+                fill: "#94a3b8",
+                fontSize: 11,
+              },
+            },
+          ]}
+          series={[
+            {
+              label: "Weekly XP",
+              data: xpPerWeek,
+              color: "#55b7ff",
+              area: true,
+              showMark: true,
+            },
+            {
+              label: "Average",
+              data: Array(xpPerWeek.length).fill(avgXp),
+              color: "#d4af37",
+              showMark: false,
+              curve: "linear",
+            },
+          ]}
+          sx={{
+            "& .MuiChartsAxis-line": {
+              stroke: "#49515b",
+            },
+
+            "& .MuiChartsAxis-tick": {
+              stroke: "#49515b",
+            },
+
+            "& .MuiChartsGrid-line": {
+              stroke: "#26313d",
+            },
+
+            "& .MuiLineElement-root": {
+              strokeWidth: 3,
+            },
+
+            "& .MuiAreaElement-root": {
+              opacity: 0.2,
+            },
+
+            "& .MuiMarkElement-root": {
+              stroke: "#55b7ff",
+              strokeWidth: 2,
+              fill: "#101419",
+            },
+
+            "& .MuiChartsLegend-mark": {
+              rx: 4,
+            },
+
+            backgroundColor: "transparent",
+          }}
+        />
+
+      </div>
+
+    </>
+  )}
+
+</div>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

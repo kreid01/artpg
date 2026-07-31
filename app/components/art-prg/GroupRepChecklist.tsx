@@ -18,11 +18,6 @@ const hidden = [
   "Limited Palette Study"
 ];
 
-function getCategoryColor(colours: Record<string, string>, categoryName?: string): string {
-  if (!categoryName) return "#64748b";
-  return colours[categoryName.toLowerCase()] ?? "#64748b";
-}
-
 export const GroupRepChecklist: React.FC<ProjectId> = ({projectId}) => {
   const groups = useQuery(api.projects.getRepGroups, {projectId});
   const createRepsFromGroup = useMutation(api.projects.createRepsFromGroup);
@@ -36,9 +31,7 @@ export const GroupRepChecklist: React.FC<ProjectId> = ({projectId}) => {
     projectId,
   })?.name as ProjectName;
 
-
-  const colours = getCategoryColours(projectName ?? "art")
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   
   if (groups === undefined) return <p className="text-sm text-slate-400">Loading…</p>;
   if (groups.length === 0) return <div></div> 
