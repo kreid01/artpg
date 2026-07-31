@@ -80,75 +80,50 @@ export const XPChartButton: React.FC<ProjectId> = ({projectId}) => {
 
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40" />
-        <Dialog.Content
-  className="
-    fixed
-    left-1/2
-    top-1/2
-    z-50
-    w-[95vw]
-    max-w-6xl
-    -translate-x-1/2
-    -translate-y-1/2
-    overflow-hidden
-    rounded-2xl
-    border
-    border-[#8d6d2c]
-    bg-linear-to-b
-    from-[#1d232b]
-    via-[#171c22]
-    to-[#101419]
-    text-white
-    shadow-[0_0_50px_rgba(0,0,0,.7)] ">
-  <div className="h-0.75 w-full bg-linear-to-r from-[#6d531e] via-[#d4af37] to-[#6d531e]" />
-  <div className="flex items-center justify-between border-b border-[#353d47] px-6 py-5">
+        <Dialog.Content className=" fixed left-1/2 top-1/2 z-50 w-[98vw] max-w-6xl -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-[#8d6d2c] bg-linear-to-b from-[#1d232b] via-[#171c22] to-[#101419] text-white shadow-[0_0_50px_rgba(0,0,0,.7)] ">
+          <div className="h-0.75 w-full bg-linear-to-r from-[#6d531e] via-[#d4af37] to-[#6d531e]" />
+          <div className="flex items-center justify-between border-b border-[#353d47] px-2 py-5">
 
-    <div className="flex items-center gap-4">
-      <div>
+            <div className="flex items-center gap-4">
+              <div>
 
-        <p className="text-[10px] uppercase tracking-[0.3em] text-amber-500">
-          Progress
-        </p>
+                <p className="text-[10px] uppercase tracking-[0.3em] text-amber-500">
+                  Progress
+                </p>
 
-        <Dialog.Title className="text-2xl font-bold text-white">
-          Weekly XP earned 
-        </Dialog.Title>
-      </div>
-    </div>
+                <Dialog.Title className="text-2xl font-bold text-white">
+                  Weekly XP earned 
+                </Dialog.Title>
+              </div>
+            </div>
 
-    <Dialog.Close asChild>
-      <CloseButton/>
-    </Dialog.Close>
+            <Dialog.Close asChild>
+              <CloseButton/>
+            </Dialog.Close>
 
-  </div>
-         <div className="px-6 pb-6 mt-2">
-
-  {isLoading ? (
-    <div className="flex h-105 items-center justify-center text-slate-400">
-      Loading journey...
-    </div>
-  ) : !hasData ? (
-    <div className="flex h-105 items-center justify-center text-slate-400">
-      No XP recorded yet.
-    </div>
-  ) : (
-    <>
-      <div className="mb-6 grid gap-4 md:grid-cols-3">
-
+          </div>
+        <div className="px-2 pb-6 mt-2">
+      {isLoading ? (
+        <div className="flex h-105 items-center justify-center text-slate-400">
+          Loading journey...
+        </div>
+      ) : !hasData ? (
+        <div className="flex h-105 items-center justify-center text-slate-400">
+          No XP recorded yet.
+        </div>
+      ) : (
+      <>
+      <div className="mb-6 grid gap-4 grid-cols-3">
         <div className="rounded-xl border border-[#3b434f] bg-[#11161c] p-4">
-
           <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500">
             Weekly Average
           </p>
-
           <p className="mt-2 text-3xl font-bold text-cyan-300">
             {avgXp.toLocaleString()}
           </p>
-
           <p className="mt-1 text-xs text-slate-500">
             XP per week
           </p>
-
         </div>
 
         <div className="rounded-xl border border-[#3b434f] bg-[#11161c] p-4">

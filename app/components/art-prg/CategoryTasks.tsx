@@ -78,7 +78,6 @@ export function CategoryTaskTree({ categories, tasks, reps, projectId }: Props) 
   );
 }
 
-
 function CategoryBranch({
   category,
   tasks,
@@ -126,7 +125,7 @@ function CategoryBranch({
   return (
     <Collapsible.Root open={open} onOpenChange={setOpen}>
     <Collapsible.Trigger asChild>
-      <button className="group relative w-full overflow-hidden rounded-xl border border-[#8d6d2c] bg-linear-to-b from-[#1d232b] via-[#171c22] to-[#101419] text-left transition-all duration-300 hover:border-amber-400 hover:shadow-[0_0_18px_rgba(255,190,70,0.15)]">
+      <button className="group h-12 text-sm relative w-full overflow-hidden rounded-md border border-[#8d6d2c] bg-linear-to-b from-[#1d232b] via-[#171c22] to-[#101419] text-left transition-all duration-300 hover:border-amber-400 hover:shadow-[0_0_18px_rgba(255,190,70,0.15)]">
         <div className="absolute inset-y-0 left-0 overflow-hidden transition-all duration-700" style={{ width: `${progress * 100}%` }}>
           <div className="h-full" style={{ background: `linear-gradient(90deg, ${color}AA 0%, ${color} 50%, ${color} 100%)` }} />
           <div className="absolute inset-x-0 top-0 h-1/2 bg-white/15" />
@@ -134,9 +133,9 @@ function CategoryBranch({
 
         <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-white/5 via-transparent to-black/20" />
 
-        <div className="relative z-10 flex items-center justify-between px-4 py-3">
+        <div className="relative z-10 flex items-center justify-between px-4 py-2">
           <div>
-            <h3 className="text-lg font-semibold text-white">{category.name}</h3>
+            <h3 className="text-sm font-semibold text-white">{category.name}</h3>
           </div>
 
           <div className="flex items-center gap-4">
@@ -156,16 +155,16 @@ function CategoryBranch({
       <div key={task._id} onClick={async () => {
           try {
             await completeTask({ taskId: task._id, projectId });
-            setToastData({ title: `${task.title} completed!` });
+            setToastData({ title: task.title});
             setOpenToast(true);
           } catch {
             setToastData({ title: "Error", description: "Failed to complete task" });
             setOpenToast(true);
           } }}
-        className="group cursor-pointer rounded-lg border border-[#3c4654] bg-linear-to-b from-[#1b2027] to-[#13181d] px-4 py-3 transition-all duration-300 hover:border-cyan-400 hover:bg-[#202833] hover:shadow-[0_0_12px_rgba(45,140,211,.25)]" >
+        className="group cursor-pointer h-12 rounded-lg border border-[#3c4654] bg-linear-to-b from-[#1b2027] to-[#13181d] px-4 py-2 transition-all duration-300 hover:border-cyan-400 hover:bg-[#202833] hover:shadow-[0_0_12px_rgba(45,140,211,.25)]" >
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-medium text-white transition-colors group-hover:text-cyan-200">{task.title}</p>
+            <p className="font-medium text-white text-sm transition-colors group-hover:text-cyan-200">{task.title}</p>
           </div>
 
           <div className="rounded-md border border-amber-700 bg-[#23211a] px-3 py-1 text-sm font-semibold text-amber-300">

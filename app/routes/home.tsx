@@ -134,7 +134,7 @@ export function ProjectButton({
     <button
       onClick={onClick}
       className={clsx(
-        "group relative overflow-hidden rounded-xl border px-4 py-2 transition-all duration-300",
+        "group relative overflow-hidden min-w-10 rounded-lg border px-3 py-2 transition-all duration-300",
         "bg-linear-to-b from-[#1b2027] via-[#171c22] to-[#111418]",
         active
           ? "border-amber-400 shadow-[0_0_18px_rgba(255,190,70,.35)]"
@@ -149,7 +149,7 @@ export function ProjectButton({
             : "opacity-0 group-hover:opacity-100 bg-linear-to-r from-amber-700 via-yellow-300 to-amber-700"
         )} />
 
-      <div className="relative flex items-center gap-3">
+      <div className="relative text-sm flex items-center gap-3">
         {icon}
       </div>
     </button>

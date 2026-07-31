@@ -6,6 +6,7 @@ import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
 import { ProjectButton } from "~/routes/home";
 import { CloseButton } from "./utils/CloseButton";
+import { FaPlus } from "react-icons/fa";
 
 interface CustomRepButtonProps {
   projectId: Id<"projects">;
@@ -73,7 +74,7 @@ export const AddCustomRepButton: React.FC<CustomRepButtonProps> = ({ projectId }
   return (
     <Dialog.Root open={open} onOpenChange={handleClose}>
       <Dialog.Trigger asChild>
-        <ProjectButton icon={<span>+</span>}/>
+        <ProjectButton icon={<FaPlus/>}/>
       </Dialog.Trigger>
 
       <Dialog.Portal>
