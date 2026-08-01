@@ -4,7 +4,7 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
 import { getCategoryColours } from "~/constants/colours";
-import { getXpCaps, type ProjectName } from "~/constants/levels";
+import { getRankImage, getSkillRankImage, getXpCaps, type ProjectName } from "~/constants/levels";
 import { CompleteToast } from "./utils/CompleteToast";
 
 type Category = {
@@ -72,6 +72,7 @@ export function CategoryTaskTree({ categories, tasks, reps, projectId }: Props) 
           totalXp={categoryXpTotals[category._id] || 0}
           xpCaps={xpCaps}
           colours={colours}
+          projectName={projectName}
         />
       ))}
     </div>
@@ -84,7 +85,8 @@ function CategoryBranch({
   projectId,
   totalXp,
   xpCaps,
-  colours
+  colours,
+  projectName
 }: {
   category: Category;
   tasks: Task[];
@@ -92,6 +94,7 @@ function CategoryBranch({
   totalXp: number;
   xpCaps: Record<string, number>,
   colours: Record<string, string>
+  projectName: ProjectName 
 }) {
   const [open, setOpen] = useState(false);
   const [adding, setAdding] = useState(false);
@@ -132,18 +135,30 @@ function CategoryBranch({
         </div>
 
         <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-white/5 via-transparent to-black/20" />
-
         <div className="relative z-10 flex items-center justify-between px-4 py-2">
-          <div>
-            <h3 className="text-sm font-semibold text-white">{category.name}</h3>
-          </div>
+          <h3 className="text-sm font-semibold text-white">
+            {category.name}
+          </h3>
 
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <div className="text-sm font-semibold text-white">{totalXp.toLocaleString()} / {cap.toLocaleString()}</div>
+          <div className="absolute right-4 flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              {projectName && (
+                <img
+                  className="h-8 w-8"
+                  src={getSkillRankImage(projectName, category.name, totalXp)}
+                  alt="skill level"
+                />
+              )}
+              <div className="text-sm w-28 font-semibold text-white text-right">
+                {totalXp.toLocaleString()} / {cap.toLocaleString()}
+              </div>
             </div>
 
-            <div className={`text-xl text-amber-400 transition-transform duration-300 ${open ? "rotate-90" : ""}`}>
+            <div
+              className={`text-xl text-amber-400 transition-transform duration-300 ${
+                open ? "rotate-90" : ""
+              }`}
+            >
               ▶
             </div>
           </div>

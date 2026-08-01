@@ -1,4 +1,4 @@
-export const levels = (projectName: ProjectName) => generateLevels(projectName, 100)
+export const levels = (projectName: ProjectName) => generateProjectLevels(projectName, 100)
 export type ProjectName = "Engineering" | "Scholar" | "Art" | "Climbing"
 
 const rankDict: Record<number, string> = {
@@ -89,26 +89,52 @@ export const getTargetXp = (projectName: ProjectName) => {
   return TARGET_XP[name] 
 }
 
-const generateLevels = (projectName: ProjectName, maxLevel = 100) => {
+const generateLevels = (targetXp: number, rewardDict?: Record<number, string>, maxLevel = 100) => {
   const levels = [];
-
-  const targetXp = getTargetXp(projectName)
-  const rewardDict = getRewardDict(projectName) 
-
   const k = 0.04;
   const a = targetXp / (Math.exp(k * maxLevel) - 1);
 
-  levels.push({ level: 1, xp: 0, reward: rewardDict[1] })
+  levels.push({ level: 1, xp: 0, reward: rewardDict?.[1] })
 
   for (let level = 2; level <= maxLevel; level++) {
     const xp = Math.round(a * (Math.exp(k * level) - 1));
-    const reward = rewardDict[level] 
+    const reward = rewardDict?.[level] 
     const rank = rankDict[level]
     levels.push({ level, xp, reward, rank });
   }
 
   return levels;
+}
+
+export const generateProjectLevels = (projectName: ProjectName, maxLevel = 100) => {
+  const targetXp = getTargetXp(projectName)
+  const rewardDict = getRewardDict(projectName) 
+  return generateLevels(targetXp, rewardDict, maxLevel)
 };
+
+export const getSkillRankImage = (projectName: ProjectName, categoryName: string, totalXp: number) => {
+  const skillLevels = generateSkillLevels(projectName, categoryName)
+  let currentLevel = skillLevels[0];
+
+  for (let i = 0; i < skillLevels.length - 1; i++) {
+    if (totalXp >= skillLevels[i].xp && totalXp < skillLevels[i + 1].xp) {
+      currentLevel = skillLevels[i];
+      break;
+    }
+  }
+  if (totalXp >= skillLevels[skillLevels.length - 1].xp) {
+    currentLevel = skillLevels[skillLevels.length - 1];
+  }
+
+  return getRankImage(currentLevel.level)
+}
+
+export const generateSkillLevels = (projectName: ProjectName, categoryName: string) => {
+  const xpCaps = getXpCaps(projectName)
+  const targetXp = xpCaps[categoryName.toLowerCase()] ?? 0
+
+  return generateLevels(targetXp)
+}
 
 export const getXpCaps = (projectName: ProjectName) => {
   const xpCapDict = {

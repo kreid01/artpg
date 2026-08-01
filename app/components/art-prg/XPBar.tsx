@@ -36,7 +36,7 @@ export const XPBar: React.FC<ProjectId> = ({projectId}) => {
   const xpNeeded = nextLevel ? nextLevel.xp - currentLevel.xp : 1;
   const pct = nextLevel ? Math.min(100, Math.round((xpIntoLevel / xpNeeded) * 100)) : 100;
 return (
-  <div className="fixed top-0 left-0 right-0 z-50 border-b border-[#5c4a1f] bg-gradient-to-b from-[#14181d] to-[#0c0f13] px-6 py-3 shadow-lg">
+  <div className="fixed top-0 left-0 right-0 z-50 border-b border-[#5c4a1f] bg-linear-to-b from-[#14181d] to-[#0c0f13] px-6 py-3 shadow-lg">
     <div className="mb-3 flex items-center justify-between">
 
       <div>
@@ -69,17 +69,9 @@ return (
     </div>
 
     <div className="relative h-5 overflow-hidden rounded-full border border-[#92753a] bg-[#1a1f24] shadow-inner">
-
       <div
-        className="absolute inset-y-0 left-0 rounded-full
-                   bg-linear-to-r
-                   from-cyan-700
-                   via-cyan-400
-                   to-cyan-300
-                   transition-all duration-700"
-        style={{ width: `${pct}%` }}
-      >
-
+        className="absolute inset-y-0 left-0 rounded-full bg-linear-to-r from-cyan-700 via-cyan-400 to-cyan-300 transition-all duration-700"
+        style={{ width: `${pct}%` }} >
         <div className="h-1/2 w-full bg-white/20" />
       </div>
 
@@ -88,7 +80,6 @@ return (
       <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold tracking-wide text-white">
         {pct}%
       </span>
-
     </div>
   </div>
 );
