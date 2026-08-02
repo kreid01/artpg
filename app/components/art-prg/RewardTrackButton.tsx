@@ -1,24 +1,71 @@
-import { useState } from "react"
+import { useEffect, useEffectEvent, useMemo, useState } from "react"
 import * as Dialog from "@radix-ui/react-dialog"
 import { useQuery } from "convex/react"
 import { api } from "convex/_generated/api"
-import { getRankImage, levels, type ProjectName } from "~/constants/levels"
+import { generateSkillLevels, getRankImage, getXpCaps, levels, type ProjectName } from "~/constants/levels"
 import { FaArrowTrendUp } from "react-icons/fa6";
 import { ProjectButton, type ProjectId } from "~/routes/home"
 import { CloseButton } from "./utils/CloseButton"
+import type { Props } from "./CategoryTasks"
 
-export const RewardTrackButton:React.FC<ProjectId> = ({projectId}) => {
+export const RewardTrackButton:React.FC<Props> = ({ categories, tasks, reps, projectId }) => {
   const [open, setOpen] = useState(false)
-  const reps = useQuery(api.projects.getAllCompleteReps, {projectId})
 
   const projectName = useQuery(api.projects.getProjectById, {
     projectId,
   })?.name as ProjectName;
 
-  const LEVELS = levels(projectName ?? "art");
+  const xpCaps = getXpCaps(projectName ?? "art")
+  const order = Object.keys(xpCaps);
 
-  const totalXp = reps?.reduce((sum, r) => sum + (r.xpValue ?? 0), 0) ?? 0
-  const currentLevel = [...LEVELS].reverse().find(l => totalXp >= l.xp)?.level ?? 1
+  const sortedCategories = [...categories].sort((a, b) => {
+    const ai = order.indexOf(a.name.toLowerCase());
+    const bi = order.indexOf(b.name.toLowerCase());
+    const aIdx = ai === -1 ? Infinity : ai;
+    const bIdx = bi === -1 ? Infinity : bi;
+    return aIdx - bIdx;
+  });
+
+  const [selectedCategory, setSelectedCategory] = useState("all");
+
+  const taskMap = useMemo(
+    () => Object.fromEntries(tasks?.map(t => [t._id, t])),
+    [tasks]
+  );
+
+  const categoryXpTotals = useMemo(() => {
+    const totals: Record<string, number> = {};
+
+    for (const rep of reps ?? []) {
+      const categoryId =
+        rep.categoryId ??
+        (rep.taskId ? taskMap[rep.taskId]?.categoryId : undefined);
+
+      if (!categoryId) continue;
+
+      totals[categoryId] = (totals[categoryId] || 0) + (rep.xpValue ?? 0);
+    }
+
+    return totals;
+  }, [reps, taskMap]);
+
+  const LEVELS = useMemo(() => {
+    return selectedCategory === "all"
+      ? levels(projectName ?? "art")
+      : generateSkillLevels(projectName ?? "art", categories.find(c => c._id == selectedCategory)?.name ?? "");
+  }, [projectName, selectedCategory]);
+
+  const totalXp = useMemo(() => {
+    return selectedCategory === "all"
+      ? reps?.reduce((sum, r) => sum + (r.xpValue ?? 0), 0) ?? 0
+      : categoryXpTotals[selectedCategory] ?? 0;
+  }, [selectedCategory, reps, categoryXpTotals]);
+
+  const currentLevel = useMemo(() => {
+    return (
+      [...LEVELS].reverse().find(level => totalXp >= level.xp)?.level ?? 1
+    );
+  }, [LEVELS, totalXp]);
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -39,6 +86,30 @@ export const RewardTrackButton:React.FC<ProjectId> = ({projectId}) => {
                 <p className="text-[10px] uppercase tracking-[0.3em] text-amber-500">Progression</p>
                 <Dialog.Title className="text-2xl font-bold text-white">Reward Track</Dialog.Title>
                 <p className="mt-1 text-sm text-slate-400">Level {currentLevel} • {totalXp.toLocaleString()} XP</p>
+                <div className="mt-1 flex flex-wrap gap-2">
+                <div className="mt-2 flex flex-nowrap gap-2 overflow-x-scroll whitespace-nowrap pb-1">
+                    <button
+                      onClick={() => setSelectedCategory("all")}
+                      className={`rounded-full px-3 py-1 text-xs ${
+                        selectedCategory === "all"
+                          ? "bg-amber-600 text-white"
+                          : "bg-[#222831] text-slate-300 hover:bg-[#2b323d]" }`} > Overall
+                    </button>
+                    {sortedCategories?.map(category => (
+                      <button
+                        key={category._id}
+                        onClick={() => setSelectedCategory(category._id)}
+                        className={`shrink-0 rounded-full px-3 py-1 text-xs ${
+                          selectedCategory === category._id
+                            ? "bg-amber-600 text-white"
+                            : "bg-[#222831] text-slate-300 hover:bg-[#2b323d]"
+                        }`}
+                      >
+                        {category.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -59,8 +130,6 @@ export const RewardTrackButton:React.FC<ProjectId> = ({projectId}) => {
               </thead>
                 <tbody>
                   {LEVELS.map(({ level, xp, reward, rank }, i) => {
-                  const next = LEVELS[i + 1];
-                  const toNext = next ? (next.xp - xp).toLocaleString() : "MAX";
                   const isCurrent = level === currentLevel;
                   const isUnlocked = totalXp >= xp;
 

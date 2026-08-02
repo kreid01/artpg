@@ -66,7 +66,7 @@ export default function Home() {
 
       <div className="mx-5 mt-32 mb-5 justify-between text-white md:flex lg:mx-40">
         <div className="mt-2 flex w-full justify-between">
-          <BurgerMenu projectId={projectId}/>
+          <BurgerMenu projectId={projectId} categories={categories} tasks={tasks} reps={reps}/>
 
           <div className="flex gap-3">
             <div className="flex gap-2">
