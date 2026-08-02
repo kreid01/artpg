@@ -5,6 +5,7 @@ import { XPChartButton } from "../charts/XPChartButton";
 import { StatChartButton } from "../charts/StatChartButton";
 import { RewardTrackButton } from "../RewardTrackButton";
 import { AddJournalEntryButton } from "../JournalEntryButton";
+import { Achievements } from "../Achievements";
 import type { Props } from "../CategoryTasks";
 
 export const BurgerMenu:React.FC<Props> = ({projectId, categories, tasks, reps}) => {
@@ -29,6 +30,9 @@ export const BurgerMenu:React.FC<Props> = ({projectId, categories, tasks, reps})
                 </DropdownMenu.Item>
                 <DropdownMenu.Item asChild>
                     <AddCustomRepButton projectId={projectId} />
+                </DropdownMenu.Item>
+                <DropdownMenu.Item asChild>
+                    <Achievements categories={categories} projectId={projectId} />
                 </DropdownMenu.Item>
                 <DropdownMenu.Item asChild>
                     <XPChartButton projectId={projectId} />

@@ -26,7 +26,7 @@ type Rep = {
   taskId?: Id<"tasks">;
 };
 
-type Props = {
+export type Props = {
   categories: Category[];
   tasks: Task[];
   reps: Rep[];

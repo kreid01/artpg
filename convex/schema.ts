@@ -11,6 +11,17 @@ export default defineSchema({
     name: v.string(),
   }),
 
+  achievements: defineTable({
+  projectId: v.optional(v.id("projects")),
+  categoryId: v.optional(v.id("categories")),
+  name: v.string(),
+  total: v.number(),
+  currentCount: v.number(),
+  xpValue: v.number(),
+  })
+  .index("by_project", ["projectId"])
+  .index("by_category", ["categoryId"]),
+
   journal: defineTable({
     created: v.number(),
     wins: v.string(),

@@ -1,8 +1,8 @@
 import { query } from "./_generated/server";
 import { v } from "convex/values";
 import { mutation } from "./_generated/server";
-import { Doc, Id } from "./_generated/dataModel";
-import { QueryCtx } from "./_generated/server";
+import type { Doc, Id } from "./_generated/dataModel";
+import type { QueryCtx } from "./_generated/server";
 
 export const getAllProjects = query({
   args: {},
@@ -399,6 +399,82 @@ export const createJournalEntry = mutation({
     await ctx.db.insert("journal", {
       ...args,
       created: Date.now(),
+    });
+  },
+});
+
+export const getAchievements = query({
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, { projectId }) => {
+    return await ctx.db
+      .query("achievements")
+      .withIndex("by_project", q => q.eq("projectId", projectId))
+      .collect();
+  },
+});
+
+export const createAchievement = mutation({
+  args: {
+    projectId: v.id("projects"),
+    categoryId: v.id("categories"),
+    name: v.string(),
+    total: v.number(),
+    xpValue: v.number(),
+  },
+  handler: async (ctx, { projectId, categoryId, name, total, xpValue }) => {
+    const category = await ctx.db.get(categoryId);
+    if (!category || category.projectId !== projectId) {
+      throw new Error("Category not found in this project");
+    }
+    if (total <= 0 || xpValue <= 0) {
+      throw new Error("Target and XP reward must be greater than zero");
+    }
+
+    const achievementId = await ctx.db.insert("achievements", {
+      projectId,
+      categoryId,
+      name,
+      total,
+      currentCount: 0,
+      xpValue,
+    });
+
+    return achievementId;
+  },
+});
+
+export const completeAchievementRep = mutation({
+  args: {
+    projectId: v.id("projects"),
+    achievementId: v.id("achievements"),
+  },
+  handler: async (ctx, { projectId, achievementId }) => {
+    const achievement = await ctx.db.get(achievementId);
+    if (!achievement || achievement.projectId !== projectId) {
+      throw new Error("Achievement not found in this project");
+    }
+    if (!achievement.categoryId) {
+      throw new Error("Achievement has no category");
+    }
+    if (achievement.currentCount >= achievement.total) {
+      throw new Error("Achievement is already complete");
+    }
+
+    const category = await ctx.db.get(achievement.categoryId);
+    if (!category || category.projectId !== projectId) {
+      throw new Error("Category not found in this project");
+    }
+
+    await ctx.db.insert("reps", {
+      categoryId: achievement.categoryId,
+      title: achievement.name,
+      xpValue: achievement.xpValue,
+      completedAt: Date.now(),
+    });
+    await ctx.db.patch(achievementId, {
+      currentCount: achievement.currentCount + 1,
     });
   },
 });
