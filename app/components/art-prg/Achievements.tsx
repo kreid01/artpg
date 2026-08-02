@@ -112,32 +112,24 @@ export function Achievements({ categories, projectId }: Props) {
           <div className="h-0.75 w-full bg-linear-to-r from-[#6d531e] via-[#d4af37] to-[#6d531e]" />
           <div className="flex items-center justify-between border-b border-[#353d47] px-6 py-5">
             <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full border border-amber-700 bg-[#2b2315] text-2xl text-amber-300">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-amber-700 bg-[#2b2315] text-xl text-amber-300 sm:h-14 sm:w-14 sm:text-2xl">
                 <FaTrophy />
               </div>
               <div>
-                <p className="text-[10px] uppercase tracking-[0.3em] text-amber-500">Achievement Hall</p>
-                <Dialog.Title className="text-2xl font-bold text-white">
+                <p className="text-[8px] uppercase tracking-[0.22em] text-amber-500 sm:text-[10px] sm:tracking-[0.3em]">Achievement Hall</p>
+                <Dialog.Title className="text-xl font-bold text-white sm:text-2xl">
                   {showEditor ? "Create Achievement" : "Achievements"}
                 </Dialog.Title>
-                <p className="mt-1 text-sm text-slate-400">
+                <p className="mt-1 text-xs text-slate-400 sm:text-sm">
                   {showEditor ? "Create one or more custom achievements." : "Track your progress across every achievement."}
                 </p>
               </div>
             </div>
-            {showEditor && (
-              <button
-                onClick={resetEditor}
-                className="flex items-center gap-2 rounded-lg border border-[#4b5563] px-3 py-2 text-sm text-slate-300 transition-colors hover:border-amber-500 hover:text-amber-300"
-              >
-                <FaArrowLeft /> All achievements
-              </button>
-            )}
           </div>
 
           {showEditor ? (
             <div className="flex-1 overflow-y-auto p-6">
-                <div className="mb-3 grid grid-cols-[1fr_1fr_100px_90px_36px] gap-3 px-1">
+                <div className="mb-3 hidden grid-cols-[1fr_1fr_100px_90px_36px] gap-3 px-1 md:grid">
                 <span className="text-[10px] uppercase tracking-[0.25em] text-amber-500">Category</span>
                 <span className="text-[10px] uppercase tracking-[0.25em] text-amber-500">Achievement name</span>
                 <span className="text-[10px] uppercase tracking-[0.25em] text-amber-500">Final target</span>
@@ -146,10 +138,10 @@ export function Achievements({ categories, projectId }: Props) {
               </div>
               <div className="space-y-3">
                 {entries.map((entry) => (
-                  <div key={entry.id} className="grid grid-cols-[1fr_1fr_100px_90px_40px] items-center gap-3 rounded-xl border border-[#3b434f] bg-[#11161c] p-3">
+                  <div key={entry.id} className="grid grid-cols-2 items-center gap-2 rounded-xl border border-[#3b434f] bg-[#11161c] p-3 md:grid-cols-[1fr_1fr_100px_90px_40px] md:gap-3">
                     <Select.Root value={entry.categoryId} onValueChange={(value) => updateEntry(entry.id, "categoryId", value)}>
-                      <Select.Trigger className="flex w-full items-center justify-between rounded-lg border border-[#4b5563] bg-[#161c23] px-3 py-2.5 text-sm text-white hover:border-amber-500 focus:border-amber-400 focus:outline-none">
-                        <Select.Value placeholder="Select category..." />
+                      <Select.Trigger className="flex w-full items-center justify-between rounded-lg border border-[#4b5563] bg-[#161c23] px-2 py-2 text-xs text-white hover:border-amber-500 focus:border-amber-400 focus:outline-none sm:px-3 sm:py-2.5 sm:text-sm">
+                        <Select.Value placeholder="Category..." />
                         <Select.Icon className="text-slate-400">▾</Select.Icon>
                       </Select.Trigger>
                       <Select.Portal>
@@ -164,19 +156,19 @@ export function Achievements({ categories, projectId }: Props) {
                         </Select.Content>
                       </Select.Portal>
                     </Select.Root>
-                    <input type="text" placeholder="e.g. Anatomy Master" value={entry.name} onChange={(event) => updateEntry(entry.id, "name", event.target.value)} className="w-full rounded-lg border border-[#4b5563] bg-[#161c23] px-3 py-2.5 text-sm text-white placeholder:text-slate-600 focus:border-amber-400 focus:outline-none" />
-                    <input type="number" min={1} value={entry.total} onChange={(event) => updateEntry(entry.id, "total", Number(event.target.value))} className="w-full rounded-lg border border-[#4b5563] bg-[#161c23] px-3 py-2.5 text-center text-white focus:border-amber-400 focus:outline-none" />
-                    <input type="number" min={1} value={entry.xpValue} onChange={(event) => updateEntry(entry.id, "xpValue", Number(event.target.value))} className="w-full rounded-lg border border-[#4b5563] bg-[#161c23] px-3 py-2.5 text-center text-white focus:border-amber-400 focus:outline-none" />
-                    <button onClick={() => removeEntry(entry.id)} disabled={entries.length === 1} aria-label="Remove achievement" className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#4b5563] bg-[#161c23] text-slate-500 hover:border-red-500 hover:bg-red-900/20 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-30">✕</button>
+                    <input type="text" placeholder="Achievement name" value={entry.name} onChange={(event) => updateEntry(entry.id, "name", event.target.value)} className="w-full rounded-lg border border-[#4b5563] bg-[#161c23] px-2 py-2 text-xs text-white placeholder:text-slate-600 focus:border-amber-400 focus:outline-none sm:px-3 sm:py-2.5 sm:text-sm" />
+                    <input type="number" min={1} aria-label="Target" value={entry.total} onChange={(event) => updateEntry(entry.id, "total", Number(event.target.value))} className="w-full rounded-lg border border-[#4b5563] bg-[#161c23] px-2 py-2 text-center text-xs text-white focus:border-amber-400 focus:outline-none sm:px-3 sm:py-2.5 sm:text-sm" />
+                    <input type="number" min={1} aria-label="XP reward" value={entry.xpValue} onChange={(event) => updateEntry(entry.id, "xpValue", Number(event.target.value))} className="w-full rounded-lg border border-[#4b5563] bg-[#161c23] px-2 py-2 text-center text-xs text-white focus:border-amber-400 focus:outline-none sm:px-3 sm:py-2.5 sm:text-sm" />
+                    <button onClick={() => removeEntry(entry.id)} disabled={entries.length === 1} aria-label="Remove achievement" className="flex h-9 w-full items-center justify-center rounded-lg border border-[#4b5563] bg-[#161c23] text-xs text-slate-500 hover:border-red-500 hover:bg-red-900/20 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-30 md:h-10 md:w-10">✕</button>
                   </div>
                 ))}
-                <button onClick={addEntry} className="mt-4 flex w-full items-center justify-center rounded-xl border border-dashed border-amber-700 bg-[#11161c] py-3 font-medium text-amber-400 hover:border-amber-400 hover:bg-[#2b2315]">
+                <button onClick={addEntry} className="mt-4 flex w-full items-center justify-center rounded-xl border border-dashed border-amber-700 bg-[#11161c] py-2.5 text-xs font-medium text-amber-400 hover:border-amber-400 hover:bg-[#2b2315] sm:py-3 sm:text-sm">
                   + Add another achievement
                 </button>
               </div>
               <div className="mt-6 flex items-center justify-end gap-3 border-t border-[#353d47] pt-4">
-                <button onClick={resetEditor} className="rounded-md px-4 py-2 text-sm text-slate-300 hover:text-white">Cancel</button>
-                <button onClick={handleSave} disabled={!isValid || saving} className="h-10 rounded-md border border-amber-500 bg-linear-to-b from-[#8d6d2c] to-[#6d531e] px-5 font-semibold text-white hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50">
+                <button onClick={resetEditor} className="rounded-md px-3 py-2 text-xs text-slate-300 hover:text-white sm:px-4 sm:text-sm">Cancel</button>
+                <button onClick={handleSave} disabled={!isValid || saving} className="h-9 rounded-md border border-amber-500 bg-linear-to-b from-[#8d6d2c] to-[#6d531e] px-3 text-xs font-semibold text-white hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 sm:h-10 sm:px-5 sm:text-sm">
                   {saving ? "Creating..." : `Create ${entries.length > 1 ? `${entries.length} achievements` : "achievement"}`}
                 </button>
               </div>
