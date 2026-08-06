@@ -45,7 +45,7 @@ return (
       <img
         src={getRankImage(currentLevel.level)}
         alt="Rank"
-        className="h-12 w-12 ml-20 shrink-0 drop-shadow-[0_0_10px_rgba(255,215,120,.35)] sm:h-16 sm:w-16"
+        className="h-12 w-12 ml-24 shrink-0 drop-shadow-[0_0_10px_rgba(255,215,120,.35)] sm:h-16 sm:w-16"
       />
       <div className="min-w-0 ml-auto">
         <div className="flex flex-col items-end justify-end gap-2">

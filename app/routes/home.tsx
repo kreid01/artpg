@@ -67,12 +67,12 @@ export default function Home() {
       />
 
       <div className="mx-5 mt-24 gap-5 lg:mx-40 lg:mt-28 lg:flex">
-        <div className="mb-2 lg:w-[30%]">
-          <GroupRepChecklist projectId={projectId} />
+        <div className="lg:w-[70%] mb-2">
+          <CategoryTaskTree reps={reps} tasks={tasks} categories={categories} projectId={projectId} />
         </div>
 
-        <div className="lg:w-[70%]">
-          <CategoryTaskTree reps={reps} tasks={tasks} categories={categories} projectId={projectId} />
+        <div className="mb-2 lg:w-[30%]">
+          <GroupRepChecklist projectId={projectId} />
         </div>
       </div>
     </div>
