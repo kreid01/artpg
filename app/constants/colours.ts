@@ -36,7 +36,6 @@ const SCHOLAR_CATEGORY_COLORS: Record<string, string> = {
   "psychology":        "#f97316", 
   "chess":       "#f59e0b", 
   "literature": "#ec4899",
-  "space": "gray"
 };
 
 const ENGINEER_CATEGORY_COLORS: Record<string, string> = {
