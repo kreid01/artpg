@@ -7,117 +7,146 @@ import { Loader } from "~/components/art-prg/utils/Loader";
 import { GroupRepChecklist } from "~/components/art-prg/GroupRepChecklist";
 import { useState } from "react";
 import type { Id } from "../../convex/_generated/dataModel";
-import {
-  FaBookOpen,
-  FaPalette,
-  FaLaptopCode
-} from "react-icons/fa";
-import { GiMountainClimbing } from "react-icons/gi";
+import { FaArrowLeft } from "react-icons/fa6";
+import { getOverallLevels, getRankImage, levels, type ProjectName } from "~/constants/levels";
+import clsx from "clsx";
+import { BurgerMenu } from "~/components/art-prg/utils/BurgerMenu";
 
 export interface ProjectId {
-  projectId: Id<'projects'>
+  projectId: Id<"projects">;
 }
+
+type ProjectSummary = {
+  _id: Id<"projects">;
+  name: string;
+  totalXp: number;
+  categoryCount: number;
+};
 
 export default function Home() {
   const { isLoaded, isSignedIn } = useUser();
-
+  const [selectedProjectId, setSelectedProjectId] = useState<Id<"projects">>();
   const projects = useQuery(api.projects.getAllProjects);
+  const summaries = useQuery(api.projects.getProjectSummaries) as ProjectSummary[] | undefined;
+  const projectId = selectedProjectId;
 
-  const [selectedProjectId, setSelectedProjectId] = useState<
-    Id<"projects"> | undefined
-  >();
+  const categories = useQuery(api.projects.getAllCategories, projectId ? { projectId } : "skip");
+  const reps = useQuery(api.projects.getAllCompleteReps, projectId ? { projectId } : "skip");
+  const tasks = useQuery(api.projects.getTasksByProject, projectId ? { projectId } : "skip");
 
-  const projectId = selectedProjectId ?? projects?.[0]?._id;
-  const artProjectId = projects?.[0]?._id;
-  const climbingProjectId = projects?.[1]?._id;
-  const scholarProjectId = projects?.[2]?._id;
-  const engineerProjectId = projects?.[3]?._id;
-
-  const categories = useQuery(
-    api.projects.getAllCategories,
-    projectId ? { projectId } : "skip"
-  );
-
-  const reps = useQuery(
-    api.projects.getAllCompleteReps,
-    projectId ? { projectId } : "skip"
-  );
-
-  const tasks = useQuery(
-    api.projects.getTasksByProject,
-    projectId ? { projectId } : "skip"
-  );
-
-  const changeProject = (id: Id<"projects"> | undefined) => {
-    if (!artProjectId || !climbingProjectId || !scholarProjectId || !engineerProjectId) return;
-    setSelectedProjectId(id)
+  const changeProject = (id: Id<"projects">) => {
+    setSelectedProjectId((current) => current === id ? undefined : id);
   };
 
   if (!isLoaded) return <Loader />;
   if (!isSignedIn) return <SignIn />;
+  if (!projects || !summaries) return <Loader />;
 
-  if (!projects || !projectId || !categories || !reps || !tasks) {
-    return <Loader />;
+  if (!projectId) {
+    return <AllProjectsDashboard summaries={summaries} onSelect={changeProject} />;
   }
+
+  if (!categories || !reps || !tasks) return <Loader />;
 
   return (
     <div className="h-screen bg-slate-950 p-4">
-      <XPBar projectId={projectId} />
+      <XPBar
+        projectId={projectId}
+        actions={
+          <>
+            <button
+              type="button"
+              onClick={() => setSelectedProjectId(undefined)}
+              aria-label="Back to all projects"
+              className=" flex h-8 w-8 items-center justify-center rounded-md border border-[#8d6d2c] bg-linear-to-b from-[#1d232b] via-[#171c22] to-[#101419] text-amber-300 transition-all hover:border-amber-400 hover:text-white hover:shadow-[0_0_15px_rgba(255,190,70,.25)] " >
+              <FaArrowLeft /> 
+            </button>
+            <BurgerMenu projectId={projectId} categories={categories} tasks={tasks} reps={reps} />
+          </>
+        }
+      />
 
-      <div className="mx-5 mt-32 mb-5 justify-between text-white md:flex lg:mx-40">
-        <div className="mt-2 flex w-full justify-between">
-          <BurgerMenu projectId={projectId} categories={categories} tasks={tasks} reps={reps}/>
-
-          <div className="flex gap-3">
-            <div className="flex gap-2">
-              <ProjectButton
-                icon={<FaPalette />}
-                active={projectId === artProjectId}
-                onClick={() => changeProject(artProjectId)}
-              />
-
-              <ProjectButton
-                icon={<GiMountainClimbing />}
-                active={projectId === climbingProjectId}
-                onClick={() => changeProject(climbingProjectId)}
-              />
-
-              <ProjectButton
-                icon={<FaBookOpen />}
-                active={projectId === scholarProjectId}
-                onClick={() => changeProject(scholarProjectId)}
-              />
-
-              <ProjectButton
-                icon={<FaLaptopCode />}
-                active={projectId === engineerProjectId}
-                onClick={() => changeProject(engineerProjectId)}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="mx-5 gap-5 lg:mx-40 lg:flex">
-        <div className="lg:w-[30%] mb-2">
+      <div className="mx-5 mt-24 gap-5 lg:mx-40 lg:mt-28 lg:flex">
+        <div className="mb-2 lg:w-[30%]">
           <GroupRepChecklist projectId={projectId} />
         </div>
 
         <div className="lg:w-[70%]">
-          <CategoryTaskTree
-            reps={reps}
-            tasks={tasks}
-            categories={categories}
-            projectId={projectId}
-          />
+          <CategoryTaskTree reps={reps} tasks={tasks} categories={categories} projectId={projectId} />
         </div>
       </div>
     </div>
   );
 }
 
-import clsx from "clsx";
-import { BurgerMenu } from "~/components/art-prg/utils/BurgerMenu";
+function AllProjectsDashboard({ summaries, onSelect }: { summaries: ProjectSummary[]; onSelect: (id: Id<"projects">) => void }) {
+  const totalXp = summaries.reduce((total, project) => total + project.totalXp, 0);
+  const overallLevels = getOverallLevels();
+  const currentLevel = [...overallLevels].reverse().find((level) => totalXp >= level.xp) ?? overallLevels[0];
+  const nextLevel = overallLevels.find((level) => level.level === currentLevel.level + 1);
+  const rankProgress = nextLevel
+    ? Math.min(100, Math.round(((totalXp - currentLevel.xp) / (nextLevel.xp - currentLevel.xp)) * 100))
+    : 100;
+
+  return (
+    <main className="min-h-screen bg-[#0b0f14] p-4 text-white sm:p-6">
+      <div className="mx-auto max-w-4xl">
+        <header className="mb-6 rounded-2xl border border-[#675226] bg-gradient-to-br from-[#202733] via-[#151b23] to-[#0d1117] p-5 shadow-[0_0_30px_rgba(0,0,0,.35)] sm:p-6">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-amber-400">The four paths</p>
+              <p className="mt-2 text-sm text-slate-400">{totalXp.toLocaleString()} total XP</p>
+            </div>
+            <img src={getRankImage(currentLevel.level)} alt={`Overall level ${currentLevel.level} rank`} className="h-20 w-20 shrink-0 object-contain drop-shadow-[0_0_14px_rgba(255,215,120,.45)] sm:h-24 sm:w-24" />
+          </div>
+          <div className="mt-5 border-t border-[#3b434f] pt-4">
+            <div className="flex items-end justify-between gap-3">
+              <p className="text-lg font-bold text-white">Overall Level {currentLevel.level}</p>
+              <p className="text-xs text-slate-400">{nextLevel ? `${rankProgress}% to next level` : "Maximum level"}</p>
+            </div>
+            <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#28313d]">
+              <div className="h-full rounded-full bg-gradient-to-r from-cyan-800 via-cyan-400 to-cyan-200" style={{ width: `${rankProgress}%` }} />
+            </div>
+          </div>
+        </header>
+
+        <div className="mb-3 flex items-end justify-between">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-amber-500">Project overview</p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {summaries.map((project) => {
+            const projectLevels = levels(project.name as ProjectName);
+            const currentLevel = [...projectLevels].reverse().find((level) => project.totalXp >= level.xp) ?? projectLevels[0];
+            const nextLevel = projectLevels.find((level) => level.level === currentLevel.level + 1);
+            const progress = nextLevel
+              ? Math.min(100, Math.round(((project.totalXp - currentLevel.xp) / (nextLevel.xp - currentLevel.xp)) * 100))
+              : 100;
+
+            return (
+              <button
+                key={project._id}
+                type="button"
+                onClick={() => onSelect(project._id)}
+                className="rounded-2xl border border-[#303a47] bg-[#121820] p-3 text-left transition-all hover:border-amber-500 hover:bg-[#171e27] hover:shadow-[0_0_18px_rgba(255,190,70,.12)] focus:outline-none focus:ring-2 focus:ring-amber-400 sm:p-4"
+              >
+                <div className="flex items-start justify-between gap-1">
+                  <p className="truncate text-sm font-semibold text-slate-100">{project.name}</p>
+                  <img src={getRankImage(currentLevel.level)} alt="" aria-hidden="true" className="h-9 w-9 shrink-0 object-contain sm:h-11 sm:w-11" />
+                </div>
+                <p className="mt-3 text-xs font-medium text-amber-300">Level {currentLevel.level}</p>
+                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#28313d]">
+                  <div className="h-full rounded-full bg-gradient-to-r from-cyan-800 to-cyan-300" style={{ width: `${progress}%` }} />
+                </div>
+                <p className="mt-2 text-[10px] text-slate-500">{project.totalXp.toLocaleString()} XP</p>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </main>
+  );
+}
 
 type ProjectButtonProps = {
   icon: React.ReactNode;
@@ -125,33 +154,21 @@ type ProjectButtonProps = {
   onClick?: () => void;
 };
 
-export function ProjectButton({
-  icon,
-  active = false,
-  onClick,
-}: ProjectButtonProps) {
+export function ProjectButton({ icon, active = false, onClick }: ProjectButtonProps) {
   return (
     <button
       onClick={onClick}
       className={clsx(
-        "group relative overflow-hidden min-w-10 rounded-lg border px-3 py-2 transition-all duration-300",
+        "group relative min-w-10 overflow-hidden rounded-lg border px-3 py-2 transition-all duration-300",
         "bg-linear-to-b from-[#1b2027] via-[#171c22] to-[#111418]",
         active
           ? "border-amber-400 shadow-[0_0_18px_rgba(255,190,70,.35)]"
           : "border-[#3c4654] hover:border-amber-500 hover:shadow-[0_0_14px_rgba(255,190,70,.15)]"
-      )} >
+      )}
+    >
       <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-white/5 via-transparent to-black/20" />
-      <div
-        className={clsx(
-          "absolute left-0 top-0 h-0.5 w-full transition-opacity",
-          active
-            ? "bg-linear-to-r from-amber-700 via-yellow-300 to-amber-700"
-            : "opacity-0 group-hover:opacity-100 bg-linear-to-r from-amber-700 via-yellow-300 to-amber-700"
-        )} />
-
-      <div className="relative text-sm flex items-center gap-3">
-        {icon}
-      </div>
+      <div className={clsx("absolute left-0 top-0 h-0.5 w-full transition-opacity", active ? "bg-linear-to-r from-amber-700 via-yellow-300 to-amber-700" : "bg-linear-to-r from-amber-700 via-yellow-300 to-amber-700 opacity-0 group-hover:opacity-100")} />
+      <div className="relative flex items-center gap-3 text-sm">{icon}</div>
     </button>
   );
 }

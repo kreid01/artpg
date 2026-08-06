@@ -11,6 +11,32 @@ export const getAllProjects = query({
   },
 });
 
+export const getProjectSummaries = query({
+  args: {},
+  handler: async (ctx) => {
+    const projects = await ctx.db.query("projects").collect();
+    const completedReps = (await ctx.db.query("reps").collect()).filter((rep) => rep.completedAt);
+
+    return await Promise.all(projects.map(async (project) => {
+      const categories = await ctx.db
+        .query("categories")
+        .filter((q) => q.eq(q.field("projectId"), project._id))
+        .collect();
+      const projectReps = (await Promise.all(completedReps.map(async (rep) => ({
+        rep,
+        projectId: await getRepProjectId(ctx, rep),
+      })))).filter(({ projectId }) => projectId === project._id).map(({ rep }) => rep);
+
+      return {
+        _id: project._id,
+        name: project.name,
+        categoryCount: categories.length,
+        totalXp: projectReps.reduce((total, rep) => total + rep.xpValue, 0),
+      };
+    }));
+  },
+});
+
 export const getProjectById = query({
   args: {
     projectId: v.id("projects"),

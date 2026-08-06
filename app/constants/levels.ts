@@ -89,6 +89,9 @@ export const getTargetXp = (projectName: ProjectName) => {
   return TARGET_XP[name] 
 }
 
+export const getOverallLevels = () =>
+  generateLevels(Object.values(TARGET_XP).reduce((total, target) => total + target, 0));
+
 const generateLevels = (targetXp: number, rewardDict?: Record<number, string>, maxLevel = 100) => {
   const levels = [];
   const k = 0.04;

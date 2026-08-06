@@ -1,7 +1,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Select from "@radix-ui/react-select";
 import { useState } from "react";
-import { FaArrowLeft, FaPlus, FaTrophy } from "react-icons/fa6";
+import { FaPlus, FaTrophy } from "react-icons/fa6";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";

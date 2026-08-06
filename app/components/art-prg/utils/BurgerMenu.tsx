@@ -12,7 +12,7 @@ export const BurgerMenu:React.FC<Props> = ({projectId, categories, tasks, reps})
     return (
         <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
-            <button className=" flex h-10 w-10 items-center justify-center rounded-md border border-[#8d6d2c] bg-linear-to-b from-[#1d232b] via-[#171c22] to-[#101419] text-amber-300 transition-all hover:border-amber-400 hover:text-white hover:shadow-[0_0_15px_rgba(255,190,70,.25)] " >
+            <button className=" flex h-8 w-8 items-center justify-center rounded-md border border-[#8d6d2c] bg-linear-to-b from-[#1d232b] via-[#171c22] to-[#101419] text-amber-300 transition-all hover:border-amber-400 hover:text-white hover:shadow-[0_0_15px_rgba(255,190,70,.25)] " >
             <HiBars3 size={24} />
             </button>
 
