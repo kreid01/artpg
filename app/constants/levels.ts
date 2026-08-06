@@ -173,15 +173,15 @@ const CLIMBING_CATEGORY_XP_CAPS: Record<string, number> = {
 }
 
 const SCHOLAR_CATEGORY_XP_CAPS: Record<string, number> = {
-  "history":  50000,
-  "mythology & folklore":        50000,
-  "language": 40000,
-  "nature & biology":        40000,
+  "history":  60000,
+  "mythology & folklore":        60000,
+  "language": 50000,
   "literature": 30000,
-  "space":               30000,
-  "philosophy":          20000,
-  "psychology":          20000,
+  "space":               20000,
   "chess":               20000,
+  "psychology":          20000,
+  "philosophy":          20000,
+  "nature & biology":        20000,
 }
 
 const ENGINEER_CATEGORY_XP_CAPS: Record<string, number> = {
