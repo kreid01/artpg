@@ -88,6 +88,8 @@ function CategoryBranch({
   const createTask = useMutation(api.projects.createTask);
 
   const completeTask = useMutation(api.projects.completeTask);
+  const completeAchievment = useMutation(api.projects.completeAchievementRep)
+  const achievements = useQuery(api.projects.getAchievements, {projectId})
 
   const handleAdd = async () => {
     if (!title.trim()) return;
@@ -152,6 +154,29 @@ function CategoryBranch({
       </button>
     </Collapsible.Trigger>
     <Collapsible.Content className="mt-3 ml-3 space-y-3 border-l-2 border-[#8d6d2c]/40 pl-4">
+      {achievements && achievements?.sort((a, b) => a.xpValue - b.xpValue).filter(ach => ach.categoryId == category._id).map(ach => (
+      <div key={ach._id} onClick={async () => {
+          try {
+            await completeAchievment({ achievementId: ach._id, projectId });
+            setToastData({ title: ach.name});
+            setOpenToast(true);
+          } catch {
+            setToastData({ title: "Error", description: "Failed to complete task" });
+            setOpenToast(true);
+          } }}
+        className="group cursor-pointer h-12 rounded-lg border border-[#3c4654] bg-linear-to-b from-[#1b2027] to-[#13181d] px-4 py-2 transition-all duration-300 hover:border-cyan-400 hover:bg-[#202833] hover:shadow-[0_0_12px_rgba(45,140,211,.25)]" >
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="font-medium text-white text-sm transition-colors group-hover:text-cyan-200">{ach.name}</p>
+          </div>
+
+          <div className="rounded-md border border-amber-700 bg-[#23211a] px-3 py-1 text-sm font-semibold text-amber-300">
+            +{ach.xpValue} XP
+          </div>
+        </div>
+      </div>
+    ))}
+
       {tasks.length !== 0 && tasks.sort((a, b) => a.xpValue - b.xpValue).map(task => (
       <div key={task._id} onClick={async () => {
           try {
