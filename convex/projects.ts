@@ -32,6 +32,7 @@ export const getProjectSummaries = query({
         name: project.name,
         categoryCount: categories.length,
         totalXp: projectReps.reduce((total, rep) => total + rep.xpValue, 0),
+        weeklyGoal: project.weeklyGoal
       };
     }));
   },
