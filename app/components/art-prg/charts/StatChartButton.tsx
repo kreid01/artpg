@@ -5,7 +5,6 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
 import { getCategoryColours } from "~/constants/colours";
-import { getXpCaps } from "~/constants/levels";
 import { FaBullseye } from "react-icons/fa6";
 import type { ProjectName } from "~/constants/levels";
 import { ProjectButton, type ProjectId } from "~/routes/home";
@@ -25,7 +24,7 @@ export const StatChartButton: React.FC<ProjectId> = ({ projectId }) => {
   );
 
   const categories = useQuery(
-    api.projects.getAllCategories,
+    api.projects.getByProject,
     open ? { projectId } : "skip"
   );
 
@@ -34,7 +33,6 @@ export const StatChartButton: React.FC<ProjectId> = ({ projectId }) => {
   })?.name as ProjectName;
 
   const colours = getCategoryColours(projectName ?? "art");
-  const xpCaps = getXpCaps(projectName ?? "art");
 
   const taskMap = useMemo(
     () => new Map((tasks ?? []).map((t) => [t._id, t])),
@@ -139,9 +137,7 @@ export const StatChartButton: React.FC<ProjectId> = ({ projectId }) => {
                         label: "Mastery",
                         data: activeCategories.map((cat) => {
                           const xp = xpByCategory.get(cat._id) ?? 0;
-                          const cap = xpCaps[cat.name.toLowerCase()] ?? 1;
-
-                          return Math.min(xp, cap);
+                          return Math.min(xp, cat?.cap?.value ?? 0);
                         }),
                         color: "#55b7ff",
                         fillArea: true,
@@ -150,7 +146,7 @@ export const StatChartButton: React.FC<ProjectId> = ({ projectId }) => {
                     radar={{
                       metrics: activeCategories.map((cat) => ({
                         name: cat.name,
-                        max: xpCaps[cat.name.toLowerCase()] ?? 1,
+                        max: cat?.cap?.value ?? 1,
                       })),
                     }}
                   />
@@ -168,7 +164,7 @@ export const StatChartButton: React.FC<ProjectId> = ({ projectId }) => {
 
                     {activeCategories.map((cat) => {
                       const xp = xpByCategory.get(cat._id) ?? 0;
-                      const cap = xpCaps[cat.name.toLowerCase()] ?? 1;
+                      const cap = cat?.cap?.value ?? 1 
                       const pct = Math.min( 100, (xp / cap) * 100);
 
                       const color =

@@ -2,11 +2,11 @@ import { useMemo, useState } from "react"
 import * as Dialog from "@radix-ui/react-dialog"
 import { useQuery } from "convex/react"
 import { api } from "convex/_generated/api"
-import { generateSkillLevels, getRankImage, getXpCaps, levels, type ProjectName } from "~/constants/levels"
-import { FaArrowTrendUp } from "react-icons/fa6";
+import { getRankImage, useOverallLevels, useProjectLevels, useSkillLevelLookup, type ProjectName } from "~/constants/levels"
 import { ProjectButton } from "~/routes/home"
 import { CloseButton } from "./utils/CloseButton"
 import type { Props } from "./CategoryTasks"
+import { FaTable } from "react-icons/fa"
 
 export const RewardTrackButton:React.FC<Props> = ({ categories, tasks, reps, projectId }) => {
   const [open, setOpen] = useState(false)
@@ -15,17 +15,8 @@ export const RewardTrackButton:React.FC<Props> = ({ categories, tasks, reps, pro
     projectId,
   })?.name as ProjectName;
 
-  const xpCaps = getXpCaps(projectName ?? "art")
-  const order = Object.keys(xpCaps);
 
-  const sortedCategories = [...categories].sort((a, b) => {
-    const ai = order.indexOf(a.name.toLowerCase());
-    const bi = order.indexOf(b.name.toLowerCase());
-    const aIdx = ai === -1 ? Infinity : ai;
-    const bIdx = bi === -1 ? Infinity : bi;
-    return aIdx - bIdx;
-  });
-
+  const sortedCategories = [...categories].sort((a, b) => (b.cap?.value ?? 0) - (a.cap?.value ?? 0));
   const [selectedCategory, setSelectedCategory] = useState("all");
 
   const taskMap = useMemo(
@@ -49,11 +40,25 @@ export const RewardTrackButton:React.FC<Props> = ({ categories, tasks, reps, pro
     return totals;
   }, [reps, taskMap]);
 
+  const projectLevels = useProjectLevels(projectId);
+  const skillLookup = useSkillLevelLookup(projectId);
+
   const LEVELS = useMemo(() => {
-    return selectedCategory === "all"
-      ? levels(projectName ?? "art")
-      : generateSkillLevels(projectName ?? "art", categories.find(c => c._id == selectedCategory)?.name ?? "");
-  }, [projectName, selectedCategory]);
+    if (!projectLevels || !skillLookup) return [];
+
+    if (selectedCategory === "all") {
+      return projectLevels;
+    }
+
+    const category = categories.find(c => c._id === selectedCategory);
+
+    return skillLookup.get(category?.name.toLowerCase() ?? "") ?? [];
+  }, [
+    selectedCategory,
+    projectLevels,
+    skillLookup,
+    categories,
+  ]);
 
   const totalXp = useMemo(() => {
     return selectedCategory === "all"
@@ -62,6 +67,8 @@ export const RewardTrackButton:React.FC<Props> = ({ categories, tasks, reps, pro
   }, [selectedCategory, reps, categoryXpTotals]);
 
   const currentLevel = useMemo(() => {
+    if (!LEVELS.length) return 1;
+
     return (
       [...LEVELS].reverse().find(level => totalXp >= level.xp)?.level ?? 1
     );
@@ -70,7 +77,7 @@ export const RewardTrackButton:React.FC<Props> = ({ categories, tasks, reps, pro
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        <ProjectButton icon={<FaArrowTrendUp/>}/>
+        <ProjectButton icon={<FaTable/>}/>
       </Dialog.Trigger>
 
       <Dialog.Portal>
@@ -80,7 +87,7 @@ export const RewardTrackButton:React.FC<Props> = ({ categories, tasks, reps, pro
           <div className="flex items-center justify-between border-b border-[#353d47] px-6 py-5">
             <div className="flex items-center gap-4 min-w-0">
               <div className="flex h-14 w-14 items-center justify-center rounded-full border border-amber-700 bg-[#2b2315] text-2xl text-amber-300">
-                <FaArrowTrendUp />
+                <FaTable />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-[10px] uppercase tracking-[0.3em] text-amber-500">Progression</p>

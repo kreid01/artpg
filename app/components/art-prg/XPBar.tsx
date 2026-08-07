@@ -1,7 +1,7 @@
 import { api } from "convex/_generated/api";
 import { useQuery } from "convex/react";
 import { Loader } from "./utils/Loader";
-import { getRankImage, levels, type ProjectName } from "~/constants/levels";
+import { getRankImage, type ProjectName, useProjectLevels } from "~/constants/levels";
 import type { ProjectId } from "~/routes/home";
 import type { ReactNode } from "react";
 
@@ -9,15 +9,13 @@ type XPBarProps = ProjectId & { actions?: ReactNode };
 
 export const XPBar: React.FC<XPBarProps> = ({projectId, actions}) => {
   const reps = useQuery(api.projects.getAllCompleteReps, {projectId});
-  const latestFocus = useQuery(api.projects.getLatestFocus);
 
   const projectName = useQuery(api.projects.getProjectById, {
     projectId,
   })?.name as ProjectName;
+  const LEVELS = useProjectLevels(projectId) ?? [];
 
-  if (!projectName || !reps || latestFocus === undefined) return <Loader />;
-
-  const LEVELS = levels(projectName ?? "");
+  if (!projectName || !reps) return <Loader />;
 
   const totalXp = reps.reduce((sum, rep) => sum + rep.xpValue, 0);
 

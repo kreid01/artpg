@@ -4,12 +4,13 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
 import { getCategoryColours } from "~/constants/colours";
-import { getRankImage, getSkillRankImage, getXpCaps, type ProjectName } from "~/constants/levels";
+import { useSkillRankImage, type ProjectName } from "~/constants/levels";
 import { CompleteToast } from "./utils/CompleteToast";
 
 type Category = {
   _id: Id<"categories">;
   name: string;
+  cap: {value: number} | null;
 };
 
 type Task = {
@@ -41,18 +42,8 @@ export function CategoryTaskTree({ categories, tasks, reps, projectId }: Props) 
     projectId,
   })?.name as ProjectName 
 
-  const xpCaps = getXpCaps(projectName ?? "art")
-  const order = Object.keys(xpCaps);
   const colours = getCategoryColours(projectName ?? "art")
-
-  const sortedCategories = [...categories].sort((a, b) => {
-    const ai = order.indexOf(a.name.toLowerCase());
-    const bi = order.indexOf(b.name.toLowerCase());
-    const aIdx = ai === -1 ? Infinity : ai;
-    const bIdx = bi === -1 ? Infinity : bi;
-    return aIdx - bIdx;
-  });
-
+  const sortedCategories = [...categories].sort((a, b) => (b.cap?.value ?? 0) - (a.cap?.value ?? 0));
   const categoryXpTotals: Record<string, number> = {};
 
   for (const rep of reps) {
@@ -70,7 +61,6 @@ export function CategoryTaskTree({ categories, tasks, reps, projectId }: Props) 
           category={category}
           tasks={tasks.filter(task => task.categoryId === category._id)}
           totalXp={categoryXpTotals[category._id] || 0}
-          xpCaps={xpCaps}
           colours={colours}
           projectName={projectName}
         />
@@ -84,7 +74,6 @@ function CategoryBranch({
   tasks,
   projectId,
   totalXp,
-  xpCaps,
   colours,
   projectName
 }: {
@@ -92,7 +81,6 @@ function CategoryBranch({
   tasks: Task[];
   projectId: Id<"projects">;
   totalXp: number;
-  xpCaps: Record<string, number>,
   colours: Record<string, string>
   projectName: ProjectName 
 }) {
@@ -118,7 +106,9 @@ function CategoryBranch({
     setAdding(false);
   };
 
-  const cap = xpCaps[category.name.toLowerCase()] || 1;
+  const rankImage = useSkillRankImage(projectId, category.name, totalXp); 
+
+  const cap = category?.cap?.value ?? 0
   const progress = Math.min(totalXp / cap, 1);
   const color = colours[category.name.toLowerCase()] || "#64748b"; 
 
@@ -145,7 +135,7 @@ function CategoryBranch({
               {projectName && (
                 <img
                   className="h-8 w-8"
-                  src={getSkillRankImage(projectName, category.name, totalXp)}
+                  src={rankImage}
                   alt="skill level"
                 />
               )}

@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { api } from "convex/_generated/api";
 import { FaChartLine } from "react-icons/fa";
-import { getTargetXp, type ProjectName } from "~/constants/levels";
+import { type ProjectName } from "~/constants/levels";
 import { ProjectButton, type ProjectId } from "~/routes/home";
 import { CloseButton } from "../utils/CloseButton";
 
@@ -20,11 +20,10 @@ const getWeekKey = (dateMs: number): string => {
 export const XPChartButton: React.FC<ProjectId> = ({projectId}) => {
   const [open, setOpen] = useState(false);
 
-  const projectName = useQuery(api.projects.getProjectById, {
-    projectId,
-  })?.name as ProjectName;
-
-  const goalXp = getTargetXp(projectName ?? "art")
+  const categories = useQuery(api.projects.getByProject, { projectId });
+  const goalXp = useMemo(() =>
+    categories?.reduce( (sum, category) => sum + (category.cap?.value ?? 0), 0) ?? 0, [categories]
+  );
 
   const reps = useQuery(api.projects.getAllCompleteReps, open ? {projectId} : "skip");
   const tasks = useQuery(api.projects.getAllTasks, open ? {projectId} : "skip");

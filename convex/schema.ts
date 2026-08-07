@@ -9,7 +9,7 @@ export default defineSchema({
   categories: defineTable({
     projectId: v.optional(v.id("projects")),
     name: v.string(),
-  }),
+  }).index("by_projectId", ["projectId"]),
 
   achievements: defineTable({
   projectId: v.optional(v.id("projects")),
@@ -22,13 +22,6 @@ export default defineSchema({
   .index("by_project", ["projectId"])
   .index("by_category", ["categoryId"]),
 
-  journal: defineTable({
-    created: v.number(),
-    wins: v.string(),
-    toImprove: v.string(),
-    focus: v.string(),
-  }).index("by_created", ["created"]),
-
   reps: defineTable({
     taskId: v.optional(v.id("tasks")),
     title: v.optional(v.string()),
@@ -37,6 +30,11 @@ export default defineSchema({
     groupId: v.optional(v.number()),
     xpValue: v.number(),
   }).index("by_task", ["taskId"]),
+
+  caps: defineTable({
+    categoryId: v.id("categories"),
+    value: v.number(),
+  }).index("by_categoryId", ["categoryId"]),
 
   tasks: defineTable({
     projectId: v.id("projects"),

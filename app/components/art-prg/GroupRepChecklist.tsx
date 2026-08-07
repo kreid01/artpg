@@ -1,7 +1,6 @@
 import { useQuery, useMutation } from "convex/react";
 import { api } from "convex/_generated/api";
 import { useState } from "react";
-import { type ProjectName } from "~/constants/levels";
 import { Loader } from "./utils/Loader";
 import { ProjectButton, type ProjectId } from "~/routes/home";
 import * as Collapsible from "@radix-ui/react-collapsible";

@@ -8,15 +8,16 @@ import { GroupRepChecklist } from "~/components/art-prg/GroupRepChecklist";
 import { useState } from "react";
 import type { Id } from "../../convex/_generated/dataModel";
 import { FaArrowLeft } from "react-icons/fa6";
-import { getOverallLevels, getRankImage, levels, type ProjectName } from "~/constants/levels";
+import { getRankImage, useOverallLevels } from "~/constants/levels";
 import clsx from "clsx";
 import { BurgerMenu } from "~/components/art-prg/utils/BurgerMenu";
+import { ProjectCard } from "~/components/art-prg/ProjectCard";
 
 export interface ProjectId {
   projectId: Id<"projects">;
 }
 
-type ProjectSummary = {
+export type ProjectSummary = {
   _id: Id<"projects">;
   name: string;
   totalXp: number;
@@ -30,7 +31,7 @@ export default function Home() {
   const summaries = useQuery(api.projects.getProjectSummaries) as ProjectSummary[] | undefined;
   const projectId = selectedProjectId;
 
-  const categories = useQuery(api.projects.getAllCategories, projectId ? { projectId } : "skip");
+  const categories = useQuery(api.projects.getByProject, projectId ? { projectId } : "skip");
   const reps = useQuery(api.projects.getAllCompleteReps, projectId ? { projectId } : "skip");
   const tasks = useQuery(api.projects.getTasksByProject, projectId ? { projectId } : "skip");
 
@@ -80,18 +81,29 @@ export default function Home() {
 }
 
 function AllProjectsDashboard({ summaries, onSelect }: { summaries: ProjectSummary[]; onSelect: (id: Id<"projects">) => void }) {
-  const totalXp = summaries.reduce((total, project) => total + project.totalXp, 0);
-  const overallLevels = getOverallLevels();
-  const currentLevel = [...overallLevels].reverse().find((level) => totalXp >= level.xp) ?? overallLevels[0];
+    const totalXp = summaries.reduce(
+    (total, project) => total + project.totalXp,
+    0
+  );
+
+  const overallLevels = useOverallLevels();
+
+  if (!overallLevels) {
+    return <div></div>; 
+  }
+
+  const currentLevel =
+    [...overallLevels].reverse().find((level) => totalXp >= level.xp) ??
+    overallLevels[0];
+
   const nextLevel = overallLevels.find((level) => level.level === currentLevel.level + 1);
-  const rankProgress = nextLevel
-    ? Math.min(100, Math.round(((totalXp - currentLevel.xp) / (nextLevel.xp - currentLevel.xp)) * 100))
-    : 100;
+
+  const rankProgress = nextLevel ? Math.min( 100, Math.round( ((totalXp - currentLevel.xp) / (nextLevel.xp - currentLevel.xp)) * 100)) : 100;
 
   return (
     <main className="min-h-screen bg-[#0b0f14] p-4 text-white sm:p-6">
       <div className="mx-auto max-w-4xl">
-        <header className="mb-6 rounded-2xl border border-[#675226] bg-gradient-to-br from-[#202733] via-[#151b23] to-[#0d1117] p-5 shadow-[0_0_30px_rgba(0,0,0,.35)] sm:p-6">
+        <header className="mb-6 rounded-2xl border border-[#675226] bg-linear-to-br from-[#202733] via-[#151b23] to-[#0d1117] p-5 shadow-[0_0_30px_rgba(0,0,0,.35)] sm:p-6">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-amber-400">The four paths</p>
@@ -115,33 +127,7 @@ function AllProjectsDashboard({ summaries, onSelect }: { summaries: ProjectSumma
         </div>
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {summaries.map((project) => {
-            const projectLevels = levels(project.name as ProjectName);
-            const currentLevel = [...projectLevels].reverse().find((level) => project.totalXp >= level.xp) ?? projectLevels[0];
-            const nextLevel = projectLevels.find((level) => level.level === currentLevel.level + 1);
-            const progress = nextLevel
-              ? Math.min(100, Math.round(((project.totalXp - currentLevel.xp) / (nextLevel.xp - currentLevel.xp)) * 100))
-              : 100;
-
-            return (
-              <button
-                key={project._id}
-                type="button"
-                onClick={() => onSelect(project._id)}
-                className="rounded-2xl border border-[#303a47] bg-[#121820] p-3 text-left transition-all hover:border-amber-500 hover:bg-[#171e27] hover:shadow-[0_0_18px_rgba(255,190,70,.12)] focus:outline-none focus:ring-2 focus:ring-amber-400 sm:p-4"
-              >
-                <div className="flex items-start justify-between gap-1">
-                  <p className="truncate text-sm font-semibold text-slate-100">{project.name}</p>
-                  <img src={getRankImage(currentLevel.level)} alt="" aria-hidden="true" className="h-9 w-9 shrink-0 object-contain sm:h-11 sm:w-11" />
-                </div>
-                <p className="mt-3 text-xs font-medium text-amber-300">Level {currentLevel.level}</p>
-                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#28313d]">
-                  <div className="h-full rounded-full bg-gradient-to-r from-cyan-800 to-cyan-300" style={{ width: `${progress}%` }} />
-                </div>
-                <p className="mt-2 text-[10px] text-slate-500">{project.totalXp.toLocaleString()} XP</p>
-              </button>
-            );
-          })}
+          {summaries.map((project) => ( <ProjectCard key={project._id} onSelect={onSelect} project={project} />))}
         </div>
       </div>
     </main>

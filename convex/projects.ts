@@ -415,20 +415,6 @@ export const createRepsFromGroup = mutation({
   },
 });
 
-export const createJournalEntry = mutation({
-  args: {
-    wins: v.string(),
-    toImprove: v.string(),
-    focus: v.string(),
-  },
-  handler: async (ctx, args) => {
-    await ctx.db.insert("journal", {
-      ...args,
-      created: Date.now(),
-    });
-  },
-});
-
 export const getAchievements = query({
   args: {
     projectId: v.id("projects"),
@@ -438,6 +424,34 @@ export const getAchievements = query({
       .query("achievements")
       .withIndex("by_project", q => q.eq("projectId", projectId))
       .collect();
+  },
+});
+
+export const getByProject = query({
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, { projectId }) => {
+    const categories = await ctx.db
+      .query("categories")
+      .withIndex("by_projectId", (q) => q.eq("projectId", projectId))
+      .collect();
+
+    return Promise.all(
+      categories.map(async (category) => {
+        const cap = await ctx.db
+          .query("caps")
+          .withIndex("by_categoryId", (q) =>
+            q.eq("categoryId", category._id)
+          )
+          .unique();
+
+        return {
+          ...category,
+          cap,
+        };
+      })
+    );
   },
 });
 
@@ -505,15 +519,61 @@ export const completeAchievementRep = mutation({
   },
 });
 
-export const getLatestFocus = query({
+export const upsertCap = mutation({
+  args: {
+    categoryId: v.id("categories"),
+    value: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("caps")
+      .withIndex("by_categoryId", (q) =>
+        q.eq("categoryId", args.categoryId)
+      )
+      .unique();
+
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        value: args.value,
+      });
+
+      return existing;
+    }
+
+    const id = await ctx.db.insert("caps", {
+      categoryId: args.categoryId,
+      value: args.value,
+    });
+
+    return await ctx.db.get(id);
+  },
+});
+
+export const getTotalCap = query({
   args: {},
   handler: async (ctx) => {
-    const latest = await ctx.db
-      .query("journal")
-      .withIndex("by_created")
-      .order("desc")
-      .first();
+    const caps = await ctx.db.query("caps").collect();
 
-    return latest?.focus ?? "";
+    return caps.reduce((total, cap) => total + cap.value, 0);
+  },
+});
+
+export const createCategory = mutation({
+  args: {
+    projectId: v.id("projects"),
+    name: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const categoryId = await ctx.db.insert("categories", {
+      projectId: args.projectId,
+      name: args.name,
+    });
+
+    await ctx.db.insert("caps", {
+      categoryId,
+      value: 0,
+    });
+
+    return categoryId;
   },
 });
