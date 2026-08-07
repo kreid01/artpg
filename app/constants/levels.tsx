@@ -1,5 +1,73 @@
-export const levels = (projectName: ProjectName) => generateProjectLevels(projectName, 100)
+import { useMemo } from "react";
+import { useQuery } from "convex/react";
+import { api } from "convex/_generated/api";
+import type { Id } from "convex/_generated/dataModel";
+
 export type ProjectName = "Engineering" | "Scholar" | "Art" | "Climbing"
+
+export const useSkillLevels = (projectId: Id<"projects">) => {
+  const categories = useQuery(api.projects.getByProject, { projectId });
+
+  return useMemo(() => {
+    if (!categories) return undefined;
+
+    return categories.reduce((acc, category) => {
+      acc[category.name.toLowerCase()] = generateLevels(
+        category.cap?.value ?? 0
+      );
+      return acc;
+    }, {} as Record<string, ReturnType<typeof generateLevels>>);
+  }, [categories]);
+};
+
+export const useSkillRankImage = (
+  projectId: Id<"projects">,
+  categoryName: string,
+  totalXp: number
+) => {
+  const skillLevels = useSkillLevels(projectId);
+
+  return useMemo(() => {
+    if (!skillLevels) return "";
+
+    const levels = skillLevels[categoryName.toLowerCase()];
+    if (!levels) return "";
+
+    let currentLevel = levels[0];
+
+    for (let i = 0; i < levels.length - 1; i++) {
+      if (totalXp >= levels[i].xp && totalXp < levels[i + 1].xp) {
+        currentLevel = levels[i];
+        break;
+      }
+    }
+
+    if (totalXp >= levels[levels.length - 1].xp) {
+      currentLevel = levels[levels.length - 1];
+    }
+
+    return getRankImage(currentLevel.level);
+  }, [skillLevels, categoryName, totalXp]);
+};
+
+export const useSkillLevelLookup = (projectId: Id<"projects">) => {
+  const categories = useQuery(api.projects.getByProject, { projectId });
+
+  return useMemo(() => {
+    if (!categories) return undefined;
+
+    const lookup = new Map<string, ReturnType<typeof generateLevels>>();
+
+    for (const category of categories) {
+      lookup.set(
+        category.name.toLowerCase(),
+        generateLevels(category.cap?.value ?? 0)
+      );
+    }
+
+    return lookup;
+  }, [categories]);
+};
 
 const rankDict: Record<number, string> = {
   0: "Iron IV",
@@ -77,20 +145,22 @@ const getRewardDict = (projectName: string) => {
   return {}
 }
 
-const TARGET_XP = {
-  "art": 400_000,
-  "scholar": 300_000,
-  "engineer": 200_000,
-  "climbing": 150_000,
-}
+// const TARGET_XP = {
+//   "art": 400_000,
+//   "scholar": 300_000,
+//   "engineer": 200_000,
+//   "climbing": 150_000,
+// }
 
-export const getTargetXp = (projectName: ProjectName) => {
-  const name = projectName?.toLowerCase() as keyof typeof TARGET_XP;
-  return TARGET_XP[name] 
-}
+export const useOverallLevels = () => {
+  const totalCap = useQuery(api.projects.getTotalCap);
 
-export const getOverallLevels = () =>
-  generateLevels(Object.values(TARGET_XP).reduce((total, target) => total + target, 0));
+  return useMemo(() => {
+    if (totalCap === undefined) return undefined;
+
+    return generateLevels(totalCap);
+  }, [totalCap]);
+};
 
 const generateLevels = (targetXp: number, rewardDict?: Record<number, string>, maxLevel = 100) => {
   const levels = [];
@@ -109,47 +179,20 @@ const generateLevels = (targetXp: number, rewardDict?: Record<number, string>, m
   return levels;
 }
 
-export const generateProjectLevels = (projectName: ProjectName, maxLevel = 100) => {
-  const targetXp = getTargetXp(projectName)
-  const rewardDict = getRewardDict(projectName) 
-  return generateLevels(targetXp, rewardDict, maxLevel)
-};
+export const useProjectLevels = (projectId: Id<"projects">, maxLevel = 100) => {
+  const categories = useQuery(api.projects.getByProject, { projectId });
+  const project = useQuery(api.projects.getProjectById, {projectId})
 
-export const getSkillRankImage = (projectName: ProjectName, categoryName: string, totalXp: number) => {
-  const skillLevels = generateSkillLevels(projectName, categoryName)
-  let currentLevel = skillLevels[0];
+  return useMemo(() => {
+    if (!categories) return undefined;
 
-  for (let i = 0; i < skillLevels.length - 1; i++) {
-    if (totalXp >= skillLevels[i].xp && totalXp < skillLevels[i + 1].xp) {
-      currentLevel = skillLevels[i];
-      break;
-    }
-  }
-  if (totalXp >= skillLevels[skillLevels.length - 1].xp) {
-    currentLevel = skillLevels[skillLevels.length - 1];
-  }
+    const targetXp = categories.reduce(
+      (sum, category) => sum + (category.cap?.value ?? 0),
+      0
+    );
 
-  return getRankImage(currentLevel.level)
-}
-
-export const generateSkillLevels = (projectName: ProjectName, categoryName: string) => {
-  const xpCaps = getXpCaps(projectName)
-  const targetXp = xpCaps[categoryName.toLowerCase()] ?? 0
-
-  return generateLevels(targetXp)
-}
-
-export const getXpCaps = (projectName: ProjectName) => {
-  const xpCapDict = {
-    art: ART_CATEGORY_XP_CAPS,
-    climbing: CLIMBING_CATEGORY_XP_CAPS,
-    scholar: SCHOLAR_CATEGORY_XP_CAPS,
-    engineer: ENGINEER_CATEGORY_XP_CAPS
-  };
-
-  const name = projectName.toLowerCase() as keyof typeof xpCapDict;
-
-  return xpCapDict[name];
+    return generateLevels(targetXp, getRewardDict(project?.name ?? ""), maxLevel);
+  }, [categories, maxLevel]);
 };
 
 const ART_CATEGORY_XP_CAPS: Record<string, number> = {
