@@ -76,7 +76,7 @@ export const ConfigureCapsButton: React.FC<Props> = ({ projectId }) => {
             </Dialog.Close>
           </div>
 
-          <div className="space-y-4 p-6 max-h-[60vh] overflow-scroll">
+          <div className="space-y-4 p-6 max-h-[60vh] overflow-y-scroll">
             {categories === undefined && (
               <p className="text-sm text-gray-400">Loading...</p>
             )}
