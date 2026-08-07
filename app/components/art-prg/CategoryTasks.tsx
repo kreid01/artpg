@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
-import { getCategoryColours } from "~/constants/colours";
 import { useSkillRankImage, type ProjectName } from "~/constants/levels";
 import { CompleteToast } from "./utils/CompleteToast";
 
@@ -11,6 +10,7 @@ type Category = {
   _id: Id<"categories">;
   name: string;
   cap: {value: number} | null;
+  colour?: string 
 };
 
 type Task = {
@@ -42,7 +42,6 @@ export function CategoryTaskTree({ categories, tasks, reps, projectId }: Props) 
     projectId,
   })?.name as ProjectName 
 
-  const colours = getCategoryColours(projectName ?? "art")
   const sortedCategories = [...categories].sort((a, b) => (b.cap?.value ?? 0) - (a.cap?.value ?? 0));
   const categoryXpTotals: Record<string, number> = {};
 
@@ -61,7 +60,6 @@ export function CategoryTaskTree({ categories, tasks, reps, projectId }: Props) 
           category={category}
           tasks={tasks.filter(task => task.categoryId === category._id)}
           totalXp={categoryXpTotals[category._id] || 0}
-          colours={colours}
           projectName={projectName}
         />
       ))}
@@ -74,14 +72,12 @@ function CategoryBranch({
   tasks,
   projectId,
   totalXp,
-  colours,
   projectName
 }: {
   category: Category;
   tasks: Task[];
   projectId: Id<"projects">;
   totalXp: number;
-  colours: Record<string, string>
   projectName: ProjectName 
 }) {
   const [open, setOpen] = useState(false);
@@ -110,10 +106,10 @@ function CategoryBranch({
 
   const cap = category?.cap?.value ?? 0
   const progress = Math.min(totalXp / cap, 1);
-  const color = colours[category.name.toLowerCase()] || "#64748b"; 
 
   const [openToast, setOpenToast] = useState(false);
   const [toastData, setToastData] = useState<{ title: string; description?: string } | null>(null);
+  const color = category.colour ?? "gray"
 
   return (
     <Collapsible.Root open={open} onOpenChange={setOpen}>

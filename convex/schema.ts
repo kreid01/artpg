@@ -9,6 +9,7 @@ export default defineSchema({
   categories: defineTable({
     projectId: v.optional(v.id("projects")),
     name: v.string(),
+    colour: v.optional(v.string()),
   }).index("by_projectId", ["projectId"]),
 
   achievements: defineTable({

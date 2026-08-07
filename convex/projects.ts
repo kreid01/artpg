@@ -519,42 +519,43 @@ export const completeAchievementRep = mutation({
   },
 });
 
-export const upsertCap = mutation({
-  args: {
-    categoryId: v.id("categories"),
-    value: v.number(),
-  },
-  handler: async (ctx, args) => {
-    const existing = await ctx.db
-      .query("caps")
-      .withIndex("by_categoryId", (q) =>
-        q.eq("categoryId", args.categoryId)
-      )
-      .unique();
-
-    if (existing) {
-      await ctx.db.patch(existing._id, {
-        value: args.value,
-      });
-
-      return existing;
-    }
-
-    const id = await ctx.db.insert("caps", {
-      categoryId: args.categoryId,
-      value: args.value,
-    });
-
-    return await ctx.db.get(id);
-  },
-});
-
 export const getTotalCap = query({
   args: {},
   handler: async (ctx) => {
     const caps = await ctx.db.query("caps").collect();
 
     return caps.reduce((total, cap) => total + cap.value, 0);
+  },
+});
+
+export const updateCategory = mutation({
+  args: {
+    categoryId: v.id("categories"),
+    name: v.string(),
+    color: v.string(),
+    cap: v.number(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.categoryId, {
+      name: args.name,
+      colour: args.color,
+    });
+
+    const existingCap = await ctx.db
+      .query("caps")
+      .withIndex("by_categoryId", q => q.eq("categoryId", args.categoryId))
+      .unique();
+
+    if (existingCap) {
+      await ctx.db.patch(existingCap._id, {
+        value: args.cap,
+      });
+    } else {
+      await ctx.db.insert("caps", {
+        categoryId: args.categoryId,
+        value: args.cap,
+      });
+    }
   },
 });
 

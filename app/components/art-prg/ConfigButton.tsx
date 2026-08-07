@@ -5,7 +5,9 @@ import { api } from "convex/_generated/api";
 import { FaSliders } from "react-icons/fa6";
 import { ProjectButton } from "~/routes/home";
 import { CloseButton } from "./utils/CloseButton";
+import {CategoryConfigRow} from "./CategoryConfigRow"
 import type { Id } from "convex/_generated/dataModel";
+import { HexColorPicker, HexColorInput } from "react-colorful";
 
 type Props = {
   projectId: Id<"projects">;
@@ -18,19 +20,10 @@ export const ConfigureCapsButton: React.FC<Props> = ({ projectId }) => {
     projectId,
   });
 
-  const upsertCap = useMutation(api.projects.upsertCap);
-
-  async function handleChange(categoryId: Id<"categories">, value: number) {
-    await upsertCap({
-      categoryId,
-      value,
-    });
-  }
-
-    const [newCategory, setNewCategory] = useState("");
-    const [adding, setAdding] = useState(false);
-
     const createCategory = useMutation(api.projects.createCategory);
+    const [newCategory, setNewCategory] = useState("");
+    const [newColor, setNewColor] = useState("#3b82f6");
+    const [adding, setAdding] = useState(false);
 
     async function handleAddCategory() {
         if (!newCategory.trim()) return;
@@ -89,51 +82,63 @@ export const ConfigureCapsButton: React.FC<Props> = ({ projectId }) => {
             )}
 
             {categories?.map((category) => (
-              <div
+            <CategoryConfigRow
                 key={category._id}
-                className="flex items-center justify-between rounded-xl border border-[#353d47] bg-[#1b2026] p-4"
-              >
-                <span className="font-medium">{category.name}</span>
-
-                <input
-                  type="number"
-                  min={0}
-                  defaultValue={category.cap?.value ?? 0}
-                  className="w-24 rounded-lg border border-[#4b5563] bg-[#11161b] px-3 py-2 text-right outline-none focus:border-amber-500"
-                  onBlur={(e) =>
-                    handleChange(category._id, Number(e.target.value))
-                  }
-                />
-              </div>
+                category={category}
+            />
             ))}
 
-            <div className="mt-6 rounded-xl border border-[#353d47] bg-[#1b2026] p-4">
-                <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-amber-400">
-                    Add Category
-                </p>
+            <div className="rounded-xl border border-[#353d47] bg-[#1b2026] p-4">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-amber-400">
+                Add Category
+            </p>
 
-                <div className="flex gap-3">
-                    <input
+            <div className="flex gap-6">
+                <div className="shrink-0">
+                <HexColorPicker
+                    color={newColor}
+                    onChange={setNewColor}
+                />
+
+                <HexColorInput
+                    color={newColor}
+                    onChange={setNewColor}
+                    prefixed
+                    className="mt-3 w-full rounded-lg border border-[#4b5563] bg-[#11161b] px-3 py-2 text-center outline-none focus:border-amber-500"
+                />
+                </div>
+
+                <div className="flex flex-1 flex-col gap-3">
+                <input
                     type="text"
                     placeholder="Category name..."
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
                     onKeyDown={(e) => {
-                        if (e.key === "Enter") handleAddCategory()
+                    if (e.key === "Enter") handleAddCategory();
                     }}
-                    className="flex-1 rounded-lg border border-[#4b5563] bg-[#11161b] px-3 py-2 outline-none focus:border-amber-500"
-                    />
+                    className="rounded-lg border border-[#4b5563] bg-[#11161b] px-3 py-2 outline-none focus:border-amber-500"
+                />
 
-                    <button
+                <div
+                    className="h-10 rounded-lg border"
+                    style={{
+                    backgroundColor: newColor,
+                    borderColor: newColor,
+                    }}
+                />
+
+                <button
                     disabled={adding || !newCategory.trim()}
                     onClick={handleAddCategory}
                     className="rounded-lg border border-amber-700 bg-[#2b2315] px-4 py-2 font-medium text-amber-300 transition hover:bg-[#352b18] disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                    Add
-                    </button>
+                >
+                    Add Category
+                </button>
+                </div>
+                </div>
                 </div>
             </div>
-          </div>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

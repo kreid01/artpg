@@ -4,7 +4,6 @@ import { RadarChart } from "@mui/x-charts/RadarChart";
 import * as Dialog from "@radix-ui/react-dialog";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
-import { getCategoryColours } from "~/constants/colours";
 import { FaBullseye } from "react-icons/fa6";
 import type { ProjectName } from "~/constants/levels";
 import { ProjectButton, type ProjectId } from "~/routes/home";
@@ -31,8 +30,6 @@ export const StatChartButton: React.FC<ProjectId> = ({ projectId }) => {
   const projectName = useQuery(api.projects.getProjectById, {
     projectId,
   })?.name as ProjectName;
-
-  const colours = getCategoryColours(projectName ?? "art");
 
   const taskMap = useMemo(
     () => new Map((tasks ?? []).map((t) => [t._id, t])),
@@ -167,9 +164,7 @@ export const StatChartButton: React.FC<ProjectId> = ({ projectId }) => {
                       const cap = cat?.cap?.value ?? 1 
                       const pct = Math.min( 100, (xp / cap) * 100);
 
-                      const color =
-                        colours[cat.name.toLowerCase()] ??
-                        "#64748b";
+                      const color = cat.colour ?? "gray"
 
                       return (
                         <div key={cat._id}>
