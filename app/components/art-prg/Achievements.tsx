@@ -20,6 +20,7 @@ type Entry = {
   name: string;
   total: number;
   xpValue: number;
+  description?: string
 };
 
 export type Props = {
@@ -33,6 +34,7 @@ const blankEntry = (): Entry => ({
   name: "",
   total: 1,
   xpValue: 10,
+  description: ""
 });
 
 const milestoneRatios = [0.025, 0.05, 0.1, 0.25, 1] as const;
@@ -84,6 +86,7 @@ export function Achievements({ categories, projectId }: Props) {
         name: entry.name.trim(),
         total: entry.total,
         xpValue: entry.xpValue,
+        description: entry.description
       })));
       resetEditor();
     } finally {
@@ -159,6 +162,7 @@ export function Achievements({ categories, projectId }: Props) {
                     <input type="text" placeholder="Achievement name" value={entry.name} onChange={(event) => updateEntry(entry.id, "name", event.target.value)} className="w-full rounded-lg border border-[#4b5563] bg-[#161c23] px-2 py-2 text-xs text-white placeholder:text-slate-600 focus:border-amber-400 focus:outline-none sm:px-3 sm:py-2.5 sm:text-sm" />
                     <input type="number" min={1} aria-label="Target" value={entry.total} onChange={(event) => updateEntry(entry.id, "total", Number(event.target.value))} className="w-full rounded-lg border border-[#4b5563] bg-[#161c23] px-2 py-2 text-center text-xs text-white focus:border-amber-400 focus:outline-none sm:px-3 sm:py-2.5 sm:text-sm" />
                     <input type="number" min={1} aria-label="XP reward" value={entry.xpValue} onChange={(event) => updateEntry(entry.id, "xpValue", Number(event.target.value))} className="w-full rounded-lg border border-[#4b5563] bg-[#161c23] px-2 py-2 text-center text-xs text-white focus:border-amber-400 focus:outline-none sm:px-3 sm:py-2.5 sm:text-sm" />
+                    <input type="text"  aria-label="Description" value={entry.description} onChange={(event) => updateEntry(entry.id, "description", event.target.value)} className="w-full col-span-2 rounded-lg border border-[#4b5563] bg-[#161c23] px-2 py-2 text-center text-xs text-white focus:border-amber-400 focus:outline-none sm:px-3 sm:py-2.5 sm:text-sm" />
                     <button onClick={() => removeEntry(entry.id)} disabled={entries.length === 1} aria-label="Remove achievement" className="flex h-9 w-full items-center justify-center rounded-lg border border-[#4b5563] bg-[#161c23] text-xs text-slate-500 hover:border-red-500 hover:bg-red-900/20 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-30 md:h-10 md:w-10">✕</button>
                   </div>
                 ))}
@@ -203,6 +207,7 @@ export function Achievements({ categories, projectId }: Props) {
                           <div>
                             <p className="text-[10px] uppercase tracking-[0.2em] text-amber-500">{achievement.categoryId ? categoryNames.get(achievement.categoryId) ?? "Uncategorised" : "Uncategorised"}</p>
                             <h3 className="mt-1 font-semibold text-white">{achievement.name}</h3>
+                            <p className="text-[10px] h-4 text-slate-400">{achievement.description}</p>
                           </div>
                           <span className="shrink-0 text-sm font-semibold text-amber-300">
                             {achievement.currentCount.toLocaleString()}/{achievement.total.toLocaleString()}

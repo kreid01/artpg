@@ -107,7 +107,7 @@ function AllProjectsDashboard({ summaries, onSelect }: { summaries: ProjectSumma
         <header className="mb-6 rounded-2xl border border-[#675226] bg-linear-to-br from-[#202733] via-[#151b23] to-[#0d1117] p-5 shadow-[0_0_30px_rgba(0,0,0,.35)] sm:p-6">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-amber-400">The four paths</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-amber-400">Life</p>
               <p className="mt-2 text-sm text-slate-400">{totalXp.toLocaleString()} total XP</p>
             </div>
             <img src={getRankImage(currentLevel.level)} alt={`Overall level ${currentLevel.level} rank`} className="h-20 w-20 shrink-0 object-contain drop-shadow-[0_0_14px_rgba(255,215,120,.45)] sm:h-24 sm:w-24" />

@@ -463,8 +463,9 @@ export const createAchievement = mutation({
     name: v.string(),
     total: v.number(),
     xpValue: v.number(),
+    description: v.optional(v.string())
   },
-  handler: async (ctx, { projectId, categoryId, name, total, xpValue }) => {
+  handler: async (ctx, { projectId, categoryId, name, total, xpValue, description }) => {
     const category = await ctx.db.get(categoryId);
     if (!category || category.projectId !== projectId) {
       throw new Error("Category not found in this project");
@@ -479,6 +480,7 @@ export const createAchievement = mutation({
       name,
       total,
       currentCount: 0,
+      description,
       xpValue,
     });
 

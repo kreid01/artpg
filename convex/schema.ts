@@ -18,6 +18,7 @@ export default defineSchema({
   categoryId: v.optional(v.id("categories")),
   name: v.string(),
   total: v.number(),
+  description: v.optional(v.string()),
   currentCount: v.number(),
   xpValue: v.number(),
   })
