@@ -22,7 +22,6 @@ export const ConfigureCapsButton: React.FC<Props> = ({ projectId }) => {
 
     const createCategory = useMutation(api.projects.createCategory);
     const [newCategory, setNewCategory] = useState("");
-    const [newColor, setNewColor] = useState("#3b82f6");
     const [adding, setAdding] = useState(false);
 
     async function handleAddCategory() {
@@ -103,20 +102,6 @@ export const ConfigureCapsButton: React.FC<Props> = ({ projectId }) => {
                     if (e.key === "Enter") handleAddCategory();
                     }}
                     className="rounded-lg border border-[#4b5563] bg-[#11161b] px-3 py-2 outline-none focus:border-amber-500"
-                />
-
-                <HexColorPicker
-                    className="w-full!"
-                    color={newColor}
-                    onChange={setNewColor}
-                />
-
-                <div
-                    className="h-10 rounded-lg border"
-                    style={{
-                    backgroundColor: newColor,
-                    borderColor: newColor,
-                    }}
                 />
 
                 <button
