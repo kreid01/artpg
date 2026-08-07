@@ -4,6 +4,7 @@ import { v } from "convex/values";
 export default defineSchema({
   projects: defineTable({
     name: v.string(),
+    weeklyGoal: v.optional(v.number())
   }),
 
   categories: defineTable({

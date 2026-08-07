@@ -21,6 +21,7 @@ export type ProjectSummary = {
   _id: Id<"projects">;
   name: string;
   totalXp: number;
+  weeklyGoal: number
   categoryCount: number;
 };
 
@@ -117,7 +118,7 @@ function AllProjectsDashboard({ summaries, onSelect }: { summaries: ProjectSumma
               <p className="text-xs text-slate-400">{nextLevel ? `${rankProgress}% to next level` : "Maximum level"}</p>
             </div>
             <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#28313d]">
-              <div className="h-full rounded-full bg-gradient-to-r from-cyan-800 via-cyan-400 to-cyan-200" style={{ width: `${rankProgress}%` }} />
+              <div className="h-full rounded-full bg-linear-to-r from-cyan-800 via-cyan-400 to-cyan-200" style={{ width: `${rankProgress}%` }} />
             </div>
           </div>
         </header>

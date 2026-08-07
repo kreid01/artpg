@@ -7,7 +7,7 @@ import { ProjectButton } from "~/routes/home";
 import { CloseButton } from "./utils/CloseButton";
 import {CategoryConfigRow} from "./CategoryConfigRow"
 import type { Id } from "convex/_generated/dataModel";
-import { HexColorPicker, HexColorInput } from "react-colorful";
+import { HexColorPicker } from "react-colorful";
 
 type Props = {
   projectId: Id<"projects">;
@@ -106,7 +106,7 @@ export const ConfigureCapsButton: React.FC<Props> = ({ projectId }) => {
                 />
 
                 <HexColorPicker
-                    className="w-[100%]!"
+                    className="w-full!"
                     color={newColor}
                     onChange={setNewColor}
                 />

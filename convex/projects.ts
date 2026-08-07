@@ -578,3 +578,44 @@ export const createCategory = mutation({
     return categoryId;
   },
 });
+
+export const getWeeklyXpByProject = query({
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, { projectId }) => {
+    const now = new Date();
+
+    const startOfWeek = new Date(now);
+    const day = startOfWeek.getDay(); // 0 = Sunday
+    const diff = day === 0 ? -6 : 1 - day;
+    startOfWeek.setDate(startOfWeek.getDate() + diff);
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const reps = await ctx.db.query("reps").collect();
+
+    let totalXp = 0;
+
+    for (const rep of reps) {
+      if (!rep.completedAt || rep.completedAt < startOfWeek.getTime()) {
+        continue;
+      }
+
+      let belongsToProject = false;
+
+      if (rep.taskId) {
+        const task = await ctx.db.get(rep.taskId);
+        belongsToProject = task?.projectId === projectId;
+      } else if (rep.categoryId) {
+        const category = await ctx.db.get(rep.categoryId);
+        belongsToProject = category?.projectId === projectId;
+      }
+
+      if (belongsToProject) {
+        totalXp += rep.xpValue;
+      }
+    }
+
+    return totalXp;
+  },
+});
