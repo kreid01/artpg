@@ -93,22 +93,7 @@ export const ConfigureCapsButton: React.FC<Props> = ({ projectId }) => {
                 Add Category
             </p>
 
-            <div className="flex gap-6">
-                <div className="shrink-0">
-                <HexColorPicker
-                    color={newColor}
-                    onChange={setNewColor}
-                />
-
-                <HexColorInput
-                    color={newColor}
-                    onChange={setNewColor}
-                    prefixed
-                    className="mt-3 w-full rounded-lg border border-[#4b5563] bg-[#11161b] px-3 py-2 text-center outline-none focus:border-amber-500"
-                />
-                </div>
-
-                <div className="flex flex-1 flex-col gap-3">
+            <div className="flex flex-col gap-6">
                 <input
                     type="text"
                     placeholder="Category name..."
@@ -118,6 +103,12 @@ export const ConfigureCapsButton: React.FC<Props> = ({ projectId }) => {
                     if (e.key === "Enter") handleAddCategory();
                     }}
                     className="rounded-lg border border-[#4b5563] bg-[#11161b] px-3 py-2 outline-none focus:border-amber-500"
+                />
+
+                <HexColorPicker
+                    className="w-[100%]!"
+                    color={newColor}
+                    onChange={setNewColor}
                 />
 
                 <div
@@ -131,13 +122,11 @@ export const ConfigureCapsButton: React.FC<Props> = ({ projectId }) => {
                 <button
                     disabled={adding || !newCategory.trim()}
                     onClick={handleAddCategory}
-                    className="rounded-lg border border-amber-700 bg-[#2b2315] px-4 py-2 font-medium text-amber-300 transition hover:bg-[#352b18] disabled:cursor-not-allowed disabled:opacity-50"
-                >
+                    className="rounded-lg border border-amber-700 bg-[#2b2315] px-4 py-2 font-medium text-amber-300 transition hover:bg-[#352b18] disabled:cursor-not-allowed disabled:opacity-50" >
                     Add Category
                 </button>
                 </div>
-                </div>
-                </div>
+            </div>
             </div>
         </Dialog.Content>
       </Dialog.Portal>
