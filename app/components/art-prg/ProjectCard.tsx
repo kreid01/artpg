@@ -23,7 +23,7 @@ export const ProjectCard:React.FC<ProjectCardProps> = ({project, onSelect}) => {
     const nextLevel = projectLevels.find((level) => level.level === currentLevel.level + 1);
 
     const progress = nextLevel ? Math.min( 100, Math.round( ((project.totalXp - currentLevel.xp) / (nextLevel.xp - currentLevel.xp)) * 100)) : 100;
-    const weeklyProgress = project.totalXp ? Math.min(100, Math.round((weeklyXp ?? 0 / project.weeklyGoal) * 100)) : 0;
+    const weeklyProgress = project.weeklyGoal && project.weeklyGoal > 0 ? Math.min(100, Math.round(((weeklyXp ?? 0) / project.weeklyGoal) * 100)) : 0;
 
     return (
             <button
