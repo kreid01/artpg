@@ -6,15 +6,6 @@ import { ProjectButton, type ProjectId } from "~/routes/home";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { FaScroll } from "react-icons/fa";
 
-const hidden = [
-  "Extraction / Design", 
-  "Prop Ideation", 
-  "Synthesis Design", 
-  "Focused Render Study", 
-  "Integrated Design Session",
-  "Limited Palette Study"
-];
-
 export const GroupRepChecklist: React.FC<ProjectId> = ({projectId}) => {
   const groups = useQuery(api.projects.getRepGroups, {projectId});
   const createRepsFromGroup = useMutation(api.projects.createRepsFromGroup);
@@ -27,12 +18,6 @@ export const GroupRepChecklist: React.FC<ProjectId> = ({projectId}) => {
   
   if (groups === undefined) return <p className="text-sm text-slate-400">Loading…</p>;
   if (groups.length === 0) return <div></div> 
-
-  const visibleGroups = groups.filter((group) => {
-    if (hidden.includes(group.name)) return false;
-    return true;
-  });
-
 
   return (
     <Collapsible.Root open={open} onOpenChange={setOpen}>
@@ -64,7 +49,7 @@ export const GroupRepChecklist: React.FC<ProjectId> = ({projectId}) => {
       </Collapsible.Trigger>
 
       <Collapsible.Content className="space-y-3">
-        {visibleGroups.map((group, index) => (
+        {groups.map((group, index) => (
           <div
             key={group.groupId}
             className="rounded-md text-sm border border-[#8d6d2c] bg-linear-to-b from-[#1b2027] via-[#171c22] to-[#111418] p-4 shadow-md opacity-0 animate-[fadeIn_.35s_ease_forwards] transition-all duration-300 hover:border-amber-400 hover:shadow-[0_0_18px_rgba(255,190,70,.15)]"

@@ -32,6 +32,7 @@ export default defineSchema({
     completedAt: v.optional(v.number()), 
     groupId: v.optional(v.number()),
     xpValue: v.number(),
+    hidden: v.optional(v.boolean())
   }).index("by_task", ["taskId"]),
 
   caps: defineTable({

@@ -370,13 +370,14 @@ export const getRepGroups = query({
 
       results.push({
         groupId,
+        hidden: groupReps.some(g => g.hidden ?? false),
         name: groupReps[0].title ?? "Untitled group",
         totalXp: groupReps.reduce((a, r) => a + r.xpValue, 0),
         entries,
       });
     }
 
-    return results.sort((a, b) => a.groupId - b.groupId);
+    return results.filter(x => !x.hidden).sort((a, b) => a.groupId - b.groupId);
   },
 });
 
