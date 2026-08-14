@@ -26,6 +26,9 @@ export default defineSchema({
   .index("by_category", ["categoryId"]),
 
   reps: defineTable({
+    // Denormalized from the task/category so project-scoped reads never need to
+    // scan every rep and join back to its parent.
+    projectId: v.optional(v.id("projects")),
     taskId: v.optional(v.id("tasks")),
     title: v.optional(v.string()),
     categoryId: v.optional(v.id("categories")),
@@ -33,7 +36,10 @@ export default defineSchema({
     groupId: v.optional(v.number()),
     xpValue: v.number(),
     hidden: v.optional(v.boolean())
-  }).index("by_task", ["taskId"]),
+  }).index("by_task", ["taskId"])
+    .index("by_projectId", ["projectId"])
+    .index("by_projectId_and_completedAt", ["projectId", "completedAt"])
+    .index("by_projectId_and_groupId", ["projectId", "groupId"]),
 
   caps: defineTable({
     categoryId: v.id("categories"),

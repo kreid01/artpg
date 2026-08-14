@@ -15,17 +15,36 @@ export const getProjectSummaries = query({
   args: {},
   handler: async (ctx) => {
     const projects = await ctx.db.query("projects").collect();
-    const completedReps = (await ctx.db.query("reps").collect()).filter((rep) => rep.completedAt);
+    // This scan is only needed while projectId is being backfilled on legacy
+    // reps. It disappears after the migration, leaving only indexed reads.
+    const legacyReps = await ctx.db
+      .query("reps")
+      .filter((q) => q.eq(q.field("projectId"), undefined))
+      .collect();
+    const legacyRepsByProject = new Map<Id<"projects">, Doc<"reps">[]>();
+    for (const rep of legacyReps) {
+      const projectId = await getRepProjectId(ctx, rep);
+      if (!projectId) continue;
+      const reps = legacyRepsByProject.get(projectId) ?? [];
+      reps.push(rep);
+      legacyRepsByProject.set(projectId, reps);
+    }
 
     return await Promise.all(projects.map(async (project) => {
-      const categories = await ctx.db
+      const [categories, indexedReps] = await Promise.all([
+        ctx.db
         .query("categories")
-        .filter((q) => q.eq(q.field("projectId"), project._id))
-        .collect();
-      const projectReps = (await Promise.all(completedReps.map(async (rep) => ({
-        rep,
-        projectId: await getRepProjectId(ctx, rep),
-      })))).filter(({ projectId }) => projectId === project._id).map(({ rep }) => rep);
+        .withIndex("by_projectId", (q) => q.eq("projectId", project._id))
+        .collect(),
+        ctx.db
+          .query("reps")
+          .withIndex("by_projectId_and_completedAt", (q) =>
+            q.eq("projectId", project._id).gte("completedAt", 0),
+          )
+          .collect(),
+      ]);
+      const projectReps = [...indexedReps, ...(legacyRepsByProject.get(project._id) ?? [])]
+        .filter((rep) => rep.completedAt);
 
       return {
         _id: project._id,
@@ -150,6 +169,7 @@ export const completeTask = mutation({
       throw new Error("Task not found in this project");
     }
     await ctx.db.insert("reps", {
+      projectId,
       taskId,
       completedAt: Date.now(),
       xpValue: task.xpValue,
@@ -161,6 +181,7 @@ async function getRepProjectId(
   ctx: QueryCtx,
   rep: Doc<"reps">
 ): Promise<Id<"projects"> | null> {
+  if (rep.projectId) return rep.projectId;
   if (rep.categoryId) {
     const category = await ctx.db.get(rep.categoryId);
     if (category?.projectId) return category.projectId;
@@ -172,25 +193,76 @@ async function getRepProjectId(
   return null;
 }
 
+/**
+ * During the projectId backfill, retain a correctness fallback for historical
+ * reps. Once the migration is complete, this is a single indexed read.
+ */
+async function getRepsByProject(
+  ctx: QueryCtx,
+  projectId: Id<"projects">,
+): Promise<Doc<"reps">[]> {
+  const indexedReps = await ctx.db
+    .query("reps")
+    .withIndex("by_projectId", (q) => q.eq("projectId", projectId))
+    .collect();
+  const legacyReps = await ctx.db
+    .query("reps")
+    .filter((q) => q.eq(q.field("projectId"), undefined))
+    .collect();
+  const matchingLegacyReps = (
+    await Promise.all(
+      legacyReps.map(async (rep) => ({
+        rep,
+        repProjectId: await getRepProjectId(ctx, rep),
+      })),
+    )
+  )
+    .filter(({ repProjectId }) => repProjectId === projectId)
+    .map(({ rep }) => rep);
+
+  return [...indexedReps, ...matchingLegacyReps];
+}
+
+async function getCompletedRepsByProject(
+  ctx: QueryCtx,
+  projectId: Id<"projects">,
+  completedAfter: number,
+): Promise<Doc<"reps">[]> {
+  const indexedReps = await ctx.db
+    .query("reps")
+    .withIndex("by_projectId_and_completedAt", (q) =>
+      q.eq("projectId", projectId).gte("completedAt", completedAfter),
+    )
+    .collect();
+  const legacyReps = await ctx.db
+    .query("reps")
+    .filter((q) => q.eq(q.field("projectId"), undefined))
+    .collect();
+  const matchingLegacyReps = (
+    await Promise.all(
+      legacyReps.map(async (rep) => ({
+        rep,
+        repProjectId: await getRepProjectId(ctx, rep),
+      })),
+    )
+  )
+    .filter(
+      ({ rep, repProjectId }) =>
+        repProjectId === projectId &&
+        rep.completedAt !== undefined &&
+        rep.completedAt >= completedAfter,
+    )
+    .map(({ rep }) => rep);
+
+  return [...indexedReps, ...matchingLegacyReps];
+}
+
 export const getAllCompleteReps = query({
   args: {
     projectId: v.id("projects"),
   },
   handler: async (ctx, { projectId }) => {
-    const reps = (await ctx.db.query("reps").collect()).filter(
-      (r) => r.completedAt
-    );
-
-    const withProject = await Promise.all(
-      reps.map(async (rep) => ({
-        rep,
-        repProjectId: await getRepProjectId(ctx, rep),
-      }))
-    );
-
-    return withProject
-      .filter(({ repProjectId }) => repProjectId === projectId)
-      .map(({ rep }) => rep);
+    return await getCompletedRepsByProject(ctx, projectId, 0);
   },
 });
 
@@ -199,8 +271,8 @@ export const getIncompleteReps = query({
     projectId: v.id("projects"),
   },
   handler: async (ctx, { projectId }) => {
-    const reps = (await ctx.db.query("reps").collect()).filter(
-      (t) => !t.completedAt && !t.groupId
+    const reps = (await getRepsByProject(ctx, projectId)).filter(
+      (rep) => !rep.completedAt && !rep.groupId,
     );
 
     const enriched = await Promise.all(
@@ -208,14 +280,11 @@ export const getIncompleteReps = query({
         const category = rep.categoryId
           ? await ctx.db.get(rep.categoryId)
           : null;
-        const repProjectId = await getRepProjectId(ctx, rep);
-        return { ...rep, categoryName: category?.name ?? null, repProjectId };
+        return { ...rep, categoryName: category?.name ?? null };
       })
     );
 
-    return enriched
-      .filter((rep) => rep.repProjectId === projectId)
-      .map(({ repProjectId, ...rest }) => rest);
+    return enriched;
   },
 });
 
@@ -266,6 +335,7 @@ export const createChecklistRep = mutation({
     }
 
     await ctx.db.insert("reps", {
+      projectId: args.projectId,
       categoryId: args.categoryId,
       xpValue: args.xpValue,
       title: args.title,
@@ -289,6 +359,7 @@ export const createRep = mutation({
     }
 
     await ctx.db.insert("reps", {
+      projectId: args.projectId,
       categoryId: args.categoryId,
       xpValue: args.xpValue,
       completedAt: Date.now(),
@@ -303,19 +374,10 @@ export const getLatestGroupId = query({
     projectId: v.id("projects"),
   },
   handler: async (ctx, { projectId }) => {
-    const reps = await ctx.db
-      .query("reps")
-      .filter((q) => q.neq(q.field("groupId"), undefined))
-      .order("desc")
-      .collect();
-
-    for (const rep of reps) {
-      const repProjectId = await getRepProjectId(ctx, rep);
-      if (repProjectId === projectId) {
-        return rep.groupId ?? 0;
-      }
-    }
-    return 0;
+    const reps = (await getRepsByProject(ctx, projectId))
+      .filter((rep) => rep.groupId !== undefined)
+      .sort((a, b) => b._creationTime - a._creationTime);
+    return reps[0]?.groupId ?? 0;
   },
 });
 
@@ -324,22 +386,9 @@ export const getRepGroups = query({
     projectId: v.id("projects"),
   },
   handler: async (ctx, { projectId }) => {
-    const reps = await ctx.db
-      .query("reps")
-      .filter((q) => q.neq(q.field("groupId"), undefined))
-      .collect();
-
-    // Only keep reps belonging to the requested project.
-    const scopedReps = (
-      await Promise.all(
-        reps.map(async (rep) => ({
-          rep,
-          repProjectId: await getRepProjectId(ctx, rep),
-        }))
-      )
-    )
-      .filter(({ repProjectId }) => repProjectId === projectId)
-      .map(({ rep }) => rep);
+    const scopedReps = (await getRepsByProject(ctx, projectId)).filter(
+      (rep) => rep.groupId !== undefined,
+    );
 
     const groupMap = new Map<number, typeof scopedReps>();
     for (const rep of scopedReps) {
@@ -387,26 +436,14 @@ export const createRepsFromGroup = mutation({
     groupId: v.float64(),
   },
   handler: async (ctx, { projectId, groupId }) => {
-    const reps = await ctx.db
-      .query("reps")
-      .filter((q) => q.eq(q.field("groupId"), groupId))
-      .collect();
-
-    // Guard against completing a group that doesn't belong to this project.
-    const scopedReps = (
-      await Promise.all(
-        reps.map(async (rep) => ({
-          rep,
-          repProjectId: await getRepProjectId(ctx, rep),
-        }))
-      )
-    )
-      .filter(({ repProjectId }) => repProjectId === projectId)
-      .map(({ rep }) => rep);
+    const scopedReps = (await getRepsByProject(ctx, projectId)).filter(
+      (rep) => rep.groupId === groupId,
+    );
 
     await Promise.all(
       scopedReps.map((r) =>
         ctx.db.insert("reps", {
+          projectId,
           categoryId: r.categoryId,
           xpValue: r.xpValue,
           title: r.title,
@@ -596,28 +633,16 @@ export const getWeeklyXpByProject = query({
     startOfWeek.setDate(startOfWeek.getDate() + diff);
     startOfWeek.setHours(0, 0, 0, 0);
 
-    const reps = await ctx.db.query("reps").collect();
+    const reps = await getCompletedRepsByProject(
+      ctx,
+      projectId,
+      startOfWeek.getTime(),
+    );
 
     let totalXp = 0;
 
     for (const rep of reps) {
-      if (!rep.completedAt || rep.completedAt < startOfWeek.getTime()) {
-        continue;
-      }
-
-      let belongsToProject = false;
-
-      if (rep.taskId) {
-        const task = await ctx.db.get(rep.taskId);
-        belongsToProject = task?.projectId === projectId;
-      } else if (rep.categoryId) {
-        const category = await ctx.db.get(rep.categoryId);
-        belongsToProject = category?.projectId === projectId;
-      }
-
-      if (belongsToProject) {
-        totalXp += rep.xpValue;
-      }
+      totalXp += rep.xpValue;
     }
 
     return totalXp;
