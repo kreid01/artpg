@@ -15,6 +15,13 @@ export const getProjectSummaries = query({
   args: {},
   handler: async (ctx) => {
     const projects = await ctx.db.query("projects").collect();
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    const day = startOfWeek.getDay();
+    const diff = day === 0 ? -6 : 1 - day;
+    startOfWeek.setDate(startOfWeek.getDate() + diff);
+    startOfWeek.setHours(0, 0, 0, 0);
+    const startOfWeekMs = startOfWeek.getTime();
     // This scan is only needed while projectId is being backfilled on legacy
     // reps. It disappears after the migration, leaving only indexed reads.
     const legacyReps = await ctx.db
@@ -51,7 +58,10 @@ export const getProjectSummaries = query({
         name: project.name,
         categoryCount: categories.length,
         totalXp: projectReps.reduce((total, rep) => total + rep.xpValue, 0),
-        weeklyGoal: project.weeklyGoal
+        weeklyGoal: project.weeklyGoal,
+        weeklyXp: projectReps
+          .filter((rep) => (rep.completedAt ?? 0) >= startOfWeekMs)
+          .reduce((total, rep) => total + rep.xpValue, 0),
       };
     }));
   },

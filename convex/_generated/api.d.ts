@@ -9,6 +9,7 @@
  */
 
 import type * as http from "../http.js";
+import type * as migrations from "../migrations.js";
 import type * as projects from "../projects.js";
 
 import type {
@@ -19,6 +20,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   http: typeof http;
+  migrations: typeof migrations;
   projects: typeof projects;
 }>;
 
@@ -48,4 +50,6 @@ export declare const internal: FilterApi<
   FunctionReference<any, "internal">
 >;
 
-export declare const components: {};
+export declare const components: {
+  migrations: import("@convex-dev/migrations/_generated/component.js").ComponentApi<"migrations">;
+};

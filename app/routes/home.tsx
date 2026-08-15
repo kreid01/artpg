@@ -21,7 +21,8 @@ export type ProjectSummary = {
   _id: Id<"projects">;
   name: string;
   totalXp: number;
-  weeklyGoal: number
+  weeklyGoal?: number;
+  weeklyXp: number;
   categoryCount: number;
 };
 
@@ -82,10 +83,12 @@ export default function Home() {
 }
 
 function AllProjectsDashboard({ summaries, onSelect }: { summaries: ProjectSummary[]; onSelect: (id: Id<"projects">) => void }) {
-    const totalXp = summaries.reduce(
+  const totalXp = summaries.reduce(
     (total, project) => total + project.totalXp,
     0
   );
+  const weeklyXp = summaries.reduce((total, project) => total + project.weeklyXp, 0);
+  const weeklyGoal = summaries.reduce((total, project) => total + (project.weeklyGoal ?? 0), 0);
 
   const overallLevels = useOverallLevels();
 
@@ -100,6 +103,9 @@ function AllProjectsDashboard({ summaries, onSelect }: { summaries: ProjectSumma
   const nextLevel = overallLevels.find((level) => level.level === currentLevel.level + 1);
 
   const rankProgress = nextLevel ? Math.min( 100, Math.round( ((totalXp - currentLevel.xp) / (nextLevel.xp - currentLevel.xp)) * 100)) : 100;
+  const weeklyProgress = weeklyGoal > 0
+    ? Math.min(100, Math.round((weeklyXp / weeklyGoal) * 100))
+    : 100;
 
   return (
     <main className="min-h-screen bg-[#0b0f14] p-4 text-white sm:p-6">
@@ -119,6 +125,20 @@ function AllProjectsDashboard({ summaries, onSelect }: { summaries: ProjectSumma
             </div>
             <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#28313d]">
               <div className="h-full rounded-full bg-linear-to-r from-cyan-800 via-cyan-400 to-cyan-200" style={{ width: `${rankProgress}%` }} />
+            </div>
+            <div className="mt-5 border-t border-[#3b434f] pt-4">
+              <div className="flex items-end justify-between gap-3">
+                <p className="text-sm font-semibold text-amber-300">This Week</p>
+                <p className="text-xs text-slate-400">
+                  {weeklyGoal > 0 ? `${weeklyProgress}% of weekly goal` : "No weekly goal set"}
+                </p>
+              </div>
+              <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#28313d]">
+                <div className="h-full rounded-full bg-linear-to-r from-amber-800 via-amber-400 to-amber-200" style={{ width: `${weeklyProgress}%` }} />
+              </div>
+              <p className="mt-2 text-[10px] text-slate-400">
+                {weeklyXp.toLocaleString()} / {weeklyGoal.toLocaleString()} XP
+              </p>
             </div>
           </div>
         </header>

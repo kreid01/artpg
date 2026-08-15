@@ -1,7 +1,6 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { HiBars3 } from "react-icons/hi2";
 import { AddCustomRepButton } from "../AddCustomRepButton";
-import { XPChartButton } from "../charts/XPChartButton";
 import { StatChartButton } from "../charts/StatChartButton";
 import { RewardTrackButton } from "../RewardTrackButton";
 import { Achievements } from "../Achievements";
@@ -30,9 +29,6 @@ export const BurgerMenu:React.FC<Props> = ({projectId, categories, tasks, reps})
                 </DropdownMenu.Item>
                 <DropdownMenu.Item asChild>
                     <Achievements categories={categories} projectId={projectId} />
-                </DropdownMenu.Item>
-                <DropdownMenu.Item asChild>
-                    <XPChartButton projectId={projectId} />
                 </DropdownMenu.Item>
                 <DropdownMenu.Item asChild>
                     <StatChartButton projectId={projectId} />
