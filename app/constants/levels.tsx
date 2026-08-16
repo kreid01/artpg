@@ -124,9 +124,9 @@ export function getRankImage(level: number): string {
 }
 
 const artRewardDict: Record<number, string> = {
-    70: "Intermediate",
-    80: "Portfolio Work",
-    90: "Comissions",
+    75: "Intermediate",
+    83: "Portfolio Work",
+    92: "Comissions",
     95: "Mentorship",
     100: "Job Ready"
 }
