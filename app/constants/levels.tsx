@@ -71,55 +71,55 @@ export const useSkillLevelLookup = (projectId: Id<"projects">) => {
 
 const rankDict: Record<number, string> = {
   0: "Iron IV",
-  4: "Iron III",
-  8: "Iron II",
-  11: "Iron I",
+  2: "Iron III",
+  3: "Iron II",
+  5: "Iron I",
 
-  15: "Bronze IV",
-  20: "Bronze III",
-  25: "Bronze II",
-  30: "Bronze I",
+  7: "Bronze IV",
+  9: "Bronze III",
+  12: "Bronze II",
+  14: "Bronze I",
 
-  35: "Silver IV",
-  40: "Silver III",
-  45: "Silver II",
-  50: "Silver I",
+  17: "Silver IV",
+  20: "Silver III",
+  23: "Silver II",
+  27: "Silver I",
 
-  55: "Gold IV",
-  59: "Gold III",
-  63: "Gold II",
-  67: "Gold I",
+  30: "Gold IV",
+  33: "Gold III",
+  36: "Gold II",
+  39: "Gold I",
 
-  70: "Platinum IV",
-  73: "Platinum III",
-  76: "Platinum II",
-  78: "Platinum I",
+  42: "Platinum IV",
+  45: "Platinum III",
+  48: "Platinum II",
+  51: "Platinum I",
 
-  80: "Emerald IV",
-  82: "Emerald III",
-  84: "Emerald II",
-  85: "Emerald I",
+  54: "Emerald IV",
+  57: "Emerald III",
+  60: "Emerald II",
+  63: "Emerald I",
 
-  86: "Diamond IV",
-  87: "Diamond III",
-  88: "Diamond II",
-  89: "Diamond I",
+  75: "Diamond IV",
+  77: "Diamond III",
+  79: "Diamond II",
+  81: "Diamond I",
 
-  90: "Master",
-  95: "Grandmaster",
-  98: "Challenger",
+  83: "Master",
+  92: "Grandmaster",
+  100: "Challenger",
 };
 
 export function getRankImage(level: number): string {
-  if (level >= 98) return "/ranks/challenger.png";
-  if (level >= 95) return "/ranks/grandmaster.png";
-  if (level >= 90) return "/ranks/master.png";
-  if (level >= 86) return "/ranks/diamond.png";
-  if (level >= 80) return "/ranks/emerald.png";
-  if (level >= 70) return "/ranks/platinum.png";
-  if (level >= 55) return "/ranks/gold.png";
-  if (level >= 35) return "/ranks/silver.png";
-  if (level >= 15) return "/ranks/bronze.png";
+  if (level >= 100) return "/ranks/challenger.png";
+  if (level >= 92) return "/ranks/grandmaster.png";
+  if (level >= 83) return "/ranks/master.png";
+  if (level >= 75) return "/ranks/diamond.png";
+  if (level >= 54) return "/ranks/emerald.png";
+  if (level >= 42) return "/ranks/platinum.png";
+  if (level >= 30) return "/ranks/gold.png";
+  if (level >= 17) return "/ranks/silver.png";
+  if (level >= 7) return "/ranks/bronze.png";
   return "/ranks/iron.png";
 }
 
@@ -158,9 +158,21 @@ export const useOverallLevels = () => {
   return useMemo(() => {
     if (totalCap === undefined) return undefined;
 
-    return generateLevels(totalCap);
+    return generatePercentageLevels(totalCap);
   }, [totalCap]);
 };
+
+// Overall levels are a direct percentage of the 400,000 XP journey. The rank
+// breakpoints correspond to the supplied 0–6,000-hour path to Challenger.
+const generatePercentageLevels = (targetXp: number, maxLevel = 100) =>
+  Array.from({ length: maxLevel }, (_, index) => {
+    const level = index + 1;
+    return {
+      level,
+      xp: Math.round((targetXp * (level - 1)) / (maxLevel - 1)),
+      rank: rankDict[level],
+    };
+  });
 
 const generateLevels = (targetXp: number, rewardDict?: Record<number, string>, maxLevel = 100) => {
   const levels = [];
