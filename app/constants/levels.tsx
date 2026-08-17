@@ -158,21 +158,9 @@ export const useOverallLevels = () => {
   return useMemo(() => {
     if (totalCap === undefined) return undefined;
 
-    return generatePercentageLevels(totalCap);
+    return generateLevels(totalCap);
   }, [totalCap]);
 };
-
-// Overall levels are a direct percentage of the 400,000 XP journey. The rank
-// breakpoints correspond to the supplied 0–6,000-hour path to Challenger.
-const generatePercentageLevels = (targetXp: number, maxLevel = 100) =>
-  Array.from({ length: maxLevel }, (_, index) => {
-    const level = index + 1;
-    return {
-      level,
-      xp: Math.round((targetXp * (level - 1)) / (maxLevel - 1)),
-      rank: rankDict[level],
-    };
-  });
 
 const generateLevels = (targetXp: number, rewardDict?: Record<number, string>, maxLevel = 100) => {
   const levels = [];
