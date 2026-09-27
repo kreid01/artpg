@@ -76,7 +76,7 @@ export function CategoryTaskTree({ categories, tasks, reps, projectId }: Props) 
           }}
           disabled={completingActiveAchievement || activeAchievement.currentCount >= activeAchievement.total}
           aria-label={`Increment active achievement ${activeAchievement.name}`}
-          className="w-full rounded-xl border border-amber-500 bg-linear-to-r from-[#2b2315] via-[#1d232b] to-[#171c22] p-4 text-left shadow-[0_0_16px_rgba(255,190,70,.12)] transition hover:border-amber-300 hover:brightness-110 disabled:cursor-default disabled:opacity-60"
+          className="w-full rounded-xl border mt-4 border-amber-500 bg-linear-to-r from-[#2b2315] via-[#1d232b] to-[#171c22] p-4 text-left shadow-[0_0_16px_rgba(255,190,70,.12)] transition hover:border-amber-300 hover:brightness-110 disabled:cursor-default disabled:opacity-60"
         >
           <div className="flex items-center justify-between gap-4">
             <div>
@@ -86,7 +86,7 @@ export function CategoryTaskTree({ categories, tasks, reps, projectId }: Props) 
             </div>
             <div className="text-right">
               <p className="font-semibold text-amber-300">{activeAchievement.currentCount.toLocaleString()}/{activeAchievement.total.toLocaleString()}</p>
-              <p className="mt-1 text-xs text-slate-400">+{activeAchievement.xpValue} XP per tap</p>
+              {activeAchievement.xpValue > 0 && <p className="mt-1 text-xs text-slate-400">+{activeAchievement.xpValue} XP per tap</p>}
             </div>
           </div>
           <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#2b323d]">

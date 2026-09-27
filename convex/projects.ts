@@ -601,13 +601,16 @@ export const completeAchievementRep = mutation({
       throw new Error("Category not found in this project");
     }
 
-    await ctx.db.insert("reps", {
-      projectId,
-      categoryId: achievement.categoryId,
-      title: achievement.name,
-      xpValue: achievement.xpValue,
-      completedAt: Date.now(),
-    });
+    if (achievement.xpValue > 0) {
+      await ctx.db.insert("reps", {
+        projectId,
+        categoryId: achievement.categoryId,
+        title: achievement.name,
+        xpValue: achievement.xpValue,
+        completedAt: Date.now(),
+      });
+    }
+
     await ctx.db.patch(achievementId, {
       currentCount: achievement.currentCount + 1,
     });
