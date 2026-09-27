@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
-import { useSkillRankImage, type ProjectName } from "~/constants/levels";
+import { getRankImage, useSkillRankImage, type ProjectName } from "~/constants/levels";
 import { CompleteToast } from "./utils/CompleteToast";
 
 type Category = {
@@ -33,6 +33,9 @@ export type Props = {
   reps: Rep[];
   projectId: Id<"projects">;
 };
+
+const achievementMilestoneRatios = [0.025, 0.05, 0.1, 0.25, 1] as const;
+const achievementMilestoneRankLevels = [0, 7, 17, 30, 100] as const;
 
 
 export function CategoryTaskTree({ categories, tasks, reps, projectId }: Props) {
@@ -91,6 +94,22 @@ export function CategoryTaskTree({ categories, tasks, reps, projectId }: Props) 
           </div>
           <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#2b323d]">
             <div className="h-full rounded-full bg-linear-to-r from-amber-700 to-yellow-300" style={{ width: `${Math.min(100, (activeAchievement.currentCount / activeAchievement.total) * 100)}%` }} />
+          </div>
+          <div className="mt-4 grid grid-cols-5 gap-1 border-t border-[#56482a] pt-3">
+            {achievementMilestoneRatios.map((ratio, index) => {
+              const milestone = Math.ceil(activeAchievement.total * ratio);
+              const complete = activeAchievement.currentCount >= milestone;
+              return (
+                <div key={`${activeAchievement._id}-${milestone}`} className="flex justify-center">
+                  <img
+                    src={getRankImage(achievementMilestoneRankLevels[index])}
+                    alt=""
+                    aria-hidden="true"
+                    className={`h-9 w-9 object-contain transition-all sm:h-10 sm:w-10 ${complete ? "drop-shadow-[0_0_8px_rgba(255,190,70,.45)]" : "grayscale brightness-50 opacity-30"}`}
+                  />
+                </div>
+              );
+            })}
           </div>
         </button>
       )}

@@ -52,6 +52,7 @@ export function Achievements({ categories, projectId }: Props) {
   const setActiveAchievement = useMutation(api.projects.setActiveAchievement);
   const activeAchievement = useQuery(api.projects.getActiveAchievement, { projectId });
   const [settingActive, setSettingActive] = useState(false);
+  const [activeSelectorOpen, setActiveSelectorOpen] = useState(false);
 
   const categoryNames = new Map(categories.map((category) => [category._id, category.name]));
   const isValid = entries.every(
@@ -113,6 +114,7 @@ export function Achievements({ categories, projectId }: Props) {
         projectId,
         achievementId: value === "none" ? null : value as Id<"achievements">,
       });
+      setActiveSelectorOpen(false);
     } finally {
       setSettingActive(false);
     }
@@ -196,19 +198,29 @@ export function Achievements({ categories, projectId }: Props) {
             <div className="flex-1 overflow-y-auto p-6">
               {achievements && achievements.length > 0 && (
                 <div className="mb-6 rounded-xl border border-[#4b5563] bg-[#11161c] p-4">
-                  <label htmlFor="active-achievement" className="mb-2 block text-[10px] uppercase tracking-[0.25em] text-amber-500">Active achievement</label>
-                  <select
-                    id="active-achievement"
-                    value={activeAchievement?._id ?? "none"}
-                    onChange={(event) => void handleActiveAchievementChange(event.target.value)}
+                  <span className="mb-2 block text-[10px] uppercase tracking-[0.25em] text-amber-500">Active achievement</span>
+                  <button
+                    type="button"
+                    onClick={() => setActiveSelectorOpen((current) => !current)}
                     disabled={settingActive}
-                    className="w-full rounded-lg border border-[#8d6d2c] bg-[#161c23] px-3 py-2.5 text-sm text-white hover:border-amber-400 focus:border-amber-400 focus:outline-none disabled:cursor-wait disabled:opacity-60"
+                    aria-expanded={activeSelectorOpen}
+                    className="flex w-full items-center justify-between rounded-lg border border-[#8d6d2c] bg-[#161c23] px-3 py-2.5 text-sm text-white hover:border-amber-400 focus:border-amber-400 focus:outline-none disabled:cursor-wait disabled:opacity-60"
                   >
-                    <option value="none">No active achievement</option>
-                    {achievements.map((achievement) => (
-                      <option key={achievement._id} value={achievement._id}>{achievement.name}</option>
-                    ))}
-                  </select>
+                    <span>{activeAchievement?.name ?? "No active achievement"}</span>
+                    <span className={`text-amber-300 transition-transform ${activeSelectorOpen ? "rotate-180" : ""}`}>▾</span>
+                  </button>
+                  {activeSelectorOpen && (
+                    <div className="mt-2 max-h-48 overflow-y-auto rounded-lg border border-[#8d6d2c] bg-[#171c22] p-1">
+                      <button type="button" onClick={() => void handleActiveAchievementChange("none")} disabled={settingActive} className="w-full rounded-md px-3 py-2 text-left text-sm text-slate-300 hover:bg-[#2b2315] hover:text-amber-300 disabled:opacity-60">
+                        No active achievement
+                      </button>
+                      {achievements.map((achievement) => (
+                        <button key={achievement._id} type="button" onClick={() => void handleActiveAchievementChange(achievement._id)} disabled={settingActive} className={`w-full rounded-md px-3 py-2 text-left text-sm hover:bg-[#2b2315] hover:text-amber-300 disabled:opacity-60 ${activeAchievement?._id === achievement._id ? "bg-[#2b2315] text-amber-300" : "text-slate-200"}`}>
+                          {achievement.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                   <p className="mt-2 text-xs text-slate-400">Your active achievement is pinned above the task tree.</p>
                 </div>
               )}
