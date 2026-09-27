@@ -196,25 +196,19 @@ export function Achievements({ categories, projectId }: Props) {
             <div className="flex-1 overflow-y-auto p-6">
               {achievements && achievements.length > 0 && (
                 <div className="mb-6 rounded-xl border border-[#4b5563] bg-[#11161c] p-4">
-                  <label className="mb-2 block text-[10px] uppercase tracking-[0.25em] text-amber-500">Active achievement</label>
-                  <Select.Root value={activeAchievement?._id ?? "none"} onValueChange={handleActiveAchievementChange} disabled={settingActive}>
-                    <Select.Trigger className="flex w-full items-center justify-between rounded-lg border border-[#8d6d2c] bg-[#161c23] px-3 py-2.5 text-sm text-white hover:border-amber-400 focus:border-amber-400 focus:outline-none disabled:cursor-wait disabled:opacity-60">
-                      <Select.Value />
-                      <Select.Icon className="text-amber-300">▾</Select.Icon>
-                    </Select.Trigger>
-                    <Select.Portal>
-                      <Select.Content className="z-50 overflow-hidden rounded-xl border border-[#8d6d2c] bg-[#171c22] shadow-[0_10px_30px_rgba(0,0,0,.6)]">
-                        <Select.Viewport className="p-2">
-                          <Select.Item value="none" className="cursor-pointer rounded-lg px-3 py-2 text-sm text-slate-300 outline-none hover:bg-[#2b2315] focus:bg-[#2b2315]">No active achievement</Select.Item>
-                          {achievements.map((achievement) => (
-                            <Select.Item key={achievement._id} value={achievement._id} className="cursor-pointer rounded-lg px-3 py-2 text-sm text-slate-200 outline-none hover:bg-[#2b2315] hover:text-amber-300 focus:bg-[#2b2315] focus:text-amber-300">
-                              <Select.ItemText>{achievement.name}</Select.ItemText>
-                            </Select.Item>
-                          ))}
-                        </Select.Viewport>
-                      </Select.Content>
-                    </Select.Portal>
-                  </Select.Root>
+                  <label htmlFor="active-achievement" className="mb-2 block text-[10px] uppercase tracking-[0.25em] text-amber-500">Active achievement</label>
+                  <select
+                    id="active-achievement"
+                    value={activeAchievement?._id ?? "none"}
+                    onChange={(event) => void handleActiveAchievementChange(event.target.value)}
+                    disabled={settingActive}
+                    className="w-full rounded-lg border border-[#8d6d2c] bg-[#161c23] px-3 py-2.5 text-sm text-white hover:border-amber-400 focus:border-amber-400 focus:outline-none disabled:cursor-wait disabled:opacity-60"
+                  >
+                    <option value="none">No active achievement</option>
+                    {achievements.map((achievement) => (
+                      <option key={achievement._id} value={achievement._id}>{achievement.name}</option>
+                    ))}
+                  </select>
                   <p className="mt-2 text-xs text-slate-400">Your active achievement is pinned above the task tree.</p>
                 </div>
               )}
