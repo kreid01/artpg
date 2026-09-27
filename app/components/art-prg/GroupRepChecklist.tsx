@@ -5,11 +5,19 @@ import { Loader } from "./utils/Loader";
 import { ProjectButton, type ProjectId } from "~/routes/home";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { FaScroll } from "react-icons/fa";
+import { QuestLogCompletionDialog } from "./QuestLogCompletionDialog";
+
+type RepGroup = {
+  groupId: number;
+  name: string;
+  totalXp: number;
+};
 
 export const GroupRepChecklist: React.FC<ProjectId> = ({projectId}) => {
   const groups = useQuery(api.projects.getRepGroups, {projectId});
   const createRepsFromGroup = useMutation(api.projects.createRepsFromGroup);
   const [completing, setCompleting] = useState<number | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<RepGroup | null>(null);
 
   const reps = useQuery(api.projects.getAllCompleteReps, {projectId});
   if (!reps) return <Loader/> 
@@ -73,23 +81,35 @@ export const GroupRepChecklist: React.FC<ProjectId> = ({projectId}) => {
                       : "Complete"}
                   </span>
                 }
-                onClick={async () => {
-                  setCompleting(group.groupId);
-
-                  try {
-                    await createRepsFromGroup({
-                      groupId: group.groupId,
-                      projectId,
-                    });
-                  } finally {
-                    setCompleting(null);
-                  }
-                }}
+                onClick={() => setSelectedGroup(group)}
               />
             </div>
           </div>
         ))}
       </Collapsible.Content>
+      <QuestLogCompletionDialog
+        open={selectedGroup !== null}
+        groupName={selectedGroup?.name ?? ""}
+        fullXp={selectedGroup?.totalXp ?? 0}
+        saving={completing !== null}
+        onClose={() => {
+          if (completing === null) setSelectedGroup(null);
+        }}
+        onConfirm={async (multiplier) => {
+          if (!selectedGroup) return;
+          setCompleting(selectedGroup.groupId);
+          try {
+            await createRepsFromGroup({
+              groupId: selectedGroup.groupId,
+              projectId,
+              multiplier,
+            });
+            setSelectedGroup(null);
+          } finally {
+            setCompleting(null);
+          }
+        }}
+      />
     </Collapsible.Root>
   );
 }

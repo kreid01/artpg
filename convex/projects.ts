@@ -444,8 +444,9 @@ export const createRepsFromGroup = mutation({
   args: {
     projectId: v.id("projects"),
     groupId: v.float64(),
+    multiplier: v.union(v.literal(1), v.literal(0.5)),
   },
-  handler: async (ctx, { projectId, groupId }) => {
+  handler: async (ctx, { projectId, groupId, multiplier }) => {
     const scopedReps = (await getRepsByProject(ctx, projectId)).filter(
       (rep) => rep.groupId === groupId,
     );
@@ -455,7 +456,7 @@ export const createRepsFromGroup = mutation({
         ctx.db.insert("reps", {
           projectId,
           categoryId: r.categoryId,
-          xpValue: r.xpValue,
+          xpValue: r.xpValue * multiplier,
           title: r.title,
           completedAt: Date.now(),
         })

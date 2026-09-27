@@ -55,7 +55,7 @@ export function Achievements({ categories, projectId }: Props) {
 
   const categoryNames = new Map(categories.map((category) => [category._id, category.name]));
   const isValid = entries.every(
-    (entry) => entry.categoryId && entry.name.trim() && Number.isFinite(entry.total) && entry.total > 0 && Number.isFinite(entry.xpValue) && entry.xpValue > 0
+    (entry) => entry.categoryId && entry.name.trim() && Number.isFinite(entry.total) && entry.total > 0
   );
 
   const resetEditor = () => {
