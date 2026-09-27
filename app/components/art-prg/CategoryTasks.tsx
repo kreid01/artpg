@@ -80,7 +80,7 @@ export function CategoryTaskTree({ categories, tasks, reps, projectId }: Props) 
         >
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-amber-400">Active achievement</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-amber-400">Active Quest</p>
               <h2 className="mt-1 font-semibold text-white">{activeAchievement.name}</h2>
               {activeAchievement.description && <p className="mt-1 text-xs text-slate-400">{activeAchievement.description}</p>}
             </div>
