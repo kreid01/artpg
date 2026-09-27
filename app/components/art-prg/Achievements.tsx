@@ -49,6 +49,9 @@ export function Achievements({ categories, projectId }: Props) {
   const achievements = useQuery(api.projects.getAchievements, { projectId });
   const createAchievement = useMutation(api.projects.createAchievement);
   const completeAchievementRep = useMutation(api.projects.completeAchievementRep);
+  const setActiveAchievement = useMutation(api.projects.setActiveAchievement);
+  const activeAchievement = useQuery(api.projects.getActiveAchievement, { projectId });
+  const [settingActive, setSettingActive] = useState(false);
 
   const categoryNames = new Map(categories.map((category) => [category._id, category.name]));
   const isValid = entries.every(
@@ -100,6 +103,18 @@ export function Achievements({ categories, projectId }: Props) {
       await completeAchievementRep({ projectId, achievementId });
     } finally {
       setCompletingId(null);
+    }
+  };
+
+  const handleActiveAchievementChange = async (value: string) => {
+    setSettingActive(true);
+    try {
+      await setActiveAchievement({
+        projectId,
+        achievementId: value === "none" ? null : value as Id<"achievements">,
+      });
+    } finally {
+      setSettingActive(false);
     }
   };
 
@@ -179,6 +194,30 @@ export function Achievements({ categories, projectId }: Props) {
             </div>
           ) : (
             <div className="flex-1 overflow-y-auto p-6">
+              {achievements && achievements.length > 0 && (
+                <div className="mb-6 rounded-xl border border-[#4b5563] bg-[#11161c] p-4">
+                  <label className="mb-2 block text-[10px] uppercase tracking-[0.25em] text-amber-500">Active achievement</label>
+                  <Select.Root value={activeAchievement?._id ?? "none"} onValueChange={handleActiveAchievementChange} disabled={settingActive}>
+                    <Select.Trigger className="flex w-full items-center justify-between rounded-lg border border-[#8d6d2c] bg-[#161c23] px-3 py-2.5 text-sm text-white hover:border-amber-400 focus:border-amber-400 focus:outline-none disabled:cursor-wait disabled:opacity-60">
+                      <Select.Value />
+                      <Select.Icon className="text-amber-300">▾</Select.Icon>
+                    </Select.Trigger>
+                    <Select.Portal>
+                      <Select.Content className="z-50 overflow-hidden rounded-xl border border-[#8d6d2c] bg-[#171c22] shadow-[0_10px_30px_rgba(0,0,0,.6)]">
+                        <Select.Viewport className="p-2">
+                          <Select.Item value="none" className="cursor-pointer rounded-lg px-3 py-2 text-sm text-slate-300 outline-none hover:bg-[#2b2315] focus:bg-[#2b2315]">No active achievement</Select.Item>
+                          {achievements.map((achievement) => (
+                            <Select.Item key={achievement._id} value={achievement._id} className="cursor-pointer rounded-lg px-3 py-2 text-sm text-slate-200 outline-none hover:bg-[#2b2315] hover:text-amber-300 focus:bg-[#2b2315] focus:text-amber-300">
+                              <Select.ItemText>{achievement.name}</Select.ItemText>
+                            </Select.Item>
+                          ))}
+                        </Select.Viewport>
+                      </Select.Content>
+                    </Select.Portal>
+                  </Select.Root>
+                  <p className="mt-2 text-xs text-slate-400">Your active achievement is pinned above the task tree.</p>
+                </div>
+              )}
               {achievements === undefined ? (
                 <p className="py-10 text-center text-sm text-slate-400">Loading achievements...</p>
               ) : achievements.length === 0 ? (

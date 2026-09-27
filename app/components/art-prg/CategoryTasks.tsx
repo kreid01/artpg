@@ -43,6 +43,11 @@ export function CategoryTaskTree({ categories, tasks, reps, projectId }: Props) 
   })?.name as ProjectName 
 
   const sortedCategories = [...categories].sort((a, b) => (b.cap?.value ?? 0) - (a.cap?.value ?? 0));
+  const activeAchievement = useQuery(api.projects.getActiveAchievement, { projectId });
+  const completeAchievement = useMutation(api.projects.completeAchievementRep);
+  const [completingActiveAchievement, setCompletingActiveAchievement] = useState(false);
+  const [openToast, setOpenToast] = useState(false);
+  const [toastData, setToastData] = useState<{ title: string; description?: string } | null>(null);
   const categoryXpTotals: Record<string, number> = {};
 
   for (const rep of reps) {
@@ -53,6 +58,42 @@ export function CategoryTaskTree({ categories, tasks, reps, projectId }: Props) 
 
   return (
     <div className="space-y-2">
+      {activeAchievement && (
+        <button
+          type="button"
+          onClick={async () => {
+            setCompletingActiveAchievement(true);
+            try {
+              await completeAchievement({ projectId, achievementId: activeAchievement._id });
+              setToastData({ title: activeAchievement.name });
+              setOpenToast(true);
+            } catch {
+              setToastData({ title: "Error", description: "Failed to increment achievement" });
+              setOpenToast(true);
+            } finally {
+              setCompletingActiveAchievement(false);
+            }
+          }}
+          disabled={completingActiveAchievement || activeAchievement.currentCount >= activeAchievement.total}
+          aria-label={`Increment active achievement ${activeAchievement.name}`}
+          className="w-full rounded-xl border border-amber-500 bg-linear-to-r from-[#2b2315] via-[#1d232b] to-[#171c22] p-4 text-left shadow-[0_0_16px_rgba(255,190,70,.12)] transition hover:border-amber-300 hover:brightness-110 disabled:cursor-default disabled:opacity-60"
+        >
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-amber-400">Active achievement</p>
+              <h2 className="mt-1 font-semibold text-white">{activeAchievement.name}</h2>
+              {activeAchievement.description && <p className="mt-1 text-xs text-slate-400">{activeAchievement.description}</p>}
+            </div>
+            <div className="text-right">
+              <p className="font-semibold text-amber-300">{activeAchievement.currentCount.toLocaleString()}/{activeAchievement.total.toLocaleString()}</p>
+              <p className="mt-1 text-xs text-slate-400">+{activeAchievement.xpValue} XP per tap</p>
+            </div>
+          </div>
+          <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#2b323d]">
+            <div className="h-full rounded-full bg-linear-to-r from-amber-700 to-yellow-300" style={{ width: `${Math.min(100, (activeAchievement.currentCount / activeAchievement.total) * 100)}%` }} />
+          </div>
+        </button>
+      )}
       {sortedCategories.map(category => (
         <CategoryBranch
           key={category._id}
@@ -61,8 +102,10 @@ export function CategoryTaskTree({ categories, tasks, reps, projectId }: Props) 
           tasks={tasks.filter(task => task.categoryId === category._id)}
           totalXp={categoryXpTotals[category._id] || 0}
           projectName={projectName}
+          activeAchievementId={activeAchievement?._id}
         />
       ))}
+      <CompleteToast setOpenToast={setOpenToast} toastData={toastData} openToast={openToast} />
     </div>
   );
 }
@@ -72,13 +115,15 @@ function CategoryBranch({
   tasks,
   projectId,
   totalXp,
-  projectName
+  projectName,
+  activeAchievementId,
 }: {
   category: Category;
   tasks: Task[];
   projectId: Id<"projects">;
   totalXp: number;
   projectName: ProjectName 
+  activeAchievementId?: Id<"achievements">;
 }) {
   const [open, setOpen] = useState(false);
   const [adding, setAdding] = useState(false);
@@ -154,7 +199,7 @@ function CategoryBranch({
       </button>
     </Collapsible.Trigger>
     <Collapsible.Content className="mt-3 ml-3 space-y-3 border-l-2 border-[#8d6d2c]/40 pl-4">
-      {achievements && achievements?.sort((a, b) => a.xpValue - b.xpValue).filter(ach => ach.categoryId == category._id).map(ach => (
+      {achievements && achievements?.sort((a, b) => a.xpValue - b.xpValue).filter(ach => ach.categoryId == category._id && ach._id !== activeAchievementId).map(ach => (
       <div key={ach._id} onClick={async () => {
           try {
             await completeAchievment({ achievementId: ach._id, projectId });

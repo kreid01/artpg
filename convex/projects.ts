@@ -476,6 +476,20 @@ export const getAchievements = query({
   },
 });
 
+export const getActiveAchievement = query({
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, { projectId }) => {
+    return await ctx.db
+      .query("achievements")
+      .withIndex("by_project_and_isActive", (q) =>
+        q.eq("projectId", projectId).eq("isActive", true),
+      )
+      .unique();
+  },
+});
+
 export const getByProject = query({
   args: {
     projectId: v.id("projects"),
@@ -536,6 +550,35 @@ export const createAchievement = mutation({
   },
 });
 
+export const setActiveAchievement = mutation({
+  args: {
+    projectId: v.id("projects"),
+    achievementId: v.union(v.id("achievements"), v.null()),
+  },
+  handler: async (ctx, { projectId, achievementId }) => {
+    if (achievementId) {
+      const achievement = await ctx.db.get(achievementId);
+      if (!achievement || achievement.projectId !== projectId) {
+        throw new Error("Achievement not found in this project");
+      }
+    }
+
+    const activeAchievements = await ctx.db
+      .query("achievements")
+      .withIndex("by_project_and_isActive", (q) =>
+        q.eq("projectId", projectId).eq("isActive", true),
+      )
+      .collect();
+
+    await Promise.all([
+      ...activeAchievements
+        .filter((achievement) => achievement._id !== achievementId)
+        .map((achievement) => ctx.db.patch(achievement._id, { isActive: false })),
+      ...(achievementId ? [ctx.db.patch(achievementId, { isActive: true })] : []),
+    ]);
+  },
+});
+
 export const completeAchievementRep = mutation({
   args: {
     projectId: v.id("projects"),
@@ -559,6 +602,7 @@ export const completeAchievementRep = mutation({
     }
 
     await ctx.db.insert("reps", {
+      projectId,
       categoryId: achievement.categoryId,
       title: achievement.name,
       xpValue: achievement.xpValue,

@@ -21,8 +21,10 @@ export default defineSchema({
   description: v.optional(v.string()),
   currentCount: v.number(),
   xpValue: v.number(),
+  isActive: v.optional(v.boolean()),
   })
   .index("by_project", ["projectId"])
+  .index("by_project_and_isActive", ["projectId", "isActive"])
   .index("by_category", ["categoryId"]),
 
   reps: defineTable({
