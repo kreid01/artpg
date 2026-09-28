@@ -37,8 +37,8 @@ const blankEntry = (): Entry => ({
   description: ""
 });
 
-const milestoneRatios = [0.025, 0.05, 0.1, 0.25, 1] as const;
-const milestoneRankLevels = [0, 7, 17, 30, 100] as const;
+const milestoneRatios = [0.025, 0.1, 0.5, 0.8, 1] as const;
+const milestoneRankLevels = [0, 17, 30, 83, 100] as const;
 
 export function Achievements({ categories, projectId }: Props) {
   const [open, setOpen] = useState(false);

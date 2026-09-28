@@ -34,8 +34,8 @@ export type Props = {
   projectId: Id<"projects">;
 };
 
-const achievementMilestoneRatios = [0.025, 0.05, 0.1, 0.25, 1] as const;
-const achievementMilestoneRankLevels = [0, 7, 17, 30, 100] as const;
+const achievementMilestoneRatios = [0.025, 0.1, 0.5, 0.8, 1] as const;
+const achievementMilestoneRankLevels = [0, 17, 30, 83, 100] as const;
 
 
 export function CategoryTaskTree({ categories, tasks, reps, projectId }: Props) {
