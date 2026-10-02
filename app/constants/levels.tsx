@@ -131,6 +131,16 @@ const artRewardDict: Record<number, string> = {
     100: "Job Ready"
 }
 
+const engineerRewardDict: Record<number, string> = {
+  70: "CS Algorithms",
+  73: "System Programming",
+  76: "Graphics Math",
+  78: "Renderer",
+  80: "Shaders",
+  82: "Realtime Rendering",
+  85: "GPU Programming"
+}
+
 const climbingRewardDict: Record<number, string> = {
   75: "V6",
   85: "V7",
@@ -142,15 +152,9 @@ const getRewardDict = (projectName: string) => {
   const name =  projectName.toLowerCase()
   if (name == "art") return artRewardDict
   if (name == "climbing") return climbingRewardDict;
+  if (name == "engineer") return engineerRewardDict
   return {}
 }
-
-// const TARGET_XP = {
-//   "art": 400_000,
-//   "scholar": 300_000,
-//   "engineer": 200_000,
-//   "climbing": 150_000,
-// }
 
 export const useOverallLevels = () => {
   const totalCap = useQuery(api.projects.getTotalCap);
